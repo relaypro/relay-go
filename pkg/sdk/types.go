@@ -1,6 +1,8 @@
 
 package sdk
 
+
+
 type Event string
 const(
     ERROR Event = "error"
@@ -21,9 +23,12 @@ const(
     CALL_START_REQUEST = "call_start_request"
 )
 
-//{"_type":"wf_api_start_event","trigger":{"args":{"phrase":[104,101,108,108,111],"source_uri":[117,114,110,58,114,101,108,97,121,45,114,101,115,111,117,114,99,101,58,110,97,109,101,58,100,101,118,105,99,101,58,97,108,112,104,97]},"type":"phrase"}}
+// EVENTS 
+
+// event structs are exported, but their _type and _id are not
+
 type StartEvent struct {
-    Type string `json:"_type"`
+    _type string `json:"_type"`
     Trigger Trigger 
 }
 
@@ -52,7 +57,42 @@ type TriggerArgs struct {
     SourceUri string
 }
 
-type StartInteractionRequest struct {
+type InteractionLifecycleEvent struct {
+    _type string `json:"_type"`
+    SourceUri string `json:"source_uri"`
+    LifecycleType string `json:"type"`          // started, resumed
+}
+
+type PromptEvent struct {
+    _type string `json:"_type"`
+    SourceUri string `json:"source_uri"`
+    PromptType string `json:"type"`             // started, stopped, resumed
+}
+
+type TimerFiredEvent struct {
+    _type string `json:"_type"`
+    Name string `json:"name"`
+}
+
+type ButtonEvent struct {
+    _type string `json:"_type"`
+    SourceUri string `json:"source_uri"`
+    Button string `json:"button"`           // "action", "channel"
+    Taps string `json:"taps"`               // "single", "double", "triple", "long"
+}
+
+type StopEvent struct {
+    _type string `json:"_type"`
+    Reason string `json:"reason"`
+}
+
+
+// REQUEST/RESPONSE
+
+// requests are not exported, because they are created internally, and their _type and _id fields are exported so they can be json encoded
+// responses are exported, but their _type and _id are not, because they are not needed by user
+
+type startInteractionRequest struct {
     Type string `json:"_type"`
     Id string `json:"_id"`
     Targets map[string][]string `json:"_target"`
@@ -61,24 +101,12 @@ type StartInteractionRequest struct {
 }
 
 type StartInteractionResponse struct {
-    Type string `json:"type"`
+    _type string `json:"_type"`
+    _id string `json:"_id"`
     SourceUri string `json:"source_uri"`
 }
 
-type InteractionLifecycleEvent struct {
-    Type string `json:"type"`
-    SourceUri string `json:"source_uri"`
-}
-// {"_type":"wf_api_interaction_lifecycle_event","source_uri":"urn:relay-resource:name:interaction:testing?device=urn%3Arelay-resource%3Aname%3Adevice%3Aalpha","type":"started"}
-// {"_type":"wf_api_interaction_lifecycle_event","source_uri":"urn:relay-resource:name:interaction:testing?device=urn%3Arelay-resource%3Aname%3Adevice%3Aalpha","type":"resumed"}
-
-type PromptEvent struct {
-    Type string `json:"type"`
-    SourceUri string `json:"source_uri"`
-}
-// {"_type":"wf_api_prompt_event","source_uri":"urn:relay-resource:name:interaction:testing?device=urn%3Arelay-resource%3Aname%3Adevice%3Aalpha","type":"stopped"}
-
-type SayRequest struct {
+type sayRequest struct {
     Type string `json:"_type"`
     Id string `json:"_id"`
     Target map[string][]string `json:"_target"`
@@ -87,22 +115,254 @@ type SayRequest struct {
 }
 
 type SayResponse struct {
-    Type string `json:"_type"`
-    Id string `json:"_id"`
+    _type string `json:"_type"`
+    _id string `json:"_id"`
     CorrelationId string `json:"id"`
 }
-// {"_id":"banana","_type":"wf_api_say_response","id":"banana"}
 
-type TerminateRequest struct {
+type playRequest struct {
+    Type string `json:"_type"`
+    Id string `json:"_id"`
+    Target map[string][]string `json:"_target"`
+    Filename string `json:"filename"`
+}
+
+type PlayResponse struct {
+    _type string `json:"_type"`
+    _id string `json:"_id"`
+    CorrelationId string `json:"id"`
+}
+
+type stopPlaybackRequest struct {
+    Type string `json:"_type"`
+    Id string `json:"_id"`
+    Target map[string][]string `json:"_target"`
+    Ids []string `json:"ids"`
+}
+
+type StopPlaybackResponse struct {
+    _type string `json:"_type"`
+    _id string `json:"_id"`
+}
+
+type TimerType string
+const (
+    TIMEOUT_TIMER_TYPE = "timeout"
+    INTERVAL_TIMER_TYPE = "interval"
+)
+
+type TimeoutType string
+const (
+    MS_TIMEOUT_TYPE = "ms"
+    SECS_TIMEOUT_TYPE = "secs"
+    MINS_TIMEOUT_TYPE = "mins"
+    HRS_TIMEOUT_TYPE = "hrs"
+)
+
+type setTimerRequest struct {
+    Type string `json:"_type"`
+    Id string `json:"_id"`
+    TimerType TimerType `json:"type"`
+    Name string `json:"name"`
+    Timeout uint64 `json:"timeout"`
+    TimeoutType TimeoutType `json:"timeout_type"`
+}
+
+type SetTimerResponse struct {
+    _type string `json:"_type"`
+    _id string `json:"_id"`
+}
+
+type clearTimerRequest struct {
+    Type string `json:"_type"`
+    Id string `json:"_id"`
+    Name string `json:"name"`
+}
+
+type ClearTimerResponse struct {
+    _type string `json:"_type"`
+    _id string `json:"_id"`
+}
+
+type LedEffect string 
+const (
+    LED_RAINBOW = "rainbow"
+    LED_ROTATE = "rotate"
+    LED_FLASH = "flash"
+    LED_BREATHE = "breathe"
+    LED_STATIC = "static"
+    LED_OFF = "off"
+)
+
+type setLedRequest struct {
+    Type string `json:"_type"`
+    Id string `json:"_id"`
+    Target map[string][]string `json:"_target"`
+    Effect LedEffect `json:"effect"`
+    Args LedInfo `json:"args"`
+        
+}
+
+type LedInfo struct {
+    Rotations int64 `json:"rotations,omitempty"`
+    Count int64 `json:"count,omitempty"`
+    Duration uint64 `json:"duration,omitempty"`
+    RepeatDelay uint64 `json:"repeat_delay,omitempty"`
+    PatternRepeats uint64 `json:"pattern_repeats,omitempty"`
+    Colors LedColors `json:"colors,omitempty"`
+}
+
+type LedColors struct {
+    Ring string `json:"ring,omitempty"`
+    Led1 string `json:"1,omitempty"`
+    Led2 string `json:"2,omitempty"`
+    Led3 string `json:"3,omitempty"`
+    Led4 string `json:"4,omitempty"`
+    Led5 string `json:"5,omitempty"`
+    Led6 string `json:"6,omitempty"`
+    Led7 string `json:"7,omitempty"`
+    Led8 string `json:"8,omitempty"`
+    Led9 string `json:"9,omitempty"`
+    Led10 string `json:"10,omitempty"`
+    Led11 string `json:"11,omitempty"`
+    Led12 string `json:"12,omitempty"`
+    Led13 string `json:"13,omitempty"`
+    Led14 string `json:"14,omitempty"`
+    Led15 string `json:"15,omitempty"`
+    Led16 string `json:"16,omitempty"`
+}
+
+type SetLedResponse struct {
+    _type string `json:"_type"`
+    _id string `json:"_id"`
+}
+
+type vibrateRequest struct {
+    Type string `json:"_type"`
+    Id string `json:"_id"`
+    Target map[string][]string `json:"_target"`
+    Pattern []uint64 `json:"pattern"`
+}
+
+type VibrateResponse struct {
+    _type string `json:"_type"`
+    _id string `json:"_id"`
+}
+
+type DeviceInfoQuery string
+const (
+    DEVICE_INFO_QUERY_NAME = "name"
+    DEVICE_INFO_QUERY_ID = "id"
+    DEVICE_INFO_QUERY_ADDRESS = "address"
+    DEVICE_INFO_QUERY_LATLONG = "latlong"
+    DEVICE_INFO_QUERY_INDOOR_LOCATION = "indoor_location"
+    DEVICE_INFO_QUERY_BATTERY = "battery"
+    DEVICE_INFO_QUERY_TYPE = "type"
+    DEVICE_INFO_QUERY_USERNAME = "username"
+    DEVICE_INFO_QUERY_LOCATION_ENABLED = "location_enabled"
+)
+
+type getDeviceInfoRequest struct {
+    Type string `json:"_type"`
+    Id string `json:"_id"`
+    Target map[string][]string `json:"_target"`
+    Query DeviceInfoQuery `json:"query"`
+    Refresh bool `json:"refresh"`
+}
+
+type GetDeviceInfoResponse struct {
+    _type string `json:"_type"`
+    _id string `json:"_id"`
+    Name string `json:"name"`
+    Id string `json:"id"`
+    Address string `json:"address"`
+    LatLong []float64 `json:"latlong"`
+    IndoorLocation string `json:"indoor_location"`
+    Battery uint64 `json:"battery"`
+    Type string `json:"type"`
+    Username string `json:"username"`
+    LocationEnabled bool `json:"location_enabled"`
+}
+
+type SetDeviceInfoType string
+const (
+    SET_DEVICE_INFO_LABEL = "label"
+//     SET_DEVICE_INFO_CHANNEL = "channel"
+    SET_DEVICE_INFO_LOCATION_ENABLED = "location_enabled"
+)
+
+type setDeviceInfoRequest struct {
+    Type string `json:"_type"`
+    Id string `json:"_id"`
+    Target map[string][]string `json:"_target"`
+    Field SetDeviceInfoType `json:"field"`
+    Value string `json:"value"`
+}
+
+type SetDeviceInfoResponse struct {
+    _type string `json:"_type"`
+    _id string `json:"_id"`
+}
+
+type setUserProfileRequest struct {
+    Type string `json:"_type"`
+    Id string `json:"_id"`
+    Target map[string][]string `json:"_target"`
+    Username string `json:"username"`
+    Force bool `json:"force"`
+}
+
+type SetUserProfileResponse struct {
+    _type string `json:"_type"`
+    _id string `json:"_id"`
+}
+
+type setChannelRequest struct {
+    Type string `json:"_type"`
+    Id string `json:"_id"`
+    Target map[string][]string `json:"_target"`
+    ChannelName string `json:"channel_name"`
+    SuppressTTS bool `json:"suppress_tts"`
+    DisableHomeChannel bool `json:"disable_home_channel"`
+}
+
+type SetChannelResponse struct {
+    _type string `json:"_type"`
+    _id string `json:"_id"`
+}
+
+type setDeviceModeRequest struct {
+    Type string `json:"_type"`
+    Id string `json:"_id"`
+    Target map[string][]string `json:"_target"`
+    Mode DeviceMode `json:"mode"`
+}
+
+type SetDeviceModeResponse struct {
+    _type string `json:"_type"`
+    _id string `json:"_id"`
+}
+
+type DeviceMode string
+const (
+    DEVICE_MODE_PANIC = "panic"
+    DEVICE_MODE_ALARM = "alarm"
+    DEVICE_MODE_NONE = "none"
+)
+
+type devicePowerOffRequest struct {
+    Type string `json:"_type"`
+    Id string `json:"_id"`
+    Target map[string][]string `json:"_target"`
+    Restart bool `json:"restart"`
+}
+
+type DevicePowerOffResponse struct {
+    _type string `json:"_type"`
+    _id string `json:"_id"`
+}
+
+type terminateRequest struct {
     Type string `json:"_type"`
     Id string `json:"_id"`
 }
-
-type StopEvent struct {
-    Type string `json:"_type"`
-    Reason string `json:"reason"`
-}
-// {"_type":"wf_api_stop_event","reason":"normal"}
-
-
- 
