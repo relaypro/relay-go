@@ -9,22 +9,19 @@ import (
     "github.com/gorilla/websocket"
 )
 
-var port = ":5000"
-
 var upgrader = websocket.Upgrader{
     ReadBufferSize:  1024,
     WriteBufferSize: 1024,
 }
 
 // this should return an interface that has a workflow() function that they can pass their workflow implementations to
-func InitializeRelaySdk() {
-    // TODO do this in a thread so it doesn't block further calls?
+func InitializeRelaySdk(port string) {
     fmt.Println("starting http server on", port)
     
     // use gorilla mux router
     r := mux.NewRouter()
     
-    r.HandleFunc("/ws/{workflowname}", handleWs)
+    r.HandleFunc("/{workflowname}", handleWs)
     
     http.ListenAndServe(port, r)
 }

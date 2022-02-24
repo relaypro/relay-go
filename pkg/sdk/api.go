@@ -13,7 +13,7 @@ type RelayApi interface {            // this is interface of your custom workflo
     // assigning callbacks
     OnStart(fn func(startEvent StartEvent))
     OnInteractionLifecycle(func(interactionLifecycleEvent InteractionLifecycleEvent))
-    OnPrompt(func(promptEvent PromptEvent))
+    OnPrompt(func(promptEvent PromptEvent))         // seperate into start and stop?
     OnTimerFired(func(timerFiredEvent TimerFiredEvent))
     OnButton(func(buttonEvent ButtonEvent))
     
@@ -53,19 +53,6 @@ type RelayApi interface {            // this is interface of your custom workflo
     RestartDevice(sourceUri string) DevicePowerOffResponse
     PowerDownDevice(sourceUri string) DevicePowerOffResponse
     Terminate()
-    // -----
-
-
-
-
-//     Translate()
-
-
-// EnableHomeChannel(target: string|string[])
-// DisableHomeChannel(target: string|string[])
-
-    
-    // -----
 }
 
 // This struct implements RelayApi below
@@ -105,7 +92,7 @@ type EventWrapper struct {
 
 func (wfInst *workflowInstance) OnStart(fn func(startEvent StartEvent)) {
     // store the func that was passed in as a callback in a slice, then whenever the websocket sends us a matching event, call the callback
-    wfInst.OnStartHandler = fn           // set the callback for this event type
+    wfInst.OnStartHandler = fn
 }
 
 func (wfInst *workflowInstance) OnInteractionLifecycle(fn func(interactionLifecycleEvent InteractionLifecycleEvent)) {

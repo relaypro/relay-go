@@ -44,8 +44,6 @@ func (wfInst *workflowInstance) sendAndReceiveRequest(msg interface{}, id string
 }
 
 func (wfInst *workflowInstance) handleEvent(eventWrapper EventWrapper) error {
-    //parsedMsg map[string]interface{}, rawMsg []byte, event Event
-    
     fmt.Println("Handling event of type", eventWrapper.ParsedMsg["_type"])
     // call the appropriate handler function, if it was set by the user implementation
     switch eventWrapper.EventName {

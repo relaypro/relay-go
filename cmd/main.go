@@ -5,6 +5,8 @@ import (
     "fmt"
 )
 
+var port = ":5000"
+
 func main() {
     // add workflow functions by name
     sdk.AddWorkflow("timer", timer_example)
@@ -24,8 +26,7 @@ func main() {
                 sourceUri = interactionLifecycleEvent.SourceUri     // save the interaction id here to use in the timer callback
                 
                 // say
-//                 api.Say(interactionLifecycleEvent.SourceUri, "hello world", "")
-//                 api.Say(interactionLifecycleEvent.SourceUri, "second text", "")
+                api.Say(interactionLifecycleEvent.SourceUri, "hello world", "")
                 
                 // play
 //                 id := api.Play(interactionLifecycleEvent.SourceUri, "ibot-priv:///incoming_call_ring3.opus")
@@ -58,9 +59,6 @@ func main() {
 //                 deviceName := api.GetDeviceName(interactionLifecycleEvent.SourceUri, false)
 //                 api.Say(interactionLifecycleEvent.SourceUri, deviceName, "")
                 
-                // change channel
-                //api.SetDeviceChannel(interactionLifecycleEvent.SourceUri, "User 40")          // TODO this isn't actually supported in ibot?
-
                 // enable location
 //                 api.EnableLocation(interactionLifecycleEvent.SourceUri)
 //                 loc := api.GetDeviceLocationEnabled(interactionLifecycleEvent.SourceUri, false)
@@ -103,5 +101,5 @@ func main() {
         })
     })
     
-    sdk.InitializeRelaySdk()
+    sdk.InitializeRelaySdk(port)
 }
