@@ -107,6 +107,20 @@ type StartInteractionResponse struct {
     SourceUri string `json:"source_uri"`
 }
 
+type endInteractionRequest struct {
+    Type string `json:"_type"`
+    Id string `json:"_id"`
+    Targets map[string][]string `json:"_target"`
+    Name string `json:"name"`
+    //Options ??
+}
+
+type EndInteractionResponse struct {
+    _type string `json:"_type"`
+    _id string `json:"_id"`
+    SourceUri string `json:"source_uri"`
+}
+
 type sayRequest struct {
     Type string `json:"_type"`
     Id string `json:"_id"`

@@ -20,7 +20,8 @@ type RelayApi interface {            // this is interface of your custom workflo
     OnButton(func(buttonEvent ButtonEvent))
     
     // api
-    StartInteraction(sourceUri string) StartInteractionResponse
+    StartInteraction(sourceUri string, name string) StartInteractionResponse
+    EndInteraction(sourceUri string, name string) EndInteractionResponse
     SetTimer(timerType TimerType, name string, timeout uint64, timeoutType TimeoutType) SetTimerResponse
     ClearTimer(name string) ClearTimerResponse
     Say(sourceUri string, text string, lang string) SayResponse
@@ -116,12 +117,22 @@ func (wfInst *workflowInstance) OnTimerFired(fn func(timerFiredEvent TimerFiredE
 
 // API functions
 
-func (wfInst *workflowInstance) StartInteraction(sourceUri string) StartInteractionResponse {
+func (wfInst *workflowInstance) StartInteraction(sourceUri string, name string) StartInteractionResponse {
     id := makeId()
     target := makeTargetMap(sourceUri)
-    req := startInteractionRequest{Type: "wf_api_start_interaction_request", Id: id, Targets: target, Name: "testing"}
+    req := startInteractionRequest{Type: "wf_api_start_interaction_request", Id: id, Targets: target, Name: name}
     call := wfInst.sendAndReceiveRequest(req, id)
     res := StartInteractionResponse{}
+    json.Unmarshal(call.EventWrapper.Msg, &res)
+    return res
+}
+
+func (wfInst *workflowInstance) EndInteraction(sourceUri string, name string) EndInteractionResponse {
+    id:= makeId()
+    target:= makeTargetMap(sourceUri)
+    req := endInteractionRequest{Type: "wf_api_end_interaction_request", Id: id, Targets: target, Name: name}
+    call := wfInst.sendAndReceiveRequest(req, id)
+    res:= EndInteractionResponse{}
     json.Unmarshal(call.EventWrapper.Msg, &res)
     return res
 }

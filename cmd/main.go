@@ -7,11 +7,11 @@ import (
     "fmt"
 )
 
-var port = ":5000"
+var port = ":8080"
 
 func main() {
     // add workflow functions by name
-    sdk.AddWorkflow("timer", timer_example)
+    // sdk.AddWorkflow("timer", timer_example)
     
     sdk.AddWorkflow("hello", func(api sdk.RelayApi) {
         var sourceUri string
@@ -19,7 +19,7 @@ func main() {
         api.OnStart(func(startEvent sdk.StartEvent) {
             sourceDevice := startEvent.Trigger.Args.SourceUri
             fmt.Println("starting interaction on source device", sourceDevice)
-            api.StartInteraction(sourceDevice)
+            api.StartInteraction(sourceDevice, "hello")
         })
         
         api.OnInteractionLifecycle(func(interactionLifecycleEvent sdk.InteractionLifecycleEvent) {
@@ -29,7 +29,13 @@ func main() {
                 
                 // say
                 api.Say(interactionLifecycleEvent.SourceUri, "hello world", "")
-                
+                api.EndInteraction(interactionLifecycleEvent.SourceUri, "hello")
+            }
+
+            if interactionLifecycleEvent.LifecycleType == "ended" {
+                fmt.Println("i'm a callback for interaction lifecycle: ", interactionLifecycleEvent)
+                api.Terminate()
+            }
                 // play
 //                 id := api.Play(interactionLifecycleEvent.SourceUri, "ibot-priv:///incoming_call_ring3.opus")
 //                 fmt.Println("play id ", id)
@@ -90,17 +96,16 @@ func main() {
 //                 api.PowerDownDevice(interactionLifecycleEvent.SourceUri)
                 
 //                 api.Terminate()
-            }
         })
         
-        api.OnButton(func(buttonEvent sdk.ButtonEvent) {
-            fmt.Println("button pressed", buttonEvent.Button, buttonEvent.Taps, buttonEvent.SourceUri)
-            api.Terminate()
-        })
+        // api.OnButton(func(buttonEvent sdk.ButtonEvent) {
+        //     fmt.Println("button pressed", buttonEvent.Button, buttonEvent.Taps, buttonEvent.SourceUri)
+        //     api.Terminate()
+        // })
         
-        api.OnTimerFired(func(timerFiredEvent sdk.TimerFiredEvent) {
-            fmt.Println("timer fired! name ", timerFiredEvent.Name)
-        })
+        // api.OnTimerFired(func(timerFiredEvent sdk.TimerFiredEvent) {
+        //     fmt.Println("timer fired! name ", timerFiredEvent.Name)
+        // })
     })
     
     sdk.InitializeRelaySdk(port)
