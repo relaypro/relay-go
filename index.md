@@ -1072,6 +1072,8 @@ func (wfInst *workflowInstance) SetUserProfile(sourceUri string, username string
 func (wfInst *workflowInstance) StartInteraction(sourceUri string, name string) StartInteractionResponse
 ```
 
+This is a start interaction function.  It starts an interaction.
+
 ### func \(\*workflowInstance\) StopPlayback
 
 ```go
