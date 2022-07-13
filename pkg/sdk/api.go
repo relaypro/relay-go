@@ -117,6 +117,7 @@ func (wfInst *workflowInstance) OnTimerFired(fn func(timerFiredEvent TimerFiredE
 
 // API functions
 
+// This is a start interaction function.  It starts an interaction.
 func (wfInst *workflowInstance) StartInteraction(sourceUri string, name string) StartInteractionResponse {
     id := makeId()
     target := makeTargetMap(sourceUri)
