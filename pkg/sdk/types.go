@@ -50,6 +50,27 @@ const (
 	TELEPHONY_TRIGGER = "telephony"
 )
 
+type NotificationOptions struct {
+    priority NotificationPriority
+    title string
+    body string
+    sound NotificationSound
+}
+
+
+type NotificationPriority string
+const (
+    NORMAL = `normal`
+    HIGH = `high`
+    CRITICAL = `critical`
+)
+
+type NotificationSound string
+const (
+    DEFAULT = `default`
+    SOS = `sos`
+)
+
 type TriggerArgs struct {
     // TODO remove these when ibot serialization is fixed
     UnparsedPhrase []interface{} `json:"phrase"`
@@ -131,8 +152,90 @@ type sayRequest struct {
 
 type SayResponse struct {
     _type string `json:"_type"`
-    _id string `json:"_id"`
+    _id string `json:"_id"`   
     CorrelationId string `json:"id"`
+}
+
+type listenRequest struct {
+    Id string `json:"_id"`
+    Target map[string][]string `json:"_target"`
+    Type string `json:"type"`
+    ReuqestId string `json:"request_id"`
+    Phrases []string `json:"phrases"`
+    Transcribe bool `json:"transcribe"`
+    Timeout int `json:"timeout"`
+    AltLang string `json:"alt_lang"`
+}
+
+type ListenResponse struct {
+    _id string `json:"_id"`
+    _type string `json:"_type"`
+}
+
+type translateRequest struct {
+    Id string `json:"_id"`
+    Type string `json:"_type"`
+    Text string `json:"text"`
+    FromLang string `json:"from_lang"`
+    ToLang string `json:"to_lang"`
+}
+
+type TranslateResponse struct {
+    _id string `json:"_id"`
+    _type string `json:"_type"`
+    Text string `json:"text"`
+}
+
+type logAnalyticsEventRequest struct {
+    Id string `json:"_id"`
+    Type string `json:"_type"`
+    Content string `json:"content"`
+    ContentType string `json:"content_type"`
+    Category string `json:"category"`
+    DeviceUri string `json":"device_uri"`
+}
+
+type LogAnalyticsEventResponse struct {
+    _id string `json:"_id"`
+    _type string `json:"_type"`
+}
+
+type setVarRequest struct {
+    Id string `json:"_id"`
+    Type string `json:"_type"`
+    Name string `json:"name"`
+    Value string `json:"value"`
+}
+
+type SetVarResponse struct {
+    _id string `json:"_id"`
+    _type string `json:"_type"`
+    Name string `json:"name"`
+    IType string `json:"type"`
+    Value string `json:"value"`
+}
+
+type unsetVarRequest struct {
+    Id string `json:"_id"`
+    Type string `json:"_type"`
+    Name string `json:"name"`
+}
+
+type UnsetVarResponse struct {
+    _id string `json:"_id"`
+    _type string `json:"_type"`
+}
+
+type getVarRequest struct {
+    Id string `json:"_id"`
+    Type string `json:"_type"`
+    Name string `json:"name"`
+}
+
+type GetVarResponse struct {
+    _id string `json:"_id"`
+    _type string `json:"_type"`
+    Value string `json:"value"`
 }
 
 type playRequest struct {
@@ -158,6 +261,42 @@ type stopPlaybackRequest struct {
 type StopPlaybackResponse struct {
     _type string `json:"_type"`
     _id string `json:"_id"`
+}
+
+type inboxCountRequest struct {
+    Id string `json:"_id"`
+    Target map[string][]string `json:"_target"`
+    Type string `json:"_type"`
+}
+
+type InboxCountResponse struct {
+    _id string `json:"_id"`
+    _type string `json:"_type"`
+    Count string `json:"count"`
+}
+
+type playInboxMessagesRequest struct {
+    Id string `json:"_id"`
+    Target map[string][]string `json:"_target"`
+    Type string `json:"_type"`
+}
+
+type PlayInboxMessagesResponse struct {
+    _id string `json:"_id"`
+    _type string `json:"_type"`
+}
+
+type setHomeChannelStateRequest struct {
+    Type string `json:"_type"`
+    Id string `json:"_id"`
+    Target map[string][]string `json:"_target"`
+    Enabled bool `json:"enabled"`
+}
+
+type SetHomeChannelStateResponse struct {
+    _type string `json:"_type"`
+    Id string `json:"_id"`
+
 }
 
 type TimerType string
@@ -197,6 +336,31 @@ type clearTimerRequest struct {
 type ClearTimerResponse struct {
     _type string `json:"_type"`
     _id string `json:"_id"`
+}
+
+type createIncidentRequest struct {
+    Id string `json:"_id"`
+    Type string `json:"_type"`
+    IncidentType string `json:"type"`
+    OriginatorUri string `json:"originator_uri"`
+}
+
+type CreateIncidentResponse struct {
+    _id string `json:"_id"`
+    _type string `json:"_type"`
+    IncidentId string `json:"incident_id"`
+}
+
+type resolveIncidentRequest struct {
+    Id string `json:"_id"`
+    Type string `json:"_type"`
+    IncidentId string `json:"incident_id"`
+    Reason string `json:"reason"`
+}
+
+type ResolveIncidentResponse struct {
+    _id string `json:"_id"`
+    _type string `json:"_type"`
 }
 
 type LedEffect string 
@@ -262,6 +426,24 @@ type vibrateRequest struct {
 type VibrateResponse struct {
     _type string `json:"_type"`
     _id string `json:"_id"`
+}
+
+type sendNotificationRequest struct {
+    _id string `json:"_id"`
+    _target string `json:"_target"`
+    _type string `json:"_type"`
+    Originator string `json:"originator"`
+    IType string `json:"type"`
+    Text string `json:"text"`
+    Target map[string][]string `json:"target"`
+    Name string `json:"name"`
+    PushOptions NotificationOptions `json:"push_opts"`
+
+}
+
+type SendNotificationResponse struct {
+    _id string `json:"_id"`
+    _type string `json:"_type"`
 }
 
 type DeviceInfoQuery string

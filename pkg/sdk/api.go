@@ -24,9 +24,23 @@ type RelayApi interface {            // this is interface of your custom workflo
     EndInteraction(sourceUri string, name string) EndInteractionResponse
     SetTimer(timerType TimerType, name string, timeout uint64, timeoutType TimeoutType) SetTimerResponse
     ClearTimer(name string) ClearTimerResponse
+    CreateIncident(originator string, itype string) CreateIncidentResponse
+    ResolveIncident(incidentId string, reason string) ResolveIncidentResponse
     Say(sourceUri string, text string, lang string) SayResponse
+    SayAndWait(sourceUri string, text string, lang string) SayResponse
+    Listen(sourceUri string, phrases []string, transcribe bool, alt_lang string, timeout int) ListenResponse
+    Translate(sourceUri string, from string, to string) TranslateResponse
+    LogMessage(message string, category string) LogAnalyticsEventResponse
+    LogUserMessage(message string, sourceUri string, category string) LogAnalyticsEventResponse
+    SetVar(name string, value string) SetVarResponse
+    UnsetVar(name string) UnsetVarResponse
+    GetVar(name string, defaultValue string) string
     Play(sourceUri string, filename string) string
+    PlayAndWait(sourceUri string, filename string)
     StopPlayback(sourceUri string, ids []string) StopPlaybackResponse
+    GetUnreadInboxSize(target string) InboxCountResponse
+    PlayUnreadInboxMessages(target string) PlayInboxMessagesResponse
+    SwitchLedOn(sourceUri string, ledIndex int, color string) SetLedResponse
     SwitchAllLedOn(sourceUri string, color string) SetLedResponse
     SwitchAllLedOff(sourceUri string) SetLedResponse
     Rainbow(sourceUri string, rotations int64) SetLedResponse
@@ -35,16 +49,20 @@ type RelayApi interface {            // this is interface of your custom workflo
     Breathe(sourceUri string, color string) SetLedResponse
     SetLeds(sourceUri string, effect LedEffect, args LedInfo) SetLedResponse
     Vibrate(sourceUri string, pattern []uint64) VibrateResponse
+    Broadcast(target string, originator string, name string, text string, pushOptions NotificationOptions) SendNotificationResponse
     GetDeviceName(sourceUri string, refresh bool) string
     GetDeviceId(sourceUri string, refresh bool) string
     GetDeviceAddress(sourceUri string, refresh bool) string
+    GetDeviceLocation(sourceUri string, refresh bool) string
     GetDeviceLatLong(sourceUri string, refresh bool) []float64
+    GetDeviceCoordinates(sourceUri string, refresh bool) []float64
     GetDeviceIndoorLocation(sourceUri string, refresh bool) string
     GetDeviceBattery(sourceUri string, refresh bool) uint64
     GetDeviceType(sourceUri string, refresh bool) string
     GetDeviceUsername(sourceUri string, refresh bool) string
     GetDeviceLocationEnabled(sourceUri string, refresh bool) bool
     SetDeviceName(sourceUri string, name string) SetDeviceInfoResponse
+    EnableHomeChannel(sourceUri string) SetHomeChannelStateResponse
 //     SetDeviceChannel(sourceUri string, channel string) SetDeviceInfoResponse
     EnableLocation(sourceUri string) SetDeviceInfoResponse
     DisableLocation(sourceUri string) SetDeviceInfoResponse
@@ -155,6 +173,14 @@ func (wfInst *workflowInstance) ClearTimer(name string) ClearTimerResponse {
     return res
 }
 
+func (wfInst *workflowInstance) CreateIncident(originator string, itype string) CreateIncidentResponse {
+
+}
+
+func (wfInst *workflowInstance) ResolveIncident(incidentId string, reason string) ResolveIncidentResponse {
+
+}
+
 func (wfInst *workflowInstance) Say(sourceUri string, text string, lang string) SayResponse {
     if lang == "" {
         lang = "en-US"
@@ -169,6 +195,42 @@ func (wfInst *workflowInstance) Say(sourceUri string, text string, lang string) 
     return res
 }
 
+func(wfInst *workflowInstance) SayAndWait(sourceUri string, text string, lang string) SayResponse {
+    
+}
+
+func(wfInst *workflowInstance) Listen(sourceUri string, phrases []string, transcribe bool, alt_lang string, timeout int) ListenResponse {
+
+}
+
+func(wfInst *workflowInstance) Translate(sourceUri string, from string, to string) TranslateResponse {
+
+}
+
+func(wfInst *workflowInstance) LogMessage(message string, category string) LogAnalyticsEventResponse {
+
+}
+
+func(wfInst *workflowInstance) LogUserMessage(message string, sourceUri string, category string) LogAnalyticsEventResponse {
+
+}
+
+func(wfInst *workflowInstance) SetVar(name string, value string) SetVarResponse {
+
+}
+
+func(wfInst *workflowInstance) UnsetVar(name string) UnsetVarResponse {
+
+}
+
+func(wfInst *workflowInstance) GetVar(name string, defaultValue string) string {
+
+}
+
+func(wfInst *workflowInstance) GetNumberVar(name string, defaultValue int) int {
+
+}
+
 func (wfInst *workflowInstance) Play(sourceUri string, filename string) string {
     fmt.Println("playing file ", filename, "to", sourceUri)
     id := makeId()
@@ -178,6 +240,10 @@ func (wfInst *workflowInstance) Play(sourceUri string, filename string) string {
     res := PlayResponse{}
     json.Unmarshal(call.EventWrapper.Msg, &res)
     return res.CorrelationId
+}
+
+func (wfInst *workflowInstance) PlayAndWait(sourceUri string, filename string) {
+
 }
 
 func (wfInst *workflowInstance) StopPlayback(sourceUri string, ids []string) StopPlaybackResponse {
@@ -191,6 +257,26 @@ func (wfInst *workflowInstance) StopPlayback(sourceUri string, ids []string) Sto
     return res
 }
 
+func (wfInst *workflowInstance) GetUnreadInboxSize(target string) InboxCountResponse {
+
+}
+
+func (wfInst *workflowInstance) PlayUnreadInboxMessages(target string) PlayInboxMessagesResponse {
+
+}
+
+func (wfInst *workflowInstance) setHomeChannelState(sourceUri string, enabled bool) SetHomeChannelStateResponse {
+
+}
+
+func(wfInst *workflowInstance) EnableHomeChannel(sourceUri string) SetHomeChannelStateResponse {
+    return wfInst.setHomeChannelState(sourceUri, true)
+}
+
+func(wfInst *workflowInstance) DisableHomeChannel(sourceUri string) SetHomeChannelStateResponse {
+    return wfInst.setHomeChannelState(sourceUri, false)
+}
+
 func (wfInst *workflowInstance) SetLeds(sourceUri string, effect LedEffect, args LedInfo) SetLedResponse {
     fmt.Println("setting leds", effect, "with args", args)
     id := makeId()
@@ -200,6 +286,10 @@ func (wfInst *workflowInstance) SetLeds(sourceUri string, effect LedEffect, args
     res := SetLedResponse{}
     json.Unmarshal(call.EventWrapper.Msg, &res)
     return res
+}
+
+func (wfInst *workflowInstance) SwitchLedOn(sourceUri string, led int, color string) SetLedResponse {
+
 }
 
 func (wfInst *workflowInstance) SwitchAllLedOn(sourceUri string, color string) SetLedResponse {
@@ -237,6 +327,27 @@ func (wfInst *workflowInstance) Vibrate(sourceUri string, pattern []uint64) Vibr
     return res
 }
 
+func (wfInst *workflowInstance) sendNotification(target string, originator string, itype string, name string, text string, pushOptions NotificationOptions) SendNotificationResponse {
+
+}
+
+
+func (wfInst *workflowInstance) Broadcast(target string, originator string, name string, text string, pushOptions NotificationOptions) SendNotificationResponse {
+    return wfInst.sendNotification(target, originator, "broadcast",name, text, pushOptions)
+}
+
+func (wfInst *workflowInstance) CancelBroadcast(target string, name string) SendNotificationResponse {
+
+}
+
+func (wfInst *workflowInstance) Alert(target string, originator string, name string, text string, pushOptions NotificationOptions) SendNotificationResponse {
+    return wfInst.sendNotification(target, originator, "alert", name, text, pushOptions)
+}
+
+func (wfInst *workflowInstance) CancelAlert(target string, name string) SendNotificationResponse {
+
+}
+
 func (wfInst *workflowInstance) getDeviceInfo(sourceUri string, query DeviceInfoQuery, refresh bool) GetDeviceInfoResponse {
     fmt.Println("getting device info with query", query, "refresh", refresh)
     id := makeId()
@@ -261,16 +372,24 @@ func (wfInst *workflowInstance) GetDeviceId(sourceUri string, refresh bool) stri
     return resp.Id
 }
 
-func (wfInst *workflowInstance) GetDeviceAddress(sourceUri string, refresh bool) string {
+func (wfInst *workflowInstance) GetDeviceLocation(sourceUri string, refresh bool) string {
     resp := wfInst.getDeviceInfo(sourceUri, DEVICE_INFO_QUERY_ADDRESS, refresh)
     fmt.Println("device info address", resp.Address)
     return resp.Address
 }
 
-func (wfInst *workflowInstance) GetDeviceLatLong(sourceUri string, refresh bool) []float64 {
+func (wfInst *workflowInstance) GetDeviceAddress(sourceUri string, refresh bool) string {
+    return wfInst.GetDeviceLocation(sourceUri, refresh)
+}
+
+func (wfInst *workflowInstance) GetDeviceCoordinates(sourceUri string, refresh bool) []float64 {
     resp := wfInst.getDeviceInfo(sourceUri, DEVICE_INFO_QUERY_LATLONG, refresh)
     fmt.Println("device info latlong", resp.LatLong)
     return resp.LatLong
+}
+
+func (wfInst *workflowInstance) GetDeviceLatLong(sourceUri string, refresh bool) []float64 {
+    return wfInst.GetDeviceCoordinates(sourceUri, refresh)
 }
 
 func (wfInst *workflowInstance) GetDeviceIndoorLocation(sourceUri string, refresh bool) string {
