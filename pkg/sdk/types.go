@@ -72,11 +72,8 @@ const (
 )
 
 type TriggerArgs struct {
-    // TODO remove these when ibot serialization is fixed
-    UnparsedPhrase []interface{} `json:"phrase"`
-    UnparsedSourceUri []interface{} `json:"source_uri"`
-    Phrase string
-    SourceUri string
+    Phrase string `json:"phrase"`
+    SourceUri string `json:"source_uri"`
 }
 
 type InteractionLifecycleEvent struct {

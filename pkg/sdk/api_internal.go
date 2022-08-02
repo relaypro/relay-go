@@ -53,11 +53,6 @@ func (wfInst *workflowInstance) handleEvent(eventWrapper EventWrapper) error {
             var params StartEvent
             json.Unmarshal(eventWrapper.Msg, &params)
 
-            // TODO This won't be necessary once ibot fixes serialization
-            // source uri and phrase are serialized as byte arrays not binary
-            params.Trigger.Args.SourceUri = convert(params.Trigger.Args.UnparsedSourceUri)
-            params.Trigger.Args.Phrase = convert(params.Trigger.Args.UnparsedPhrase)
-
             if wfInst.OnStartHandler != nil {
                 wfInst.OnStartHandler(params)
             } else {
