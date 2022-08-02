@@ -5,6 +5,7 @@ package sdk
 import (
     "fmt"
     "sync"
+    "strconv"
     "encoding/json"
     "github.com/gorilla/websocket"
 )
@@ -27,20 +28,22 @@ type RelayApi interface {            // this is interface of your custom workflo
     CreateIncident(originator string, itype string) CreateIncidentResponse
     ResolveIncident(incidentId string, reason string) ResolveIncidentResponse
     Say(sourceUri string, text string, lang string) SayResponse
-    SayAndWait(sourceUri string, text string, lang string) SayResponse
-    Listen(sourceUri string, phrases []string, transcribe bool, alt_lang string, timeout int) ListenResponse
-    Translate(sourceUri string, from string, to string) TranslateResponse
+    Alert(target string, originator string, name string, text string, pushOptions NotificationOptions) SendNotificationResponse
+    // SayAndWait(sourceUri string, text string, lang string) SayResponse
+    // Listen(sourceUri string, phrases []string, transcribe bool, alt_lang string, timeout int) ListenResponse
+    Translate(sourceUri string, text string, from string, to string) string
     LogMessage(message string, category string) LogAnalyticsEventResponse
     LogUserMessage(message string, sourceUri string, category string) LogAnalyticsEventResponse
     SetVar(name string, value string) SetVarResponse
     UnsetVar(name string) UnsetVarResponse
     GetVar(name string, defaultValue string) string
+    GetNumberVar(name string, defaultValue int) int
     Play(sourceUri string, filename string) string
-    PlayAndWait(sourceUri string, filename string)
+    // PlayAndWait(sourceUri string, filename string)
     StopPlayback(sourceUri string, ids []string) StopPlaybackResponse
-    GetUnreadInboxSize(target string) InboxCountResponse
-    PlayUnreadInboxMessages(target string) PlayInboxMessagesResponse
-    SwitchLedOn(sourceUri string, ledIndex int, color string) SetLedResponse
+    GetUnreadInboxSize(sourceUri string) int
+    PlayUnreadInboxMessages(sourceUri string) PlayInboxMessagesResponse
+    // SwitchLedOn(sourceUri string, ledIndex int, color string) SetLedResponse
     SwitchAllLedOn(sourceUri string, color string) SetLedResponse
     SwitchAllLedOff(sourceUri string) SetLedResponse
     Rainbow(sourceUri string, rotations int64) SetLedResponse
@@ -53,9 +56,9 @@ type RelayApi interface {            // this is interface of your custom workflo
     GetDeviceName(sourceUri string, refresh bool) string
     GetDeviceId(sourceUri string, refresh bool) string
     GetDeviceAddress(sourceUri string, refresh bool) string
-    GetDeviceLocation(sourceUri string, refresh bool) string
+    // GetDeviceLocation(sourceUri string, refresh bool) string
     GetDeviceLatLong(sourceUri string, refresh bool) []float64
-    GetDeviceCoordinates(sourceUri string, refresh bool) []float64
+    // GetDeviceCoordinates(sourceUri string, refresh bool) []float64
     GetDeviceIndoorLocation(sourceUri string, refresh bool) string
     GetDeviceBattery(sourceUri string, refresh bool) uint64
     GetDeviceType(sourceUri string, refresh bool) string
@@ -63,6 +66,7 @@ type RelayApi interface {            // this is interface of your custom workflo
     GetDeviceLocationEnabled(sourceUri string, refresh bool) bool
     SetDeviceName(sourceUri string, name string) SetDeviceInfoResponse
     EnableHomeChannel(sourceUri string) SetHomeChannelStateResponse
+    DisableHomeChannel(sourceUri string) SetHomeChannelStateResponse
 //     SetDeviceChannel(sourceUri string, channel string) SetDeviceInfoResponse
     EnableLocation(sourceUri string) SetDeviceInfoResponse
     DisableLocation(sourceUri string) SetDeviceInfoResponse
@@ -174,11 +178,21 @@ func (wfInst *workflowInstance) ClearTimer(name string) ClearTimerResponse {
 }
 
 func (wfInst *workflowInstance) CreateIncident(originator string, itype string) CreateIncidentResponse {
-
+    id := makeId()
+    req := createIncidentRequest{Type: "wf_api_create_incident_request", Id: id, IncidentType: itype, OriginatorUri: originator}
+    call := wfInst.sendAndReceiveRequest(req, id)
+    res := CreateIncidentResponse{}
+    json.Unmarshal(call.EventWrapper.Msg, &res)
+    return res
 }
 
 func (wfInst *workflowInstance) ResolveIncident(incidentId string, reason string) ResolveIncidentResponse {
-
+    id := makeId()
+    req := resolveIncidentRequest{Type: "wf_api_resolve_incident_request", Id: id, IncidentId: incidentId, Reason: reason}
+    call := wfInst.sendAndReceiveRequest(req, id)
+    res := ResolveIncidentResponse{}
+    json.Unmarshal(call.EventWrapper.Msg, &res)
+    return res
 }
 
 func (wfInst *workflowInstance) Say(sourceUri string, text string, lang string) SayResponse {
@@ -195,40 +209,81 @@ func (wfInst *workflowInstance) Say(sourceUri string, text string, lang string) 
     return res
 }
 
-func(wfInst *workflowInstance) SayAndWait(sourceUri string, text string, lang string) SayResponse {
+// func(wfInst *workflowInstance) SayAndWait(sourceUri string, text string, lang string) SayResponse {
     
-}
+// }
 
-func(wfInst *workflowInstance) Listen(sourceUri string, phrases []string, transcribe bool, alt_lang string, timeout int) ListenResponse {
+// func(wfInst *workflowInstance) Listen(sourceUri string, phrases []string, transcribe bool, alt_lang string, timeout int) ListenResponse {
 
-}
+// }
 
-func(wfInst *workflowInstance) Translate(sourceUri string, from string, to string) TranslateResponse {
-
+func(wfInst *workflowInstance) Translate(sourceUri string, text string, from string, to string) string {
+    fmt.Println("translating ", text)
+    id := makeId()
+    req := translateRequest{Type: "wf_api_translate_request", Id: id, Text: text, FromLang: from, ToLang: to}
+    call := wfInst.sendAndReceiveRequest(req, id)
+    res := TranslateResponse{}
+    json.Unmarshal(call.EventWrapper.Msg, &res)
+    return res.Text
 }
 
 func(wfInst *workflowInstance) LogMessage(message string, category string) LogAnalyticsEventResponse {
-
+    fmt.Println("logging analytic event with the message", message)
+    id := makeId()
+    req := logAnalyticsEventRequest{Type: "wf_api_log_analytics_event_request", Id: id, Content: message, ContentType: "default", Category: category}
+    call := wfInst.sendAndReceiveRequest(req, id)
+    res := LogAnalyticsEventResponse{}
+    json.Unmarshal(call.EventWrapper.Msg, &res)
+    return res
 }
 
 func(wfInst *workflowInstance) LogUserMessage(message string, sourceUri string, category string) LogAnalyticsEventResponse {
-
+    fmt.Println("logging analytic event with the message", message)
+    id := makeId()
+    req := logAnalyticsEventRequest{Type: "wf_api_log_analytics_event_request", Id: id, Content: message, ContentType: "default", Category: category, DeviceUri: sourceUri}
+    call := wfInst.sendAndReceiveRequest(req, id)
+    res := LogAnalyticsEventResponse{}
+    json.Unmarshal(call.EventWrapper.Msg, &res)
+    return res
 }
 
 func(wfInst *workflowInstance) SetVar(name string, value string) SetVarResponse {
-
+    fmt.Println("setting variable with name", name, "and value", value)
+    id := makeId()
+    req := setVarRequest{Type: "wf_api_set_var_request", Id: id, Name: name, Value: value}
+    call := wfInst.sendAndReceiveRequest(req, id)
+    res := SetVarResponse{}
+    json.Unmarshal(call.EventWrapper.Msg, &res)
+    return res
 }
 
 func(wfInst *workflowInstance) UnsetVar(name string) UnsetVarResponse {
-
+    fmt.Println("unsetting variable with name", name)
+    id := makeId()
+    req := unsetVarRequest{Type: "wf_api_unset_var_request", Id: id, Name: name}
+    call := wfInst.sendAndReceiveRequest(req, id)
+    res := UnsetVarResponse{}
+    json.Unmarshal(call.EventWrapper.Msg, &res)
+    return res
 }
 
 func(wfInst *workflowInstance) GetVar(name string, defaultValue string) string {
-
+    fmt.Println("getting variable with name", name, "and default value", defaultValue)
+    id := makeId()
+    req := getVarRequest{Type: "wf_api_get_var_request", Id: id, Name: name}
+    call := wfInst.sendAndReceiveRequest(req, id)
+    res := GetVarResponse{}
+    json.Unmarshal(call.EventWrapper.Msg, &res)
+    if(res.Value != "") {
+        return res.Value
+    }
+    return defaultValue
 }
 
 func(wfInst *workflowInstance) GetNumberVar(name string, defaultValue int) int {
-
+    numVar, err := strconv.Atoi(wfInst.GetVar(name, strconv.FormatInt(int64(defaultValue), 10)))
+    fmt.Println("error", err)
+    return numVar
 }
 
 func (wfInst *workflowInstance) Play(sourceUri string, filename string) string {
@@ -257,16 +312,39 @@ func (wfInst *workflowInstance) StopPlayback(sourceUri string, ids []string) Sto
     return res
 }
 
-func (wfInst *workflowInstance) GetUnreadInboxSize(target string) InboxCountResponse {
-
+func (wfInst *workflowInstance) GetUnreadInboxSize(sourceUri string) int {
+    fmt.Println("playing unread inbox messages for", sourceUri)
+    id := makeId()
+    target := makeTargetMap(sourceUri)
+    req := inboxCountRequest{Type: "wf_api_inbox_count_request", Id: id, Target: target}
+    call := wfInst.sendAndReceiveRequest(req, id)
+    res := InboxCountResponse{}
+    json.Unmarshal(call.EventWrapper.Msg, &res)
+    count, err := strconv.Atoi(res.Count)
+    fmt.Println("error", err)
+    return count
 }
 
-func (wfInst *workflowInstance) PlayUnreadInboxMessages(target string) PlayInboxMessagesResponse {
-
+func (wfInst *workflowInstance) PlayUnreadInboxMessages(sourceUri string) PlayInboxMessagesResponse {
+    fmt.Println("playing unread inbox messages for", sourceUri)
+    id := makeId()
+    target := makeTargetMap(sourceUri)
+    req := playInboxMessagesRequest{Type: "wf_api_play_inbox_messages_request", Id: id, Target: target}
+    call := wfInst.sendAndReceiveRequest(req, id)
+    res := PlayInboxMessagesResponse{}
+    json.Unmarshal(call.EventWrapper.Msg, &res)
+    return res
 }
 
 func (wfInst *workflowInstance) setHomeChannelState(sourceUri string, enabled bool) SetHomeChannelStateResponse {
-
+    fmt.Println("setting home channel for", sourceUri, "with state", enabled)
+    id := makeId()
+    target := makeTargetMap(sourceUri)
+    req := setHomeChannelStateRequest{Type: "wf_api_set_home_channel_state_request", Id: id, Target: target, Enabled: enabled}
+    call := wfInst.sendAndReceiveRequest(req, id)
+    res := SetHomeChannelStateResponse{}
+    json.Unmarshal(call.EventWrapper.Msg, &res)
+    return res
 }
 
 func(wfInst *workflowInstance) EnableHomeChannel(sourceUri string) SetHomeChannelStateResponse {
@@ -288,9 +366,9 @@ func (wfInst *workflowInstance) SetLeds(sourceUri string, effect LedEffect, args
     return res
 }
 
-func (wfInst *workflowInstance) SwitchLedOn(sourceUri string, led int, color string) SetLedResponse {
+// func (wfInst *workflowInstance) SwitchLedOn(sourceUri string, led int, color string) SetLedResponse {
 
-}
+// }
 
 func (wfInst *workflowInstance) SwitchAllLedOn(sourceUri string, color string) SetLedResponse {
     return wfInst.SetLeds(sourceUri, LED_STATIC, LedInfo{Colors: LedColors{ Ring: color}})
@@ -328,7 +406,14 @@ func (wfInst *workflowInstance) Vibrate(sourceUri string, pattern []uint64) Vibr
 }
 
 func (wfInst *workflowInstance) sendNotification(target string, originator string, itype string, name string, text string, pushOptions NotificationOptions) SendNotificationResponse {
-
+    fmt.Println("sending a notification of type ", itype)
+    id := makeId()
+    targetMap := makeTargetMap(target)
+    req := sendNotificationRequest{Type: "wf_api_notification_request", Id: id, Target: targetMap, Originator: originator, IType: itype, Name: name, Text: text, ITarget: targetMap, PushOptions: pushOptions}
+    call := wfInst.sendAndReceiveRequest(req, id)
+    res := SendNotificationResponse{}
+    json.Unmarshal(call.EventWrapper.Msg, &res)
+    return res
 }
 
 
@@ -337,7 +422,8 @@ func (wfInst *workflowInstance) Broadcast(target string, originator string, name
 }
 
 func (wfInst *workflowInstance) CancelBroadcast(target string, name string) SendNotificationResponse {
-
+    var pushOptions NotificationOptions
+    return wfInst.sendNotification(target, "", "cancel", name, "", pushOptions)
 }
 
 func (wfInst *workflowInstance) Alert(target string, originator string, name string, text string, pushOptions NotificationOptions) SendNotificationResponse {
@@ -345,8 +431,8 @@ func (wfInst *workflowInstance) Alert(target string, originator string, name str
 }
 
 func (wfInst *workflowInstance) CancelAlert(target string, name string) SendNotificationResponse {
-
-}
+    var pushOptions NotificationOptions
+    return wfInst.sendNotification(target, "", "cancel", name, "", pushOptions)}
 
 func (wfInst *workflowInstance) getDeviceInfo(sourceUri string, query DeviceInfoQuery, refresh bool) GetDeviceInfoResponse {
     fmt.Println("getting device info with query", query, "refresh", refresh)

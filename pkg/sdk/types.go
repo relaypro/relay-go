@@ -189,7 +189,7 @@ type logAnalyticsEventRequest struct {
     Content string `json:"content"`
     ContentType string `json:"content_type"`
     Category string `json:"category"`
-    DeviceUri string `json":"device_uri"`
+    DeviceUri string `json":"device_uri,omitempty"`
 }
 
 type LogAnalyticsEventResponse struct {
@@ -426,14 +426,14 @@ type VibrateResponse struct {
 }
 
 type sendNotificationRequest struct {
-    _id string `json:"_id"`
-    _target string `json:"_target"`
-    _type string `json:"_type"`
+    Type string `json:"_type"`
+    Id string `json:"_id"`
+    Target map[string][]string `json:"_target"`
     Originator string `json:"originator"`
     IType string `json:"type"`
-    Text string `json:"text"`
-    Target map[string][]string `json:"target"`
     Name string `json:"name"`
+    Text string `json:"text"`
+    ITarget map[string][]string `json:"target"`
     PushOptions NotificationOptions `json:"push_opts"`
 
 }
