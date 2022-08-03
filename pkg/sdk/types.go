@@ -93,6 +93,10 @@ type TimerFiredEvent struct {
     Name string `json:"name"`
 }
 
+type TimerEvent struct {
+    _type string `json:"_type"`
+}
+
 type ButtonEvent struct {
     _type string `json:"_type"`
     SourceUri string `json:"source_uri"`
@@ -335,6 +339,27 @@ type ClearTimerResponse struct {
     _id string `json:"_id"`
 }
 
+type startTimerRequest struct {
+    Id string `json:"_id"`
+    Type string `json:"_type"`
+    Timeout int `json:"timeout"`
+}
+
+type StartTimerResponse struct {
+    _id string `json:"_id"`
+    _type string `json:"_type"`
+}
+
+type stopTimerRequest struct {
+    Id string `json:"_id"`
+    Type string `json:"_type"`
+}
+
+type StopTimerResponse struct {
+    _id string `json"_id"`
+    _type string `json:"_type"`
+}
+
 type createIncidentRequest struct {
     Id string `json:"_id"`
     Type string `json:"_type"`
@@ -358,6 +383,20 @@ type resolveIncidentRequest struct {
 type ResolveIncidentResponse struct {
     _id string `json:"_id"`
     _type string `json:"_type"`
+}
+
+type groupQueryRequest struct {
+    Id string `json:"_id"`
+    Type string `json:"_type"`
+    GroupUri string `json:"group_uri"`
+    Query string `json:"query"`
+}
+
+type GroupQueryResponse struct {
+    _id string `json:"_id"`
+    _type string `json:"_type"`
+    MemberUris []string `json:"member_uris"`
+    IsMember bool `json:"is_member"`
 }
 
 type LedEffect string 
@@ -554,6 +593,43 @@ type devicePowerOffRequest struct {
 type DevicePowerOffResponse struct {
     _type string `json:"_type"`
     _id string `json:"_id"`
+}
+
+type placeCallRequest struct {
+    Id string `json:"_id"`
+    Type string `json:"_type"`
+    Target map[string][]string `json:"_target"`
+    Uri string `json:"uri"`
+}
+
+type PlaceCallResponse struct {
+    _id string `json:"_id"`
+    _type string `json:"_type"`
+    call_id string `json:"call_id"`
+}
+
+type hangupCallRequest struct {
+    Id string `json:"_id"`
+    Target map[string][]string `json:"_target"`
+    Type string `json:"_type"`
+    CallId string `json:"call_id"`
+}
+
+type HangupCallResponse struct {
+    _id string `json:"_id"`
+    _type string `json:"_type"`
+}
+
+type answerRequest struct {
+    Id string `json:"_id"`
+    Target map[string][]string `json:"_target"`
+    Type string `json:"_type"`
+    CallId string `json:"call_id"`
+}
+
+type AnswerResponse struct {
+    _id string `json:"_id"`
+    _type string `json:"_type"`
 }
 
 type terminateRequest struct {

@@ -99,6 +99,15 @@ func (wfInst *workflowInstance) handleEvent(eventWrapper EventWrapper) error {
             } else {
                 fmt.Println("ignoring event", eventWrapper.EventName, "no handler registered")                
             }
+        case "timer":
+            fmt.Println("received timer event", string(eventWrapper.Msg))
+            var params TimerEvent
+            json.Unmarshal(eventWrapper.Msg, &params)
+            if wfInst.OnTimerHandler != nil {
+                wfInst.OnTimerHandler(params)
+            } else {
+                fmt.Println("ignoring event", eventWrapper.EventName, "no handler registered")
+            }
         default:
             fmt.Println("UNKNOWN EVENT ", eventWrapper.ParsedMsg);
     }

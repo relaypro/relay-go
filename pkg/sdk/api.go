@@ -19,12 +19,14 @@ type RelayApi interface {            // this is interface of your custom workflo
     OnPrompt(func(promptEvent PromptEvent))         // seperate into start and stop?
     OnTimerFired(func(timerFiredEvent TimerFiredEvent))
     OnButton(func(buttonEvent ButtonEvent))
+    OnTimer(fn func(timerEvent TimerEvent))
     
     // api
     StartInteraction(sourceUri string, name string) StartInteractionResponse
     EndInteraction(sourceUri string, name string) EndInteractionResponse
     SetTimer(timerType TimerType, name string, timeout uint64, timeoutType TimeoutType) SetTimerResponse
     ClearTimer(name string) ClearTimerResponse
+    StartTimer(timeout int) StartTimerResponse
     CreateIncident(originator string, itype string) CreateIncidentResponse
     ResolveIncident(incidentId string, reason string) ResolveIncidentResponse
     Say(sourceUri string, text string, lang string) SayResponse
@@ -58,6 +60,8 @@ type RelayApi interface {            // this is interface of your custom workflo
     GetDeviceAddress(sourceUri string, refresh bool) string
     // GetDeviceLocation(sourceUri string, refresh bool) string
     GetDeviceLatLong(sourceUri string, refresh bool) []float64
+    IsGroupMember(groupNameUri string, potentialMemberUri string) bool
+    GetGroupMembers(groupUri string) []string
     // GetDeviceCoordinates(sourceUri string, refresh bool) []float64
     GetDeviceIndoorLocation(sourceUri string, refresh bool) string
     GetDeviceBattery(sourceUri string, refresh bool) uint64
@@ -77,6 +81,9 @@ type RelayApi interface {            // this is interface of your custom workflo
     
     RestartDevice(sourceUri string) DevicePowerOffResponse
     PowerDownDevice(sourceUri string) DevicePowerOffResponse
+    PlaceCall(targetUri string, uri string) PlaceCallResponse
+    AnswerCall(sourceUri string, callId string) AnswerResponse
+    HangupCall(targetUri string, callId string) HangupCallResponse
     Terminate()
 }
 
@@ -96,6 +103,7 @@ type workflowInstance struct {
     OnPromptHandler func(promptEvent PromptEvent)
     OnButtonHandler func(buttonEvent ButtonEvent)
     OnTimerFiredHandler func(timerFiredEvent TimerFiredEvent)
+    OnTimerHandler func(timerEvent TimerEvent)
 }
 
 // Call represents an active request
@@ -136,6 +144,10 @@ func (wfInst *workflowInstance) OnTimerFired(fn func(timerFiredEvent TimerFiredE
     wfInst.OnTimerFiredHandler = fn
 }
 
+func (wfInst *workflowInstance) OnTimer(fn func(timerEvent TimerEvent)) {
+    wfInst.OnTimerHandler = fn
+}
+
 
 // API functions
 
@@ -173,6 +185,24 @@ func (wfInst *workflowInstance) ClearTimer(name string) ClearTimerResponse {
     req := clearTimerRequest{Type: "wf_api_clear_timer_request", Id: id, Name: name}
     call := wfInst.sendAndReceiveRequest(req, id)
     res := ClearTimerResponse{}
+    json.Unmarshal(call.EventWrapper.Msg, &res)
+    return res
+}
+
+func (wfInst *workflowInstance) StartTimer(timeout int) StartTimerResponse {
+    id := makeId()
+    req := startTimerRequest{Type: "wf_api_start_timer_request", Id: id, Timeout: timeout}
+    call := wfInst.sendAndReceiveRequest(req, id)
+    res := StartTimerResponse{}
+    json.Unmarshal(call.EventWrapper.Msg, &res)
+    return res
+}
+
+func (wfInst *workflowInstance) StopTimer() StopTimerResponse {
+    id := makeId()
+    req := stopTimerRequest{Type: "wf_api_stop_timer_request", Id: id}
+    call := wfInst.sendAndReceiveRequest(req, id)
+    res := StopTimerResponse{}
     json.Unmarshal(call.EventWrapper.Msg, &res)
     return res
 }
@@ -535,6 +565,30 @@ func (wfInst *workflowInstance) DisableLocation(sourceUri string) SetDeviceInfoR
     return wfInst.setDeviceInfo(sourceUri, SET_DEVICE_INFO_LOCATION_ENABLED, "false")
 }
 
+func (wfInst *workflowInstance) GetGroupMembers(groupUri string) []string {
+    fmt.Println("retrieving members of ", groupUri)
+    id := makeId()
+    req := groupQueryRequest{Type: "wf_api_group_query_request", Id: id, GroupUri: groupUri, Query: "list_members"}
+    call := wfInst.sendAndReceiveRequest(req, id)
+    res := GroupQueryResponse{}
+    json.Unmarshal(call.EventWrapper.Msg, &res)
+    return res.MemberUris
+}
+
+func (wfInst *workflowInstance) IsGroupMember(groupNameUri string, potentialMemberUri string) bool {
+    var groupName string = ParseGroupName(groupNameUri)
+    var deviceName string = ParseDeviceName(potentialMemberUri)
+    var groupUri string = GroupMember(groupName, deviceName)
+
+    fmt.Println("retrieving whether", deviceName, "is a part of group", groupName)
+    id := makeId()
+    req := groupQueryRequest{Type: "wf_api_group_query_request", Id: id, GroupUri: groupUri, Query: "is_member"}
+    call := wfInst.sendAndReceiveRequest(req, id)
+    res := GroupQueryResponse{}
+    json.Unmarshal(call.EventWrapper.Msg, &res)
+    return res.IsMember
+}
+
 func (wfInst *workflowInstance) SetUserProfile(sourceUri string, username string, force bool) SetUserProfileResponse {
     fmt.Println("setting user profile to", username, "force", force)
     id := makeId()
@@ -586,6 +640,39 @@ func (wfInst *workflowInstance) PowerDownDevice(sourceUri string) DevicePowerOff
     req := devicePowerOffRequest{Type: "wf_api_device_power_off_request", Id: id, Target: target, Restart: false}
     call := wfInst.sendAndReceiveRequest(req, id)
     res := DevicePowerOffResponse{}
+    json.Unmarshal(call.EventWrapper.Msg, &res)
+    return res
+}
+
+func (wfInst *workflowInstance) PlaceCall(targetUri string, uri string) PlaceCallResponse {
+    fmt.Println("placing call to ", targetUri, "with uri", uri)
+    id := makeId()
+    target := makeTargetMap(targetUri)
+    req := placeCallRequest{Type: "wf_api_call_request", Id: id, Target: target, Uri: uri}
+    call := wfInst.sendAndReceiveRequest(req, id)
+    res := PlaceCallResponse{}
+    json.Unmarshal(call.EventWrapper.Msg, &res)
+    return res
+}
+
+func (wfInst *workflowInstance) AnswerCall(sourceUri string, callId string) AnswerResponse {
+    fmt.Println("calling device with call id", callId)
+    id := makeId()
+    target := makeTargetMap(sourceUri)
+    req := answerRequest{Type: "wf_api_answer_request", Id: id, Target: target, CallId: callId}
+    call := wfInst.sendAndReceiveRequest(req, id)
+    res := AnswerResponse{}
+    json.Unmarshal(call.EventWrapper.Msg, &res)
+    return res
+}
+
+func (wfInst *workflowInstance) HangupCall(targetUri string, callId string) HangupCallResponse {
+    fmt.Println("hanging up call with", callId, "and target uri", targetUri)
+    id := makeId()
+    target := makeTargetMap(targetUri)
+    req := hangupCallRequest{Type: "wf_api_hangup_request", Id: id, Target: target, CallId: callId}
+    call := wfInst.sendAndReceiveRequest(req, id)
+    res := HangupCallResponse{}
     json.Unmarshal(call.EventWrapper.Msg, &res)
     return res
 }
