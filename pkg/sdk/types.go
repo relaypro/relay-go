@@ -2,8 +2,6 @@
 
 package sdk
 
-
-
 type Event string
 const(
     ERROR Event = "error"
@@ -12,6 +10,7 @@ const(
     INTERACTION_LIFECYCLE = "interaction_lifecycle"
     BUTTON = "button"
     TIMER = "timer"
+    SPEECH = "speech"
     NOTIFICATION = "notification"
     INCIDENT = "incident"
     PROMPT_START = "prompt_start"
@@ -109,6 +108,15 @@ type StopEvent struct {
     Reason string `json:"reason"`
 }
 
+type SpeechEvent struct {
+    _type string `json:"_type"`
+    SourceUri string `json:"source_uri"`
+    ReuqestId string `json:"request_id"`
+    Text string `json:"text"`
+    Audio string `json:"audio"`
+    Lang string `json:"lang"` 
+}
+
 
 // REQUEST/RESPONSE
 
@@ -160,8 +168,8 @@ type SayResponse struct {
 type listenRequest struct {
     Id string `json:"_id"`
     Target map[string][]string `json:"_target"`
-    Type string `json:"type"`
-    ReuqestId string `json:"request_id"`
+    Type string `json:"_type"`
+    ReqestId string `json:"request_id"`
     Phrases []string `json:"phrases"`
     Transcribe bool `json:"transcribe"`
     Timeout int `json:"timeout"`
@@ -169,9 +177,18 @@ type listenRequest struct {
 }
 
 type ListenResponse struct {
-    _id string `json:"_id"`
+    __id string `json:"_id"`
     _type string `json:"_type"`
+    audio string `json:"audio"`
+    lang string `json:"lang"`
+    request_id string `json:"request_id`
+    source_uri string `json:"source_uri"`
+    Text string `json:"text"`
 }
+
+// type SpeechResponse struct {
+    
+// }
 
 type translateRequest struct {
     Id string `json:"_id"`
@@ -445,6 +462,58 @@ type LedColors struct {
     Led14 string `json:"14,omitempty"`
     Led15 string `json:"15,omitempty"`
     Led16 string `json:"16,omitempty"`
+}
+
+func setLedColors(index string, color string) LedColors {
+    if(index == "1") {
+        return LedColors{Led1: color}
+    }
+    if(index == "2") {
+        return LedColors{Led2: color}
+    }
+    if(index == "3") {
+        return LedColors{Led3: color}
+    }
+    if(index == "4") {
+        return LedColors{Led4: color}
+    }
+    if(index == "5") {
+        return LedColors{Led5: color}
+    }
+    if(index == "6") {
+        return LedColors{Led6: color}
+    }
+    if(index == "7") {
+        return LedColors{Led7: color}
+    }
+    if(index == "8") {
+        return LedColors{Led8: color}
+    }
+    if(index == "9") {
+        return LedColors{Led9: color}
+    }
+    if(index == "10") {
+        return LedColors{Led10: color}
+    }
+    if(index == "11") {
+        return LedColors{Led11: color}
+    }
+    if(index == "12") {
+        return LedColors{Led12: color}
+    }
+    if(index == "13") {
+        return LedColors{Led13: color}
+    }
+    if(index == "14") {
+        return LedColors{Led14: color}
+    }
+    if(index == "15") {
+        return LedColors{Led15: color}
+    }
+    if(index == "16") {
+        return LedColors{Led16: color}
+    }
+    return LedColors{Led1: color}
 }
 
 type SetLedResponse struct {

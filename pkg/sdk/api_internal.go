@@ -11,6 +11,9 @@ import (
     "encoding/json"
 )
 
+// var promptReceived bool
+// var speechReceived bool
+
 func (wfInst *workflowInstance) sendRequest(msg interface{}) {
     err := wfInst.WebsocketConnection.WriteJSON(&msg)
     if err != nil {
@@ -19,6 +22,7 @@ func (wfInst *workflowInstance) sendRequest(msg interface{}) {
 }
 
 func (wfInst *workflowInstance) sendAndReceiveRequest(msg interface{}, id string) *Call {
+    // promptReceived = true
     // mutex is used to synchronize access to Pending map, and to lock the websocket write call
     wfInst.Mutex.Lock()
     call := &Call{Req: msg, Done: make(chan bool, 100)}
@@ -34,7 +38,34 @@ func (wfInst *workflowInstance) sendAndReceiveRequest(msg interface{}, id string
         wfInst.Mutex.Unlock()
     }
     fmt.Println("Sent request:", msg)
+    // here we block to receive from the call's channel
+    select {
+        case <-call.Done:
+        case <-time.After(10 * time.Second):
+            fmt.Println("Request timed out")
+            call.Error = errors.New("request timeout")
+    }
+    return call
+}
+
+
+func (wfInst *workflowInstance) sendAndReceiveRequestWait(msg interface{}, id string) *Call {
+    // promptReceived = false
+    // mutex is used to synchronize access to Pending map, and to lock the websocket write call
+    wfInst.Mutex.Lock()
+    call := &Call{Req: msg, Done: make(chan bool, 100)}
+    wfInst.Pending[id] = call
+    wfInst.Mutex.Unlock()
     
+    err := wfInst.WebsocketConnection.WriteJSON(&msg)
+    if err != nil {
+        fmt.Println("error sending message", err)
+        // remove the pending call
+        wfInst.Mutex.Lock()
+        delete(wfInst.Pending, id)
+        wfInst.Mutex.Unlock()
+    }
+    fmt.Println("Sent request:", msg)
     // here we block to receive from the call's channel
     select {
         case <-call.Done:
@@ -47,6 +78,7 @@ func (wfInst *workflowInstance) sendAndReceiveRequest(msg interface{}, id string
 
 func (wfInst *workflowInstance) handleEvent(eventWrapper EventWrapper) error {
     fmt.Println("Handling event of type", eventWrapper.ParsedMsg["_type"])
+    // promptReceived = false;
     // call the appropriate handler function, if it was set by the user implementation
     switch eventWrapper.EventName {
         case "start":
@@ -68,6 +100,7 @@ func (wfInst *workflowInstance) handleEvent(eventWrapper EventWrapper) error {
                 fmt.Println("ignoring event", eventWrapper.EventName, "no handler registered")                
             }
         case "prompt":
+            // promptReceived = true
             var params PromptEvent
             json.Unmarshal(eventWrapper.Msg, &params)
             fmt.Println("prompt event: ", params)
@@ -105,6 +138,15 @@ func (wfInst *workflowInstance) handleEvent(eventWrapper EventWrapper) error {
             json.Unmarshal(eventWrapper.Msg, &params)
             if wfInst.OnTimerHandler != nil {
                 wfInst.OnTimerHandler(params)
+            } else {
+                fmt.Println("ignoring event", eventWrapper.EventName, "no handler registered")
+            }
+        case "speech":
+            fmt.Println("received speech event", string(eventWrapper.Msg))
+            var params SpeechEvent
+            json.Unmarshal(eventWrapper.Msg, &params)
+            if(wfInst.OnSpeechHandler != nil) {
+                wfInst.OnSpeechHandler(params)
             } else {
                 fmt.Println("ignoring event", eventWrapper.EventName, "no handler registered")
             }

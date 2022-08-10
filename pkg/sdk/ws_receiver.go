@@ -4,7 +4,6 @@ package sdk
 
 import (
     "fmt"
-    "errors"
 )
 
 func (wfInst *workflowInstance) receiveWs() {
@@ -27,7 +26,15 @@ func (wfInst *workflowInstance) receiveWs() {
         // messages are either events or responses to requests we sent
         parsedMsg, eventName, messageType := parseMessage(msg)
         eventWrapper := EventWrapper{ParsedMsg: parsedMsg, Msg: msg, EventName: eventName}
-        if messageType == "event" {
+        fmt.Println("EVENT'S NAME", eventName)
+        // if eventName == "prompt" {
+        //     promptReceived = true
+        // }
+        // if eventName == "speech" {
+        //     speechReceived = true
+        //     promptReceived = false
+        // }
+        if messageType == "event"  && eventName != "speech"{
             // send events to event channel
             select {
                 case wfInst.EventChannel <- eventWrapper:
@@ -35,7 +42,7 @@ func (wfInst *workflowInstance) receiveWs() {
                     fmt.Println("Error, can't send to event channel")
                     return
             }
-        } else if messageType == "response" {
+        } else if messageType == "response" || eventName == "speech" {
             // pair with callback
             err = wfInst.handleResponse(EventWrapper{ParsedMsg: parsedMsg, Msg: msg, EventName: eventName})
             if err != nil {
@@ -49,22 +56,30 @@ func (wfInst *workflowInstance) receiveWs() {
 
 func (wfInst *workflowInstance) handleResponse(eventWrapper EventWrapper) error {
     fmt.Println("handling response for ", eventWrapper.ParsedMsg)
-    
-    // find the matching request and complete the call
-    id := eventWrapper.ParsedMsg["_id"].(string)
-    wfInst.Mutex.Lock()
-    call := wfInst.Pending[id]
-    delete(wfInst.Pending, id)
-    wfInst.Mutex.Unlock()
-    
-    if call == nil {
-        fmt.Println("no call associated with response", eventWrapper.ParsedMsg)
-        return errors.New("no pending request found")
+    // find the matching request and complete the call 
+    var id string
+    if (eventWrapper.ParsedMsg["_type"].(string) == "wf_api_speech_event") {
+        id = eventWrapper.ParsedMsg["request_id"].(string)
+    } else {
+        id = eventWrapper.ParsedMsg["_id"].(string)
     }
-    
-    call.EventWrapper = eventWrapper
-    call.Res = eventWrapper.ParsedMsg
-    call.Done <- true
-    
+    if (eventWrapper.ParsedMsg["_type"].(string) != "wf_api_listen_response") {
+        wfInst.Mutex.Lock()
+        call := wfInst.Pending[id]
+        delete(wfInst.Pending, id)
+        wfInst.Mutex.Unlock()
+        fmt.Println("Call: ", call)
+        call.EventWrapper = eventWrapper
+        fmt.Println("Event wrapper", eventWrapper.EventName)
+        call.Res = eventWrapper.ParsedMsg
+        call.Done <- true
+        // if eventWrapper.EventName != "listen" {
+        //     call.Done <- true
+        // }
+        // if eventWrapper.EventName == "speech" {
+        //     call.Done <- true
+        // }
+       
+    }
     return nil
 }

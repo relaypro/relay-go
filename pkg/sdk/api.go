@@ -20,7 +20,8 @@ type RelayApi interface {            // this is interface of your custom workflo
     OnTimerFired(func(timerFiredEvent TimerFiredEvent))
     OnButton(func(buttonEvent ButtonEvent))
     OnTimer(fn func(timerEvent TimerEvent))
-    
+    OnSpeech(fn func(speechEvent SpeechEvent))
+
     // api
     StartInteraction(sourceUri string, name string) StartInteractionResponse
     EndInteraction(sourceUri string, name string) EndInteractionResponse
@@ -31,8 +32,8 @@ type RelayApi interface {            // this is interface of your custom workflo
     ResolveIncident(incidentId string, reason string) ResolveIncidentResponse
     Say(sourceUri string, text string, lang string) SayResponse
     Alert(target string, originator string, name string, text string, pushOptions NotificationOptions) SendNotificationResponse
-    // SayAndWait(sourceUri string, text string, lang string) SayResponse
-    // Listen(sourceUri string, phrases []string, transcribe bool, alt_lang string, timeout int) ListenResponse
+    SayAndWait(sourceUri string, text string, lang string) SayResponse
+    Listen(sourceUri string, phrases []string, transcribe bool, alt_lang string, timeout int) string
     Translate(sourceUri string, text string, from string, to string) string
     LogMessage(message string, category string) LogAnalyticsEventResponse
     LogUserMessage(message string, sourceUri string, category string) LogAnalyticsEventResponse
@@ -45,24 +46,24 @@ type RelayApi interface {            // this is interface of your custom workflo
     StopPlayback(sourceUri string, ids []string) StopPlaybackResponse
     GetUnreadInboxSize(sourceUri string) int
     PlayUnreadInboxMessages(sourceUri string) PlayInboxMessagesResponse
-    // SwitchLedOn(sourceUri string, ledIndex int, color string) SetLedResponse
-    SwitchAllLedOn(sourceUri string, color string) SetLedResponse
-    SwitchAllLedOff(sourceUri string) SetLedResponse
-    Rainbow(sourceUri string, rotations int64) SetLedResponse
-    Rotate(sourceUri string, color string) SetLedResponse
-    Flash(sourceUri string, color string) SetLedResponse
-    Breathe(sourceUri string, color string) SetLedResponse
+    SwitchLedOn(sourceUri string, ledIndex int, color string) SetLedResponse
+    // SwitchAllLedOn(sourceUri string, color string) SetLedResponse
+    // SwitchAllLedOff(sourceUri string) SetLedResponse
+    // Rainbow(sourceUri string, rotations int64) SetLedResponse
+    // Rotate(sourceUri string, color string) SetLedResponse
+    // Flash(sourceUri string, color string) SetLedResponse
+    // Breathe(sourceUri string, color string) SetLedResponse
     SetLeds(sourceUri string, effect LedEffect, args LedInfo) SetLedResponse
     Vibrate(sourceUri string, pattern []uint64) VibrateResponse
     Broadcast(target string, originator string, name string, text string, pushOptions NotificationOptions) SendNotificationResponse
     GetDeviceName(sourceUri string, refresh bool) string
     GetDeviceId(sourceUri string, refresh bool) string
     GetDeviceAddress(sourceUri string, refresh bool) string
-    // GetDeviceLocation(sourceUri string, refresh bool) string
+    GetDeviceLocation(sourceUri string, refresh bool) string
     GetDeviceLatLong(sourceUri string, refresh bool) []float64
     IsGroupMember(groupNameUri string, potentialMemberUri string) bool
     GetGroupMembers(groupUri string) []string
-    // GetDeviceCoordinates(sourceUri string, refresh bool) []float64
+    GetDeviceCoordinates(sourceUri string, refresh bool) []float64
     GetDeviceIndoorLocation(sourceUri string, refresh bool) string
     GetDeviceBattery(sourceUri string, refresh bool) uint64
     GetDeviceType(sourceUri string, refresh bool) string
@@ -104,6 +105,7 @@ type workflowInstance struct {
     OnButtonHandler func(buttonEvent ButtonEvent)
     OnTimerFiredHandler func(timerFiredEvent TimerFiredEvent)
     OnTimerHandler func(timerEvent TimerEvent)
+    OnSpeechHandler func (speechEvent SpeechEvent)
 }
 
 // Call represents an active request
@@ -146,6 +148,10 @@ func (wfInst *workflowInstance) OnTimerFired(fn func(timerFiredEvent TimerFiredE
 
 func (wfInst *workflowInstance) OnTimer(fn func(timerEvent TimerEvent)) {
     wfInst.OnTimerHandler = fn
+}
+
+func (wfInst *workflowInstance) OnSpeech(fn func(speechEvent SpeechEvent)) {
+    wfInst.OnSpeechHandler = fn
 }
 
 
@@ -239,13 +245,31 @@ func (wfInst *workflowInstance) Say(sourceUri string, text string, lang string) 
     return res
 }
 
-// func(wfInst *workflowInstance) SayAndWait(sourceUri string, text string, lang string) SayResponse {
-    
-// }
+func(wfInst *workflowInstance) SayAndWait(sourceUri string, text string, lang string) SayResponse {
+    if lang == "" {
+        lang = "en-US"
+    }
+    fmt.Println("saying ", text, "to", sourceUri, "with lang", lang)
+    id := makeId()
+    target := makeTargetMap(sourceUri)
+    req := sayRequest{Type: "wf_api_say_request", Id: id, Target: target, Text: text, Lang: lang}
+    call := wfInst.sendAndReceiveRequestWait(req, id)
+    res := SayResponse{}
+    json.Unmarshal(call.EventWrapper.Msg, &res)
+    return res
+}
 
-// func(wfInst *workflowInstance) Listen(sourceUri string, phrases []string, transcribe bool, alt_lang string, timeout int) ListenResponse {
-
-// }
+func(wfInst *workflowInstance) Listen(sourceUri string, phrases []string, transcribe bool, alt_lang string, timeout int) string {
+    fmt.Println("listening ")
+    id := makeId()
+    target := makeTargetMap(sourceUri)
+    req := listenRequest{Type: "wf_api_listen_request", Id: id, Target: target, ReqestId: "request1", Phrases: phrases, Transcribe: transcribe, Timeout: timeout, AltLang: alt_lang}
+    call := wfInst.sendAndReceiveRequest(req, id)
+    res := ListenResponse{}
+    fmt.Println("Call event wrapper message: ", call.EventWrapper)
+    json.Unmarshal(call.EventWrapper.Msg, &res)
+    return res.Text
+}
 
 func(wfInst *workflowInstance) Translate(sourceUri string, text string, from string, to string) string {
     fmt.Println("translating ", text)
@@ -327,8 +351,15 @@ func (wfInst *workflowInstance) Play(sourceUri string, filename string) string {
     return res.CorrelationId
 }
 
-func (wfInst *workflowInstance) PlayAndWait(sourceUri string, filename string) {
-
+func (wfInst *workflowInstance) PlayAndWait(sourceUri string, filename string) string {
+    fmt.Println("playing file ", filename, "to", sourceUri)
+    id := makeId()
+    target := makeTargetMap(sourceUri)
+    req := playRequest{Type: "wf_api_play_request", Id: id, Target: target, Filename: filename}
+    call := wfInst.sendAndReceiveRequestWait(req, id)
+    res := PlayResponse{}
+    json.Unmarshal(call.EventWrapper.Msg, &res)
+    return res.CorrelationId
 }
 
 func (wfInst *workflowInstance) StopPlayback(sourceUri string, ids []string) StopPlaybackResponse {
@@ -396,9 +427,9 @@ func (wfInst *workflowInstance) SetLeds(sourceUri string, effect LedEffect, args
     return res
 }
 
-// func (wfInst *workflowInstance) SwitchLedOn(sourceUri string, led int, color string) SetLedResponse {
-
-// }
+func (wfInst *workflowInstance) SwitchLedOn(sourceUri string, led int, color string) SetLedResponse {
+    return wfInst.SetLeds(sourceUri, LED_STATIC, LedInfo{ Colors: setLedColors(strconv.FormatInt(int64(led), 10), color)})
+}
 
 func (wfInst *workflowInstance) SwitchAllLedOn(sourceUri string, color string) SetLedResponse {
     return wfInst.SetLeds(sourceUri, LED_STATIC, LedInfo{Colors: LedColors{ Ring: color}})
@@ -423,6 +454,7 @@ func (wfInst *workflowInstance) Flash(sourceUri string, color string) SetLedResp
 func (wfInst *workflowInstance) Breathe(sourceUri string, color string) SetLedResponse {
     return wfInst.SetLeds(sourceUri, LED_BREATHE, LedInfo{Count: -1, Colors: LedColors{ Ring: color }})
 }
+
 
 func (wfInst *workflowInstance) Vibrate(sourceUri string, pattern []uint64) VibrateResponse {
     fmt.Println("vibrating with pattern", pattern)
