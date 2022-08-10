@@ -42,17 +42,17 @@ type RelayApi interface {            // this is interface of your custom workflo
     GetVar(name string, defaultValue string) string
     GetNumberVar(name string, defaultValue int) int
     Play(sourceUri string, filename string) string
-    // PlayAndWait(sourceUri string, filename string)
+    PlayAndWait(sourceUri string, filename string) string
     StopPlayback(sourceUri string, ids []string) StopPlaybackResponse
     GetUnreadInboxSize(sourceUri string) int
     PlayUnreadInboxMessages(sourceUri string) PlayInboxMessagesResponse
     SwitchLedOn(sourceUri string, ledIndex int, color string) SetLedResponse
-    // SwitchAllLedOn(sourceUri string, color string) SetLedResponse
-    // SwitchAllLedOff(sourceUri string) SetLedResponse
-    // Rainbow(sourceUri string, rotations int64) SetLedResponse
-    // Rotate(sourceUri string, color string) SetLedResponse
-    // Flash(sourceUri string, color string) SetLedResponse
-    // Breathe(sourceUri string, color string) SetLedResponse
+    SwitchAllLedOn(sourceUri string, color string) SetLedResponse
+    SwitchAllLedOff(sourceUri string) SetLedResponse
+    Rainbow(sourceUri string, rotations int64) SetLedResponse
+    Rotate(sourceUri string, color string) SetLedResponse
+    Flash(sourceUri string, color string) SetLedResponse
+    Breathe(sourceUri string, color string) SetLedResponse
     SetLeds(sourceUri string, effect LedEffect, args LedInfo) SetLedResponse
     Vibrate(sourceUri string, pattern []uint64) VibrateResponse
     Broadcast(target string, originator string, name string, text string, pushOptions NotificationOptions) SendNotificationResponse
@@ -72,7 +72,7 @@ type RelayApi interface {            // this is interface of your custom workflo
     SetDeviceName(sourceUri string, name string) SetDeviceInfoResponse
     EnableHomeChannel(sourceUri string) SetHomeChannelStateResponse
     DisableHomeChannel(sourceUri string) SetHomeChannelStateResponse
-//     SetDeviceChannel(sourceUri string, channel string) SetDeviceInfoResponse
+    // SetDeviceChannel(sourceUri string, channel string) SetDeviceInfoResponse
     EnableLocation(sourceUri string) SetDeviceInfoResponse
     DisableLocation(sourceUri string) SetDeviceInfoResponse
     SetUserProfile(sourceUri string, username string, force bool) SetUserProfileResponse
@@ -351,7 +351,7 @@ func (wfInst *workflowInstance) Play(sourceUri string, filename string) string {
     return res.CorrelationId
 }
 
-func (wfInst *workflowInstance) PlayAndWait(sourceUri string, filename string) string {
+func (wfInst *workflowInstance) PlayAndWait(sourceUri string, filename string) string{
     fmt.Println("playing file ", filename, "to", sourceUri)
     id := makeId()
     target := makeTargetMap(sourceUri)

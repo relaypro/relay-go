@@ -11,8 +11,7 @@ import (
     "encoding/json"
 )
 
-// var promptReceived bool
-// var speechReceived bool
+var promptReceived bool
 
 func (wfInst *workflowInstance) sendRequest(msg interface{}) {
     err := wfInst.WebsocketConnection.WriteJSON(&msg)
@@ -22,7 +21,7 @@ func (wfInst *workflowInstance) sendRequest(msg interface{}) {
 }
 
 func (wfInst *workflowInstance) sendAndReceiveRequest(msg interface{}, id string) *Call {
-    // promptReceived = true
+    promptReceived = true
     // mutex is used to synchronize access to Pending map, and to lock the websocket write call
     wfInst.Mutex.Lock()
     call := &Call{Req: msg, Done: make(chan bool, 100)}
@@ -50,7 +49,7 @@ func (wfInst *workflowInstance) sendAndReceiveRequest(msg interface{}, id string
 
 
 func (wfInst *workflowInstance) sendAndReceiveRequestWait(msg interface{}, id string) *Call {
-    // promptReceived = false
+    promptReceived = false
     // mutex is used to synchronize access to Pending map, and to lock the websocket write call
     wfInst.Mutex.Lock()
     call := &Call{Req: msg, Done: make(chan bool, 100)}
@@ -69,6 +68,12 @@ func (wfInst *workflowInstance) sendAndReceiveRequestWait(msg interface{}, id st
     // here we block to receive from the call's channel
     select {
         case <-call.Done:
+            t := time.Now()
+            for !promptReceived {
+                if(time.Since(t) >= 30) {
+                    break
+                }
+            }
         case <-time.After(10 * time.Second):
             fmt.Println("Request timed out")
             call.Error = errors.New("request timeout")
