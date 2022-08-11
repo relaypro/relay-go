@@ -776,7 +776,21 @@ func (wfInst *workflowInstance) TriggerWorkflow(accessToken string, refreshToken
 
     triggerUrl := "https://" + serverHostname + "/ibot/workflow/" + workflowId + "?" + queryParams.Encode()
     
-    var payload = []byte(`{"action":"invoke"}`)
+    triggerPayload := map[string]string {
+        "action": "invoke",
+    } 
+    if(len(actionArgs) > 0) {
+        actionArgsString, err := json.Marshal(actionArgs)
+        if err != nil {
+            log.Fatal(err)
+        }
+        triggerPayload["action_args"] = string(actionArgsString)
+    }
+    triggerPayloadString, err := json.Marshal(triggerPayload)
+    if err != nil {
+        log.Fatal(err)
+    }
+    var payload = []byte(string(triggerPayloadString))
 
     req, err := http.NewRequest("POST", triggerUrl, bytes.NewBuffer(payload))
     if err != nil {
@@ -804,7 +818,6 @@ func (wfInst *workflowInstance) TriggerWorkflow(accessToken string, refreshToken
             log.Fatal(err)
         }
         defer res.Body.Close()
-        fmt.Println(res.StatusCode)
     }
 
     bytes, err := ioutil.ReadAll(res.Body)
@@ -851,7 +864,7 @@ func (wfInst *workflowInstance) FetchDevice(accessToken string, refreshToken str
         }
         defer res.Body.Close()
     }
-    
+
     bytes, err := ioutil.ReadAll(res.Body)
     if err != nil {
         log.Fatal(err)
