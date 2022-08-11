@@ -11,7 +11,9 @@ import (
     "encoding/json"
 )
 
-var promptReceived bool
+// boolean variable used to keep track of whether or not streaming is complete on the device.  Mainly used for the functions
+// SayAndWait and PlayAndWait, which require streaming to complete on the device before continuing through the workflow.
+var streamingComplete bool
 
 func (wfInst *workflowInstance) sendRequest(msg interface{}) {
     err := wfInst.WebsocketConnection.WriteJSON(&msg)
@@ -21,7 +23,7 @@ func (wfInst *workflowInstance) sendRequest(msg interface{}) {
 }
 
 func (wfInst *workflowInstance) sendAndReceiveRequest(msg interface{}, id string) *Call {
-    promptReceived = true
+    streamingComplete = true
     // mutex is used to synchronize access to Pending map, and to lock the websocket write call
     wfInst.Mutex.Lock()
     call := &Call{Req: msg, Done: make(chan bool, 100)}
@@ -49,7 +51,6 @@ func (wfInst *workflowInstance) sendAndReceiveRequest(msg interface{}, id string
 
 
 func (wfInst *workflowInstance) sendAndReceiveRequestWait(msg interface{}, id string) *Call {
-    promptReceived = false
     // mutex is used to synchronize access to Pending map, and to lock the websocket write call
     wfInst.Mutex.Lock()
     call := &Call{Req: msg, Done: make(chan bool, 100)}
@@ -67,10 +68,14 @@ func (wfInst *workflowInstance) sendAndReceiveRequestWait(msg interface{}, id st
     fmt.Println("Sent request:", msg)
     // here we block to receive from the call's channel
     select {
+        // once the call is done, wait until your receive a prompt event before returning the call
         case <-call.Done:
-            t := time.Now()
-            for !promptReceived {
-                if(time.Since(t) >= 30) {
+            streamingComplete = false
+            startTime := time.Now()
+            fmt.Println("Waiting for prompt stopped")
+            for !streamingComplete {
+                if(time.Since(startTime).Seconds() >= 30) {
+                    fmt.Println("Timed out waiting for prompt event")
                     break
                 }
             }
@@ -83,7 +88,6 @@ func (wfInst *workflowInstance) sendAndReceiveRequestWait(msg interface{}, id st
 
 func (wfInst *workflowInstance) handleEvent(eventWrapper EventWrapper) error {
     fmt.Println("Handling event of type", eventWrapper.ParsedMsg["_type"])
-    // promptReceived = false;
     // call the appropriate handler function, if it was set by the user implementation
     switch eventWrapper.EventName {
         case "start":
@@ -105,7 +109,6 @@ func (wfInst *workflowInstance) handleEvent(eventWrapper EventWrapper) error {
                 fmt.Println("ignoring event", eventWrapper.EventName, "no handler registered")                
             }
         case "prompt":
-            // promptReceived = true
             var params PromptEvent
             json.Unmarshal(eventWrapper.Msg, &params)
             fmt.Println("prompt event: ", params)

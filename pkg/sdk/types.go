@@ -109,6 +109,7 @@ type StopEvent struct {
 }
 
 type SpeechEvent struct {
+    _id string `json:"_id"`
     _type string `json:"_type"`
     SourceUri string `json:"source_uri"`
     ReuqestId string `json:"request_id"`
@@ -177,18 +178,9 @@ type listenRequest struct {
 }
 
 type ListenResponse struct {
-    __id string `json:"_id"`
+    _id string `json:"_id"`
     _type string `json:"_type"`
-    audio string `json:"audio"`
-    lang string `json:"lang"`
-    request_id string `json:"request_id`
-    source_uri string `json:"source_uri"`
-    Text string `json:"text"`
 }
-
-// type SpeechResponse struct {
-    
-// }
 
 type translateRequest struct {
     Id string `json:"_id"`

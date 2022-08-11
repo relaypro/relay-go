@@ -80,8 +80,8 @@ type RelayApi interface {            // this is interface of your custom workflo
 
     SetDeviceMode(sourceUri string, mode DeviceMode) SetDeviceModeResponse
     
-    RestartDevice(sourceUri string) DevicePowerOffResponse
-    PowerDownDevice(sourceUri string) DevicePowerOffResponse
+    // RestartDevice(sourceUri string) DevicePowerOffResponse
+    // PowerDownDevice(sourceUri string) DevicePowerOffResponse
     PlaceCall(targetUri string, uri string) PlaceCallResponse
     AnswerCall(sourceUri string, callId string) AnswerResponse
     HangupCall(targetUri string, callId string) HangupCallResponse
@@ -265,8 +265,7 @@ func(wfInst *workflowInstance) Listen(sourceUri string, phrases []string, transc
     target := makeTargetMap(sourceUri)
     req := listenRequest{Type: "wf_api_listen_request", Id: id, Target: target, ReqestId: "request1", Phrases: phrases, Transcribe: transcribe, Timeout: timeout, AltLang: alt_lang}
     call := wfInst.sendAndReceiveRequest(req, id)
-    res := ListenResponse{}
-    fmt.Println("Call event wrapper message: ", call.EventWrapper)
+    res := SpeechEvent{}
     json.Unmarshal(call.EventWrapper.Msg, &res)
     return res.Text
 }
@@ -504,7 +503,6 @@ func (wfInst *workflowInstance) getDeviceInfo(sourceUri string, query DeviceInfo
     call := wfInst.sendAndReceiveRequest(req, id)
     res := GetDeviceInfoResponse{}
     json.Unmarshal(call.EventWrapper.Msg, &res)
-//     fmt.Println("device info response", res)
     return res
 }
 
@@ -585,6 +583,8 @@ func (wfInst *workflowInstance) SetDeviceName(sourceUri string, name string) Set
     return wfInst.setDeviceInfo(sourceUri, SET_DEVICE_INFO_LABEL, name)
 }
 
+// SetDeviceChannel is currently not supported
+
 // func (wfInst *workflowInstance) SetDeviceChannel(sourceUri string, channel string) SetDeviceInfoResponse {
 //     return wfInst.setDeviceInfo(sourceUri, SET_DEVICE_INFO_CHANNEL, channel)
 // }
@@ -654,27 +654,29 @@ func (wfInst *workflowInstance) SetDeviceMode(sourceUri string, mode DeviceMode)
     return res
 }
 
-func (wfInst *workflowInstance) RestartDevice(sourceUri string) DevicePowerOffResponse {
-    fmt.Println("restarting device")
-    id := makeId()
-    target := makeTargetMap(sourceUri)
-    req := devicePowerOffRequest{Type: "wf_api_device_power_off_request", Id: id, Target: target, Restart: true}
-    call := wfInst.sendAndReceiveRequest(req, id)
-    res := DevicePowerOffResponse{}
-    json.Unmarshal(call.EventWrapper.Msg, &res)
-    return res
-}
+// Restart/Powering down device is currently not supported
 
-func (wfInst *workflowInstance) PowerDownDevice(sourceUri string) DevicePowerOffResponse {
-    fmt.Println("powering down device")
-    id := makeId()
-    target := makeTargetMap(sourceUri)
-    req := devicePowerOffRequest{Type: "wf_api_device_power_off_request", Id: id, Target: target, Restart: false}
-    call := wfInst.sendAndReceiveRequest(req, id)
-    res := DevicePowerOffResponse{}
-    json.Unmarshal(call.EventWrapper.Msg, &res)
-    return res
-}
+// func (wfInst *workflowInstance) RestartDevice(sourceUri string) DevicePowerOffResponse {
+//     fmt.Println("restarting device")
+//     id := makeId()
+//     target := makeTargetMap(sourceUri)
+//     req := devicePowerOffRequest{Type: "wf_api_device_power_off_request", Id: id, Target: target, Restart: true}
+//     call := wfInst.sendAndReceiveRequest(req, id)
+//     res := DevicePowerOffResponse{}
+//     json.Unmarshal(call.EventWrapper.Msg, &res)
+//     return res
+// }
+
+// func (wfInst *workflowInstance) PowerDownDevice(sourceUri string) DevicePowerOffResponse {
+//     fmt.Println("powering down device")
+//     id := makeId()
+//     target := makeTargetMap(sourceUri)
+//     req := devicePowerOffRequest{Type: "wf_api_device_power_off_request", Id: id, Target: target, Restart: false}
+//     call := wfInst.sendAndReceiveRequest(req, id)
+//     res := DevicePowerOffResponse{}
+//     json.Unmarshal(call.EventWrapper.Msg, &res)
+//     return res
+// }
 
 func (wfInst *workflowInstance) PlaceCall(targetUri string, uri string) PlaceCallResponse {
     fmt.Println("placing call to ", targetUri, "with uri", uri)
