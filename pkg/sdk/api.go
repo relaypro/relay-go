@@ -4,10 +4,16 @@ package sdk
 
 import (
     "fmt"
+    "bytes"
+    "io/ioutil"
+    "log"
     "sync"
     "strconv"
     "encoding/json"
     "github.com/gorilla/websocket"
+    "net/http"
+    "net/url"
+    "time"
 )
 
 var workflowMap map[string]func(api RelayApi) = make(map[string]func(api RelayApi))
@@ -86,6 +92,8 @@ type RelayApi interface {            // this is interface of your custom workflo
     AnswerCall(sourceUri string, callId string) AnswerResponse
     HangupCall(targetUri string, callId string) HangupCallResponse
     Terminate()
+    FetchDevice(accessToken string, refreshToken string, clientId string, subscriberId string, userId string) map[string]string
+    TriggerWorkflow(accessToken string, refreshToken string, clientId string, workflowId string, subscriberId string, userId string, targets []string, actionArgs map[string]string) map[string]string
 }
 
 // This struct implements RelayApi below
@@ -716,4 +724,140 @@ func (wfInst *workflowInstance) Terminate() {
     id := makeId()
     req := terminateRequest{Type: "wf_api_terminate_request", Id: id}
     wfInst.sendRequest(req)
+}
+
+var serverHostname string = "all-main-qa-ibot.nocell.io"
+var version string = "relay-sdk-go/2.0.0"
+var auth_hostname string = "auth.relaygo.info"
+
+func (wfInst *workflowInstance) updateAccessToken(refreshToken string, clientId string) string {
+    grantUrl := "https://" + auth_hostname + "/oauth2/token"
+
+    // var grantPayload = []byte(`{
+    //     "client_id": ` + clientId + `,
+    //     "grant_type": "refresh_token",
+    //     "refresh_token": ` + refreshToken + `
+    // }`)
+    var grantPayload = []byte(`grant_type=refresh_token&refresh_token=` + refreshToken + `&client_id=` + clientId)
+
+    req, err := http.NewRequest("POST", grantUrl, bytes.NewBuffer(grantPayload))
+    req.Header.Set("User-Agent", version)
+
+    client := &http.Client {}
+    res, err := client.Do(req)
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    if res.StatusCode != http.StatusOK {
+        log.Fatal("Failed to retrieve access token with status code ", res.StatusCode)
+    }
+
+    defer res.Body.Close()
+
+    // bytes, err := ioutil.ReadAll(res.Body)
+    if err != nil {
+        log.Fatal(err)
+    }
+    var accessTokenRes map[string]interface{}
+    error := json.NewDecoder(res.Body).Decode(&accessTokenRes)
+    if error != nil {
+        log.Fatal(err)
+    }
+    fmt.Println("ACCESS TOKEN: ", accessTokenRes["access_token"].(string))
+    return accessTokenRes["access_token"].(string)
+    
+}
+
+func (wfInst *workflowInstance) TriggerWorkflow(accessToken string, refreshToken string, clientId string, workflowId string, subscriberId string, userId string, targets []string, actionArgs map[string]string) map[string]string {
+    queryParams := url.Values{}
+    queryParams.Add("subscriber_id", subscriberId)
+    queryParams.Add("user_id", userId)
+    triggerUrl := "https://" + serverHostname + "/ibot/workflow/" + workflowId + "?" + queryParams.Encode()
+    fmt.Println("TRIGGERURL : ", triggerUrl)
+    
+    var payload = []byte(`{"action":"invoke"}`)
+
+    req, err := http.NewRequest("POST", triggerUrl, bytes.NewBuffer(payload))
+    req.Header.Set("User-Agent", version)
+    req.Header.Set("Authorization", "Bearer " + accessToken)
+
+    client := &http.Client{}
+    client.Timeout = time.Second * 15
+    res, err := client.Do(req)
+
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    defer res.Body.Close()
+
+    if res.StatusCode == http.StatusUnauthorized {
+        fmt.Println("Got 401, retrieving a new access token")
+        accessToken = wfInst.updateAccessToken(refreshToken, clientId)
+        req.Header.Set("Authorization", "Bearer " + accessToken)
+        res, err = client.Do(req)
+        if err != nil {
+            log.Fatal(err)
+        }
+        defer res.Body.Close()
+        fmt.Println(res.StatusCode)
+    }
+
+    // if res.StatusCode == http.StatusOK {
+        bytes, err := ioutil.ReadAll(res.Body)
+        if err != nil {
+            log.Fatal(err)
+        }
+        response := map[string]string {
+            "response": string(bytes),
+            "access_token": accessToken,
+        }
+        return response
+    // }
+    // fmt.Println(res.StatusCode)
+    // return nil
+}
+
+func (wfInst *workflowInstance) FetchDevice(accessToken string, refreshToken string, clientId string, subscriberId string, userId string) map[string]string {
+    url := "https://" + serverHostname + "/relaypro/api/v1/device/" + userId + "?subscriber_id=" + subscriberId
+    // queryParams := map[string]string {
+    //     "subscriber_id": subscriberId,
+    // }
+
+    client := &http.Client{}
+    client.Timeout = time.Second * 15
+    req, err := http.NewRequest("GET", url, nil)
+    req.Header.Set("User-Agent", version)
+    req.Header.Set("Authorization", "Bearer " + accessToken)
+    res, err := client.Do(req)
+    
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    defer res.Body.Close()
+
+    if res.StatusCode == http.StatusUnauthorized {
+        fmt.Println("Got 401, retrieving a new access token")
+        accessToken = wfInst.updateAccessToken(refreshToken, clientId)
+        req.Header.Set("Authorization", "Bearer " + accessToken)
+        res, err = client.Do(req)
+        if err != nil {
+            log.Fatal(err)
+        }
+        defer res.Body.Close()
+    }
+    if res.StatusCode == http.StatusOK {
+        bytes, err := ioutil.ReadAll(res.Body)
+        if err != nil {
+            log.Fatal(err)
+        }
+        response := map[string]string {
+            "response": string(bytes),
+            "access_token": accessToken,
+        }
+        return response
+    }
+    return nil
 }
