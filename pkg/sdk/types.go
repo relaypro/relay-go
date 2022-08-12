@@ -49,6 +49,45 @@ const (
 	TELEPHONY_TRIGGER = "telephony"
 )
 
+type Language string 
+const (
+    ENGLISH = `en-US`
+    GERMAN = `de-DE`
+    SPANISH = `es-ES`
+    FRENCH = `fr-FR`
+    ITALIAN = `it-IT`
+    RUSSIAN = `ru-RU`
+    SWEDISH = `sv-SE`
+    TURKISH = `tr-TR`
+    HINDI = `hi-IN`
+    ICELANDIC = `is-IS`
+    JAPANESE = `ja-JP`
+    KOREAN = `ko-KR`
+    POLISH = `pl-PK`
+    PORTUGUESE = `pt-BR`
+    NORWEGIAN = `nb-NO`
+    DUTCH = `nl-NL`
+    CHINESE = `zh`
+    ARABIC = `ar`
+    VIETNAMESE = `vi-VN`
+    INDONESIAN = `id-ID`
+    FILIPINO = `fil-PH`
+    DANISH = `da-DK`
+    CZECH = `cs-CZ`
+    GUJURATI = `gu-IN`
+    HUNGARIAN = `hu-HU`
+    TAMIL = `ta-IN`
+    UKRANIAN = `uk-UA`
+    SLOVAK = `sk-SK`
+    ROMANIAN = `ro-RO`
+    PUNJABI = `pa-IN`
+    MALAY = `ms-MY`
+    BENGALI = `bn-IN`
+    GREEK = `el-GR`
+    KANNADA = `kn-IN`
+    FINNISH = `fi-FI`
+)
+
 type NotificationOptions struct {
     priority NotificationPriority
     title string
@@ -157,7 +196,7 @@ type sayRequest struct {
     Id string `json:"_id"`
     Target map[string][]string `json:"_target"`
     Text string `json:"text"`
-    Lang string `json:"lang"`
+    Lang Language `json:"lang"`
 }
 
 type SayResponse struct {
@@ -186,8 +225,8 @@ type translateRequest struct {
     Id string `json:"_id"`
     Type string `json:"_type"`
     Text string `json:"text"`
-    FromLang string `json:"from_lang"`
-    ToLang string `json:"to_lang"`
+    FromLang Language `json:"from_lang"`
+    ToLang Language `json:"to_lang"`
 }
 
 type TranslateResponse struct {

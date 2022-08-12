@@ -33,14 +33,14 @@ type RelayApi interface {            // this is interface of your custom workflo
     EndInteraction(sourceUri string, name string) EndInteractionResponse
     SetTimer(timerType TimerType, name string, timeout uint64, timeoutType TimeoutType) SetTimerResponse
     ClearTimer(name string) ClearTimerResponse
-    StartTimer(timeout int) StartTimerResponse
+    StartTimer(timeout int) StartTimerResponse // need to test timers
     CreateIncident(originator string, itype string) CreateIncidentResponse
     ResolveIncident(incidentId string, reason string) ResolveIncidentResponse
-    Say(sourceUri string, text string, lang string) SayResponse
+    Say(sourceUri string, text string, lang Language) SayResponse
     Alert(target string, originator string, name string, text string, pushOptions NotificationOptions) SendNotificationResponse
-    SayAndWait(sourceUri string, text string, lang string) SayResponse
+    SayAndWait(sourceUri string, text string, lang Language) SayResponse
     Listen(sourceUri string, phrases []string, transcribe bool, alt_lang string, timeout int) string
-    Translate(sourceUri string, text string, from string, to string) string
+    Translate(sourceUri string, text string, from Language, to Language) string
     LogMessage(message string, category string) LogAnalyticsEventResponse
     LogUserMessage(message string, sourceUri string, category string) LogAnalyticsEventResponse
     SetVar(name string, value string) SetVarResponse
@@ -56,9 +56,9 @@ type RelayApi interface {            // this is interface of your custom workflo
     SwitchAllLedOn(sourceUri string, color string) SetLedResponse
     SwitchAllLedOff(sourceUri string) SetLedResponse
     Rainbow(sourceUri string, rotations int64) SetLedResponse
-    Rotate(sourceUri string, color string) SetLedResponse
-    Flash(sourceUri string, color string) SetLedResponse
-    Breathe(sourceUri string, color string) SetLedResponse
+    Rotate(sourceUri string, color string, rotations int64) SetLedResponse
+    Flash(sourceUri string, color string, count int64) SetLedResponse
+    Breathe(sourceUri string, color string, count int64) SetLedResponse
     SetLeds(sourceUri string, effect LedEffect, args LedInfo) SetLedResponse
     Vibrate(sourceUri string, pattern []uint64) VibrateResponse
     Broadcast(target string, originator string, name string, text string, pushOptions NotificationOptions) SendNotificationResponse
@@ -239,9 +239,9 @@ func (wfInst *workflowInstance) ResolveIncident(incidentId string, reason string
     return res
 }
 
-func (wfInst *workflowInstance) Say(sourceUri string, text string, lang string) SayResponse {
+func (wfInst *workflowInstance) Say(sourceUri string, text string, lang Language) SayResponse {
     if lang == "" {
-        lang = "en-US"
+        lang = ENGLISH
     }
     fmt.Println("saying ", text, "to", sourceUri, "with lang", lang)
     id := makeId()
@@ -253,9 +253,9 @@ func (wfInst *workflowInstance) Say(sourceUri string, text string, lang string) 
     return res
 }
 
-func(wfInst *workflowInstance) SayAndWait(sourceUri string, text string, lang string) SayResponse {
+func(wfInst *workflowInstance) SayAndWait(sourceUri string, text string, lang Language) SayResponse {
     if lang == "" {
-        lang = "en-US"
+        lang = ENGLISH
     }
     fmt.Println("saying ", text, "to", sourceUri, "with lang", lang)
     id := makeId()
@@ -278,7 +278,7 @@ func(wfInst *workflowInstance) Listen(sourceUri string, phrases []string, transc
     return res.Text
 }
 
-func(wfInst *workflowInstance) Translate(sourceUri string, text string, from string, to string) string {
+func(wfInst *workflowInstance) Translate(sourceUri string, text string, from Language, to Language) string {
     fmt.Println("translating ", text)
     id := makeId()
     req := translateRequest{Type: "wf_api_translate_request", Id: id, Text: text, FromLang: from, ToLang: to}
@@ -450,16 +450,16 @@ func (wfInst *workflowInstance) Rainbow(sourceUri string, rotations int64) SetLe
     return wfInst.SetLeds(sourceUri, LED_RAINBOW, LedInfo{Rotations: rotations})
 }
 
-func (wfInst *workflowInstance) Rotate(sourceUri string, color string) SetLedResponse {
-    return wfInst.SetLeds(sourceUri, LED_ROTATE, LedInfo{Rotations: -1, Colors: LedColors{ Led1: color }})
+func (wfInst *workflowInstance) Rotate(sourceUri string, color string, rotations int64 ) SetLedResponse {
+    return wfInst.SetLeds(sourceUri, LED_ROTATE, LedInfo{Rotations: rotations, Colors: LedColors{ Led1: color }})
 }
 
-func (wfInst *workflowInstance) Flash(sourceUri string, color string) SetLedResponse {
-    return wfInst.SetLeds(sourceUri, LED_FLASH, LedInfo{Count: -1, Colors: LedColors{ Ring: color }})
+func (wfInst *workflowInstance) Flash(sourceUri string, color string, count int64) SetLedResponse {
+    return wfInst.SetLeds(sourceUri, LED_FLASH, LedInfo{Count: count, Colors: LedColors{ Ring: color }})
 }
 
-func (wfInst *workflowInstance) Breathe(sourceUri string, color string) SetLedResponse {
-    return wfInst.SetLeds(sourceUri, LED_BREATHE, LedInfo{Count: -1, Colors: LedColors{ Ring: color }})
+func (wfInst *workflowInstance) Breathe(sourceUri string, color string, count int64) SetLedResponse {
+    return wfInst.SetLeds(sourceUri, LED_BREATHE, LedInfo{Count: count, Colors: LedColors{ Ring: color }})
 }
 
 
