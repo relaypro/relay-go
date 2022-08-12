@@ -726,9 +726,9 @@ func (wfInst *workflowInstance) Terminate() {
     wfInst.sendRequest(req)
 }
 
-var serverHostname string = "all-main-qa-ibot.nocell.io"
+var serverHostname string = "all-main-pro-ibot.relaysvr.com";
 var version string = "relay-sdk-go/2.0.0"
-var auth_hostname string = "auth.relaygo.info"
+var auth_hostname string = "auth.relaygo.com"
 
 func (wfInst *workflowInstance) updateAccessToken(refreshToken string, clientId string) string {
     grantUrl := "https://" + auth_hostname + "/oauth2/token"
