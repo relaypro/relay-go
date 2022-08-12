@@ -23,20 +23,6 @@ const(
     CALL_START_REQUEST = "call_start_request"
 )
 
-// EVENTS 
-
-// event structs are exported, but their _type and _id are not
-
-type StartEvent struct {
-    _type string `json:"_type"`
-    Trigger Trigger 
-}
-
-type Trigger struct {
-    Type TriggerType
-    Args TriggerArgs
-}
-
 type TriggerType string
 const (
     PHRASE_TRIGGER = "phrase"
@@ -87,6 +73,47 @@ const (
     KANNADA = `kn-IN`
     FINNISH = `fi-FI`
 )
+
+type TimerType string
+const (
+    TIMEOUT_TIMER_TYPE = "timeout"
+    INTERVAL_TIMER_TYPE = "interval"
+)
+
+type TimeoutType string
+const (
+    MS_TIMEOUT_TYPE = "ms"
+    SECS_TIMEOUT_TYPE = "secs"
+    MINS_TIMEOUT_TYPE = "mins"
+    HRS_TIMEOUT_TYPE = "hrs"
+)
+
+type DeviceInfoQuery string
+const (
+    DEVICE_INFO_QUERY_NAME = "name"
+    DEVICE_INFO_QUERY_ID = "id"
+    DEVICE_INFO_QUERY_ADDRESS = "address"
+    DEVICE_INFO_QUERY_LATLONG = "latlong"
+    DEVICE_INFO_QUERY_INDOOR_LOCATION = "indoor_location"
+    DEVICE_INFO_QUERY_BATTERY = "battery"
+    DEVICE_INFO_QUERY_TYPE = "type"
+    DEVICE_INFO_QUERY_USERNAME = "username"
+    DEVICE_INFO_QUERY_LOCATION_ENABLED = "location_enabled"
+)
+
+// EVENTS 
+
+// event structs are exported, but their _type and _id are not
+
+type StartEvent struct {
+    _type string `json:"_type"`
+    Trigger Trigger 
+}
+
+type Trigger struct {
+    Type TriggerType
+    Args TriggerArgs
+}
 
 type NotificationOptions struct {
     priority NotificationPriority
@@ -348,20 +375,6 @@ type SetHomeChannelStateResponse struct {
 
 }
 
-type TimerType string
-const (
-    TIMEOUT_TIMER_TYPE = "timeout"
-    INTERVAL_TIMER_TYPE = "interval"
-)
-
-type TimeoutType string
-const (
-    MS_TIMEOUT_TYPE = "ms"
-    SECS_TIMEOUT_TYPE = "secs"
-    MINS_TIMEOUT_TYPE = "mins"
-    HRS_TIMEOUT_TYPE = "hrs"
-)
-
 type setTimerRequest struct {
     Type string `json:"_type"`
     Id string `json:"_id"`
@@ -582,19 +595,6 @@ type SendNotificationResponse struct {
     _type string `json:"_type"`
 }
 
-type DeviceInfoQuery string
-const (
-    DEVICE_INFO_QUERY_NAME = "name"
-    DEVICE_INFO_QUERY_ID = "id"
-    DEVICE_INFO_QUERY_ADDRESS = "address"
-    DEVICE_INFO_QUERY_LATLONG = "latlong"
-    DEVICE_INFO_QUERY_INDOOR_LOCATION = "indoor_location"
-    DEVICE_INFO_QUERY_BATTERY = "battery"
-    DEVICE_INFO_QUERY_TYPE = "type"
-    DEVICE_INFO_QUERY_USERNAME = "username"
-    DEVICE_INFO_QUERY_LOCATION_ENABLED = "location_enabled"
-)
-
 type getDeviceInfoRequest struct {
     Type string `json:"_type"`
     Id string `json:"_id"`
@@ -620,7 +620,6 @@ type GetDeviceInfoResponse struct {
 type SetDeviceInfoType string
 const (
     SET_DEVICE_INFO_LABEL = "label"
-//     SET_DEVICE_INFO_CHANNEL = "channel"
     SET_DEVICE_INFO_LOCATION_ENABLED = "location_enabled"
 )
 

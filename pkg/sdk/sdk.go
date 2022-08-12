@@ -44,10 +44,7 @@ func handleWs(w http.ResponseWriter, r *http.Request) {
         fmt.Println("no workflow named ", wfName, "is registered", workflowMap)
         return
     }
-    fmt.Println("Found workflow named ", wfName, wfFunc)
-    
-    // wf is a func(api RelayApi){}
-    
+        
     conn, upgradeErr := upgrader.Upgrade(w, r, nil)
 
     if upgradeErr != nil {

@@ -64,7 +64,6 @@ func ParseDeviceId(uri string) string {
 
 
 func ParseGroupName(uri string) string {
-	//urn:relay-resource:name:group:Main
 	components := strings.Split(uri, ":")
 	parsedGroupName, err := url.PathUnescape(components[4])
 	fmt.Println("error", err)
@@ -76,7 +75,6 @@ func ParseGroupName(uri string) string {
 }
 
 func ParseGroupId(uri string) string {
-	//urn:relay-resource:name:group:Main
 	components := strings.Split(uri, ":")
 	parsedGroupId, err := url.PathUnescape(components[4])
 	fmt.Println("error", err)
@@ -97,7 +95,6 @@ func GroupName(name string) string {
 
 
 func GroupMember(group string, device string) string {
-	// escapedGroupName := url.PathEscape(group)
 	return SCHEME + ":" + ROOT + ":" + NAME + ":" + GROUP + ":" + url.PathEscape(group) + DEVICE_PATTERN + url.PathEscape(SCHEME + ":" + 
 			ROOT + ":" + NAME + ":" + DEVICE + ":" + device)
 }

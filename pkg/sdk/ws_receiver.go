@@ -27,6 +27,7 @@ func (wfInst *workflowInstance) receiveWs() {
         parsedMsg, eventName, messageType := parseMessage(msg)
         eventWrapper := EventWrapper{ParsedMsg: parsedMsg, Msg: msg, EventName: eventName}
         
+        // including speech event so that it can be passed to handleResponse for a listen API call
         if messageType == "response" || eventName == "speech" {
             // pair with callback
             err = wfInst.handleResponse(EventWrapper{ParsedMsg: parsedMsg, Msg: msg, EventName: eventName})
@@ -53,7 +54,8 @@ func (wfInst *workflowInstance) receiveWs() {
 
 func (wfInst *workflowInstance) handleResponse(eventWrapper EventWrapper) error {
     fmt.Println("handling response for ", eventWrapper.ParsedMsg)
-    // find the matching request and complete the call 
+    // find the matching request and complete the call. If the type is a speech event, it will contain a "request_id" instead of "_id".  This
+    // request_id will correspond to the listen request id, if a listen was called.
     var id string
     if (eventWrapper.ParsedMsg["_type"].(string) == "wf_api_speech_event") {
         id = eventWrapper.ParsedMsg["request_id"].(string)

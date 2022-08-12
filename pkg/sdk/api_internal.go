@@ -23,6 +23,7 @@ func (wfInst *workflowInstance) sendRequest(msg interface{}) {
 }
 
 func (wfInst *workflowInstance) sendAndReceiveRequest(msg interface{}, id string) *Call {
+    // you don't need to wait for streaming to complete here
     streamingComplete = true
     // mutex is used to synchronize access to Pending map, and to lock the websocket write call
     wfInst.Mutex.Lock()
@@ -70,6 +71,7 @@ func (wfInst *workflowInstance) sendAndReceiveRequestWait(msg interface{}, id st
     select {
         // once the call is done, wait until your receive a prompt event before returning the call
         case <-call.Done:
+            // you need to wait for streaming to complete on the device before the next function call
             streamingComplete = false
             startTime := time.Now()
             fmt.Println("Waiting for prompt stopped")
