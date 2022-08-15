@@ -1,8 +1,6 @@
 # relay-go SDK
 
-A Golang SDK for 
-
-Use `go get github.com/relaypro/relay-go` to install [Relay Workflows](https://developer.relaypro.com).
+A Golang SDK for [Relay Workflows](https://developer.relaypro.com).
 
 ## Guides Documentation
 
