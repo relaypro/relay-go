@@ -62,7 +62,7 @@ func main() {
 ## Development
 
     bash 
-    git clone git@github.com:relaypro/relay-go.git
+    go get github.com/relaypro/relay-go
     cd relay-go
 
 Start the demo workflow server:
