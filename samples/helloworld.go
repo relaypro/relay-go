@@ -5,11 +5,13 @@ package main
 import (
     "relay-go/pkg/sdk"
     "fmt"
+    log "github.com/sirupsen/logrus"
 )
 
 var port = ":8080"
 
 func main() {
+    log.SetLevel(log.DebugLevel)
 
     sdk.AddWorkflow("hellopath", func(api sdk.RelayApi) {
         var sourceUri string

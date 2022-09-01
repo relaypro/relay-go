@@ -3,7 +3,7 @@
 package sdk
 
 import (
-    "fmt"
+    log "github.com/sirupsen/logrus"
 )
 
 func (wfInst *workflowInstance) receiveWs() {
@@ -15,10 +15,10 @@ func (wfInst *workflowInstance) receiveWs() {
         _, msg, err := wfInst.WebsocketConnection.ReadMessage()
         if err != nil {
             if wfInst.StopReason != "" {
-                fmt.Println("websocket closed with reason:", wfInst.StopReason)
+                log.Debug("websocket closed with reason:", wfInst.StopReason)
                 return
             } else {
-                fmt.Println("Error reading message from websocket:", err, msg)
+                log.Debug("Error reading message from websocket:", err, msg)
                 return
             }
         }
@@ -32,7 +32,7 @@ func (wfInst *workflowInstance) receiveWs() {
             // pair with callback
             err = wfInst.handleResponse(EventWrapper{ParsedMsg: parsedMsg, Msg: msg, EventName: eventName})
             if err != nil {
-                fmt.Println("Error from response handler ", err)
+                log.Debug("Error from response handler ", err)
                 return
             }
         } else if messageType == "event" {
@@ -44,16 +44,16 @@ func (wfInst *workflowInstance) receiveWs() {
                     }
 
                 default:
-                    fmt.Println("Error, can't send to event channel")
+                    log.Debug("Error, can't send to event channel")
                     return
             }
         } 
     }
-    fmt.Println("error received from websocket", err, "quitting")
+    log.Debug("error received from websocket", err, "quitting")
 }
 
 func (wfInst *workflowInstance) handleResponse(eventWrapper EventWrapper) error {
-    fmt.Println("handling response for ", eventWrapper.ParsedMsg)
+    log.Debug("handling response for ", eventWrapper.ParsedMsg)
     // find the matching request and complete the call. If the type is a speech event, it will contain a "request_id" instead of "_id".  This
     // request_id will correspond to the listen request id, if a listen was called.
     var id string
