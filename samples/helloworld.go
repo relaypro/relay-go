@@ -11,16 +11,18 @@ var port = ":8080"
 
 func main() {
 
-    sdk.AddWorkflow("helloworld", func(api sdk.RelayApi) {
+    sdk.AddWorkflow("hellopath", func(api sdk.RelayApi) {
         var sourceUri string
         
         api.OnStart(func(startEvent sdk.StartEvent) {
-            sourceDevice := startEvent.Trigger.Args.SourceUri
-            fmt.Println("starting interaction on source device", sourceDevice)
-            api.StartInteraction(sourceDevice, "hello world")
+            sourceUri := startEvent.Trigger.Args.SourceUri
+            fmt.Println("Started hello wf from sourceUri: ", sourceUri, " trigger: ", startEvent.Trigger)
+            api.StartInteraction(sourceUri, "hello interaction")
         })
         
         api.OnInteractionLifecycle(func(interactionLifecycleEvent sdk.InteractionLifecycleEvent) {
+            fmt.Println("User workflow got interaction lifecycle: ", interactionLifecycleEvent)
+
             if interactionLifecycleEvent.LifecycleType == "started" {
                 sourceUri = interactionLifecycleEvent.SourceUri     // save the interaction id here to use in the timer callback
                 var deviceName = api.GetDeviceName(sourceUri, false)
@@ -28,7 +30,7 @@ func main() {
                 var pharses = []string {}
                 var name = api.Listen(sourceUri, pharses, false, "en-US", 30)
                 api.Say(sourceUri, "Hello " + name + " you are currently using " + deviceName, "en-US")
-                api.EndInteraction(sourceUri, "hello world")
+                api.EndInteraction(sourceUri, "hello interaction")
             }
 
             if interactionLifecycleEvent.LifecycleType == "ended" {
