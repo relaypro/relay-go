@@ -3,8 +3,8 @@
 package sdk
 
 import (
-    "fmt"
     "math/rand"
+    log "github.com/sirupsen/logrus"
     "encoding/hex"
     "time"
     "errors"
@@ -18,7 +18,7 @@ var streamingComplete bool
 func (wfInst *workflowInstance) sendRequest(msg interface{}) {
     err := wfInst.WebsocketConnection.WriteJSON(&msg)
     if err != nil {
-        fmt.Println("error sending message", err)
+        log.Error("error sending message ", err)
     }
 }
 
@@ -33,18 +33,18 @@ func (wfInst *workflowInstance) sendAndReceiveRequest(msg interface{}, id string
     
     err := wfInst.WebsocketConnection.WriteJSON(&msg)
     if err != nil {
-        fmt.Println("error sending message", err)
+        log.Error("error sending message ", err)
         // remove the pending call
         wfInst.Mutex.Lock()
         delete(wfInst.Pending, id)
         wfInst.Mutex.Unlock()
     }
-    fmt.Println("Sent request:", msg)
+    log.Debug("Sent request:", msg)
     // here we block to receive from the call's channel
     select {
         case <-call.Done:
         case <-time.After(10 * time.Second):
-            fmt.Println("Request timed out")
+            log.Debug("Request timed out")
             call.Error = errors.New("request timeout")
     }
     return call
@@ -60,13 +60,13 @@ func (wfInst *workflowInstance) sendAndReceiveRequestWait(msg interface{}, id st
     
     err := wfInst.WebsocketConnection.WriteJSON(&msg)
     if err != nil {
-        fmt.Println("error sending message", err)
+        log.Error("error sending message ", err)
         // remove the pending call
         wfInst.Mutex.Lock()
         delete(wfInst.Pending, id)
         wfInst.Mutex.Unlock()
     }
-    fmt.Println("Sent request:", msg)
+    log.Debug("Sent request:", msg)
     // here we block to receive from the call's channel
     select {
         // once the call is done, wait until your receive a prompt event before returning the call
@@ -74,22 +74,22 @@ func (wfInst *workflowInstance) sendAndReceiveRequestWait(msg interface{}, id st
             // you need to wait for streaming to complete on the device before the next function call
             streamingComplete = false
             startTime := time.Now()
-            fmt.Println("Waiting for prompt stopped")
+            log.Debug("Waiting for prompt stopped")
             for !streamingComplete {
                 if(time.Since(startTime).Seconds() >= 30) {
-                    fmt.Println("Timed out waiting for prompt event")
+                    log.Debug("Timed out waiting for prompt event")
                     break
                 }
             }
         case <-time.After(10 * time.Second):
-            fmt.Println("Request timed out")
+            log.Debug("Request timed out")
             call.Error = errors.New("request timeout")
     }
     return call
 }
 
 func (wfInst *workflowInstance) handleEvent(eventWrapper EventWrapper) error {
-    fmt.Println("Handling event of type", eventWrapper.ParsedMsg["_type"])
+    log.Debug("Handling event of type ", eventWrapper.ParsedMsg["_type"])
     // call the appropriate handler function, if it was set by the user implementation
     switch eventWrapper.EventName {
         case "start":
@@ -99,69 +99,69 @@ func (wfInst *workflowInstance) handleEvent(eventWrapper EventWrapper) error {
             if wfInst.OnStartHandler != nil {
                 wfInst.OnStartHandler(params)
             } else {
-                fmt.Println("ignoring event", eventWrapper.EventName, "no handler registered")                
+                log.Debug("ignoring event", eventWrapper.EventName, "no handler registered")                
             }
         case "interaction_lifecycle":
-            fmt.Println("interaction lifecycle event:", string(eventWrapper.Msg))
+            log.Debug("interaction lifecycle event:", string(eventWrapper.Msg))
             var params InteractionLifecycleEvent
             json.Unmarshal(eventWrapper.Msg, &params)
             if wfInst.OnInteractionLifecycleHandler != nil {
                 wfInst.OnInteractionLifecycleHandler(params)
             } else {
-                fmt.Println("ignoring event", eventWrapper.EventName, "no handler registered")                
+                log.Debug("ignoring event", eventWrapper.EventName, "no handler registered")                
             }
         case "prompt":
             var params PromptEvent
             json.Unmarshal(eventWrapper.Msg, &params)
-            fmt.Println("prompt event: ", params)
+            log.Debug("prompt event: ", params)
             if wfInst.OnPromptHandler != nil {
                 wfInst.OnPromptHandler(params)
             } else {
-                fmt.Println("ignoring event", eventWrapper.EventName, "no handler registered")                
+                log.Debug("ignoring event", eventWrapper.EventName, "no handler registered")                
             }
         case "button":
-            fmt.Println("button event", string(eventWrapper.Msg))
+            log.Debug("button event ", string(eventWrapper.Msg))
             var params ButtonEvent
             json.Unmarshal(eventWrapper.Msg, &params)
             if wfInst.OnButtonHandler != nil {
                 wfInst.OnButtonHandler(params)
             } else {
-                fmt.Println("ignoring event", eventWrapper.EventName, "no handler registered")                
+                log.Debug("ignoring event ", eventWrapper.EventName, "no handler registered")                
             }
         case "stop":
-            fmt.Println("received stop event", string(eventWrapper.Msg))
+            log.Info("Workflow instance terminating, reason: ", eventWrapper.ParsedMsg["reason"])
             var params StopEvent
             json.Unmarshal(eventWrapper.Msg, &params)
             wfInst.StopReason = params.Reason
         case "timer_fired":
-            fmt.Println("received timer fired event")
+            log.Debug("received timer fired event")
             var params TimerFiredEvent
             json.Unmarshal(eventWrapper.Msg, &params)
             if wfInst.OnTimerFiredHandler != nil {
                 wfInst.OnTimerFiredHandler(params)
             } else {
-                fmt.Println("ignoring event", eventWrapper.EventName, "no handler registered")                
+                log.Debug("ignoring event ", eventWrapper.EventName, " no handler registered")                
             }
         case "timer":
-            fmt.Println("received timer event", string(eventWrapper.Msg))
+            log.Debug("received timer event ", string(eventWrapper.Msg))
             var params TimerEvent
             json.Unmarshal(eventWrapper.Msg, &params)
             if wfInst.OnTimerHandler != nil {
                 wfInst.OnTimerHandler(params)
             } else {
-                fmt.Println("ignoring event", eventWrapper.EventName, "no handler registered")
+                log.Debug("ignoring event ", eventWrapper.EventName, " no handler registered")
             }
         case "speech":
-            fmt.Println("received speech event", string(eventWrapper.Msg))
+            log.Debug("received speech event ", string(eventWrapper.Msg))
             var params SpeechEvent
             json.Unmarshal(eventWrapper.Msg, &params)
             if(wfInst.OnSpeechHandler != nil) {
                 wfInst.OnSpeechHandler(params)
             } else {
-                fmt.Println("ignoring event", eventWrapper.EventName, "no handler registered")
+                log.Debug("ignoring event ", eventWrapper.EventName, " no handler registered")
             }
         default:
-            fmt.Println("UNKNOWN EVENT ", eventWrapper.ParsedMsg);
+            log.Debug("UNKNOWN EVENT ", eventWrapper.ParsedMsg);
     }
     return nil
 }

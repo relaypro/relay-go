@@ -6,11 +6,11 @@ import (
     "fmt"
     "bytes"
     "io/ioutil"
-    "log"
     "sync"
     "strconv"
     "encoding/json"
     "github.com/gorilla/websocket"
+    log "github.com/sirupsen/logrus"
     "net/http"
     "net/url"
     "time"
@@ -95,7 +95,6 @@ type RelayApi interface {            // this is interface of your custom workflo
     FetchDevice(accessToken string, refreshToken string, clientId string, subscriberId string, userId string) map[string]string
     TriggerWorkflow(accessToken string, refreshToken string, clientId string, workflowId string, subscriberId string, userId string, targets []string, actionArgs map[string]string) map[string]string
 }
-
 // This struct implements RelayApi below
 type workflowInstance struct {
     WebsocketConnection *websocket.Conn
@@ -243,7 +242,7 @@ func (wfInst *workflowInstance) Say(sourceUri string, text string, lang Language
     if lang == "" {
         lang = ENGLISH
     }
-    fmt.Println("saying ", text, "to", sourceUri, "with lang", lang)
+    log.Debug("saying ", text, " to ", sourceUri, " with lang ", lang)
     id := makeId()
     target := makeTargetMap(sourceUri)
     req := sayRequest{Type: "wf_api_say_request", Id: id, Target: target, Text: text, Lang: lang}
@@ -257,7 +256,7 @@ func(wfInst *workflowInstance) SayAndWait(sourceUri string, text string, lang La
     if lang == "" {
         lang = ENGLISH
     }
-    fmt.Println("saying ", text, "to", sourceUri, "with lang", lang)
+    log.Debug("saying ", text, "to", sourceUri, "with lang", lang)
     id := makeId()
     target := makeTargetMap(sourceUri)
     req := sayRequest{Type: "wf_api_say_request", Id: id, Target: target, Text: text, Lang: lang}
@@ -268,7 +267,7 @@ func(wfInst *workflowInstance) SayAndWait(sourceUri string, text string, lang La
 }
 
 func(wfInst *workflowInstance) Listen(sourceUri string, phrases []string, transcribe bool, alt_lang string, timeout int) string {
-    fmt.Println("listening ")
+    log.Debug("listening ")
     id := makeId()
     target := makeTargetMap(sourceUri)
     req := listenRequest{Type: "wf_api_listen_request", Id: id, Target: target, ReqestId: "request1", Phrases: phrases, Transcribe: transcribe, Timeout: timeout, AltLang: alt_lang}
@@ -279,7 +278,7 @@ func(wfInst *workflowInstance) Listen(sourceUri string, phrases []string, transc
 }
 
 func(wfInst *workflowInstance) Translate(sourceUri string, text string, from Language, to Language) string {
-    fmt.Println("translating ", text)
+    log.Debug("translating ", text)
     id := makeId()
     req := translateRequest{Type: "wf_api_translate_request", Id: id, Text: text, FromLang: from, ToLang: to}
     call := wfInst.sendAndReceiveRequest(req, id)
@@ -289,7 +288,7 @@ func(wfInst *workflowInstance) Translate(sourceUri string, text string, from Lan
 }
 
 func(wfInst *workflowInstance) LogMessage(message string, category string) LogAnalyticsEventResponse {
-    fmt.Println("logging analytic event with the message", message)
+    log.Debug("logging analytic event with the message", message)
     id := makeId()
     req := logAnalyticsEventRequest{Type: "wf_api_log_analytics_event_request", Id: id, Content: message, ContentType: "default", Category: category}
     call := wfInst.sendAndReceiveRequest(req, id)
@@ -299,7 +298,7 @@ func(wfInst *workflowInstance) LogMessage(message string, category string) LogAn
 }
 
 func(wfInst *workflowInstance) LogUserMessage(message string, sourceUri string, category string) LogAnalyticsEventResponse {
-    fmt.Println("logging analytic event with the message", message)
+    log.Debug("logging analytic event with the message", message)
     id := makeId()
     req := logAnalyticsEventRequest{Type: "wf_api_log_analytics_event_request", Id: id, Content: message, ContentType: "default", Category: category, DeviceUri: sourceUri}
     call := wfInst.sendAndReceiveRequest(req, id)
@@ -309,7 +308,7 @@ func(wfInst *workflowInstance) LogUserMessage(message string, sourceUri string, 
 }
 
 func(wfInst *workflowInstance) SetVar(name string, value string) SetVarResponse {
-    fmt.Println("setting variable with name", name, "and value", value)
+    log.Debug("setting variable with name", name, "and value", value)
     id := makeId()
     req := setVarRequest{Type: "wf_api_set_var_request", Id: id, Name: name, Value: value}
     call := wfInst.sendAndReceiveRequest(req, id)
@@ -319,7 +318,7 @@ func(wfInst *workflowInstance) SetVar(name string, value string) SetVarResponse 
 }
 
 func(wfInst *workflowInstance) UnsetVar(name string) UnsetVarResponse {
-    fmt.Println("unsetting variable with name", name)
+    log.Debug("unsetting variable with name", name)
     id := makeId()
     req := unsetVarRequest{Type: "wf_api_unset_var_request", Id: id, Name: name}
     call := wfInst.sendAndReceiveRequest(req, id)
@@ -329,7 +328,7 @@ func(wfInst *workflowInstance) UnsetVar(name string) UnsetVarResponse {
 }
 
 func(wfInst *workflowInstance) GetVar(name string, defaultValue string) string {
-    fmt.Println("getting variable with name", name, "and default value", defaultValue)
+    log.Debug("getting variable with name", name, "and default value", defaultValue)
     id := makeId()
     req := getVarRequest{Type: "wf_api_get_var_request", Id: id, Name: name}
     call := wfInst.sendAndReceiveRequest(req, id)
@@ -343,12 +342,12 @@ func(wfInst *workflowInstance) GetVar(name string, defaultValue string) string {
 
 func(wfInst *workflowInstance) GetNumberVar(name string, defaultValue int) int {
     numVar, err := strconv.Atoi(wfInst.GetVar(name, strconv.FormatInt(int64(defaultValue), 10)))
-    fmt.Println("error", err)
+    log.Error(err)
     return numVar
 }
 
 func (wfInst *workflowInstance) Play(sourceUri string, filename string) string {
-    fmt.Println("playing file ", filename, "to", sourceUri)
+    log.Debug("playing file ", filename, "to", sourceUri)
     id := makeId()
     target := makeTargetMap(sourceUri)
     req := playRequest{Type: "wf_api_play_request", Id: id, Target: target, Filename: filename}
@@ -359,7 +358,7 @@ func (wfInst *workflowInstance) Play(sourceUri string, filename string) string {
 }
 
 func (wfInst *workflowInstance) PlayAndWait(sourceUri string, filename string) string{
-    fmt.Println("playing file ", filename, "to", sourceUri)
+    log.Debug("playing file ", filename, "to", sourceUri)
     id := makeId()
     target := makeTargetMap(sourceUri)
     req := playRequest{Type: "wf_api_play_request", Id: id, Target: target, Filename: filename}
@@ -370,7 +369,7 @@ func (wfInst *workflowInstance) PlayAndWait(sourceUri string, filename string) s
 }
 
 func (wfInst *workflowInstance) StopPlayback(sourceUri string, ids []string) StopPlaybackResponse {
-    fmt.Println("stopping playback for", ids)
+    log.Debug("stopping playback for", ids)
     id := makeId()
     target := makeTargetMap(sourceUri)
     req := stopPlaybackRequest{Type: "wf_api_stop_playback_request", Id: id, Target: target, Ids: ids}
@@ -381,7 +380,7 @@ func (wfInst *workflowInstance) StopPlayback(sourceUri string, ids []string) Sto
 }
 
 func (wfInst *workflowInstance) GetUnreadInboxSize(sourceUri string) int {
-    fmt.Println("playing unread inbox messages for", sourceUri)
+    log.Debug("playing unread inbox messages for", sourceUri)
     id := makeId()
     target := makeTargetMap(sourceUri)
     req := inboxCountRequest{Type: "wf_api_inbox_count_request", Id: id, Target: target}
@@ -394,7 +393,7 @@ func (wfInst *workflowInstance) GetUnreadInboxSize(sourceUri string) int {
 }
 
 func (wfInst *workflowInstance) PlayUnreadInboxMessages(sourceUri string) PlayInboxMessagesResponse {
-    fmt.Println("playing unread inbox messages for", sourceUri)
+    log.Debug("playing unread inbox messages for", sourceUri)
     id := makeId()
     target := makeTargetMap(sourceUri)
     req := playInboxMessagesRequest{Type: "wf_api_play_inbox_messages_request", Id: id, Target: target}
@@ -405,7 +404,7 @@ func (wfInst *workflowInstance) PlayUnreadInboxMessages(sourceUri string) PlayIn
 }
 
 func (wfInst *workflowInstance) setHomeChannelState(sourceUri string, enabled bool) SetHomeChannelStateResponse {
-    fmt.Println("setting home channel for", sourceUri, "with state", enabled)
+    log.Debug("setting home channel for", sourceUri, "with state", enabled)
     id := makeId()
     target := makeTargetMap(sourceUri)
     req := setHomeChannelStateRequest{Type: "wf_api_set_home_channel_state_request", Id: id, Target: target, Enabled: enabled}
@@ -424,7 +423,7 @@ func(wfInst *workflowInstance) DisableHomeChannel(sourceUri string) SetHomeChann
 }
 
 func (wfInst *workflowInstance) SetLeds(sourceUri string, effect LedEffect, args LedInfo) SetLedResponse {
-    fmt.Println("setting leds", effect, "with args", args)
+    log.Debug("setting leds", effect, "with args", args)
     id := makeId()
     target := makeTargetMap(sourceUri)
     req := setLedRequest{Type: "wf_api_set_led_request", Id: id, Target: target, Effect: effect, Args: args}
@@ -464,7 +463,7 @@ func (wfInst *workflowInstance) Breathe(sourceUri string, color string, count in
 
 
 func (wfInst *workflowInstance) Vibrate(sourceUri string, pattern []uint64) VibrateResponse {
-    fmt.Println("vibrating with pattern", pattern)
+    log.Debug("vibrating with pattern", pattern)
     id := makeId()
     target := makeTargetMap(sourceUri)
     req := vibrateRequest{Type: "wf_api_vibrate_request", Id: id, Target: target, Pattern: pattern}
@@ -475,7 +474,7 @@ func (wfInst *workflowInstance) Vibrate(sourceUri string, pattern []uint64) Vibr
 }
 
 func (wfInst *workflowInstance) sendNotification(target string, originator string, itype string, name string, text string, pushOptions NotificationOptions) SendNotificationResponse {
-    fmt.Println("sending a notification of type ", itype)
+    log.Debug("sending a notification of type ", itype)
     id := makeId()
     targetMap := makeTargetMap(target)
     req := sendNotificationRequest{Type: "wf_api_notification_request", Id: id, Target: targetMap, Originator: originator, IType: itype, Name: name, Text: text, ITarget: targetMap, PushOptions: pushOptions}
@@ -504,7 +503,7 @@ func (wfInst *workflowInstance) CancelAlert(target string, name string) SendNoti
     return wfInst.sendNotification(target, "", "cancel", name, "", pushOptions)}
 
 func (wfInst *workflowInstance) getDeviceInfo(sourceUri string, query DeviceInfoQuery, refresh bool) GetDeviceInfoResponse {
-    fmt.Println("getting device info with query", query, "refresh", refresh)
+    log.Debug("getting device info with query", query, "refresh", refresh)
     id := makeId()
     target := makeTargetMap(sourceUri)
     req := getDeviceInfoRequest{Type: "wf_api_get_device_info_request", Id: id, Target: target, Query: query, Refresh: refresh}
@@ -516,19 +515,19 @@ func (wfInst *workflowInstance) getDeviceInfo(sourceUri string, query DeviceInfo
 
 func (wfInst *workflowInstance) GetDeviceName(sourceUri string, refresh bool) string {
     resp := wfInst.getDeviceInfo(sourceUri, DEVICE_INFO_QUERY_NAME, refresh)
-    fmt.Println("device info name", resp.Name)
+    log.Debug("device info name", resp.Name)
     return resp.Name
 }
 
 func (wfInst *workflowInstance) GetDeviceId(sourceUri string, refresh bool) string {
     resp := wfInst.getDeviceInfo(sourceUri, DEVICE_INFO_QUERY_ID, refresh)
-    fmt.Println("device info id", resp.Id)
+    log.Debug("device info id", resp.Id)
     return resp.Id
 }
 
 func (wfInst *workflowInstance) GetDeviceLocation(sourceUri string, refresh bool) string {
     resp := wfInst.getDeviceInfo(sourceUri, DEVICE_INFO_QUERY_ADDRESS, refresh)
-    fmt.Println("device info address", resp.Address)
+    log.Debug("device info address", resp.Address)
     return resp.Address
 }
 
@@ -538,7 +537,7 @@ func (wfInst *workflowInstance) GetDeviceAddress(sourceUri string, refresh bool)
 
 func (wfInst *workflowInstance) GetDeviceCoordinates(sourceUri string, refresh bool) []float64 {
     resp := wfInst.getDeviceInfo(sourceUri, DEVICE_INFO_QUERY_LATLONG, refresh)
-    fmt.Println("device info latlong", resp.LatLong)
+    log.Debug("device info latlong", resp.LatLong)
     return resp.LatLong
 }
 
@@ -548,36 +547,36 @@ func (wfInst *workflowInstance) GetDeviceLatLong(sourceUri string, refresh bool)
 
 func (wfInst *workflowInstance) GetDeviceIndoorLocation(sourceUri string, refresh bool) string {
     resp := wfInst.getDeviceInfo(sourceUri, DEVICE_INFO_QUERY_INDOOR_LOCATION, refresh)
-    fmt.Println("device info indoor location", resp.IndoorLocation)
+    log.Debug("device info indoor location", resp.IndoorLocation)
     return resp.IndoorLocation
 }
 
 func (wfInst *workflowInstance) GetDeviceBattery(sourceUri string, refresh bool) uint64 {
     resp := wfInst.getDeviceInfo(sourceUri, DEVICE_INFO_QUERY_BATTERY, refresh)
-    fmt.Println("device info battery", resp.Battery)
+    log.Debug("device info battery", resp.Battery)
     return resp.Battery
 }
 
 func (wfInst *workflowInstance) GetDeviceType(sourceUri string, refresh bool) string {
     resp := wfInst.getDeviceInfo(sourceUri, DEVICE_INFO_QUERY_TYPE, refresh)
-    fmt.Println("device info type", resp.Type)
+    log.Debug("device info type", resp.Type)
     return resp.Type
 }
 
 func (wfInst *workflowInstance) GetDeviceUsername(sourceUri string, refresh bool) string {
     resp := wfInst.getDeviceInfo(sourceUri, DEVICE_INFO_QUERY_USERNAME, refresh)
-    fmt.Println("device info username", resp.Username)
+    log.Debug("device info username", resp.Username)
     return resp.Username
 }
 
 func (wfInst *workflowInstance) GetDeviceLocationEnabled(sourceUri string, refresh bool) bool {
     resp := wfInst.getDeviceInfo(sourceUri, DEVICE_INFO_QUERY_LOCATION_ENABLED, refresh)
-    fmt.Println("device info location enabled", resp.LocationEnabled)
+    log.Debug("device info location enabled", resp.LocationEnabled)
     return resp.LocationEnabled
 }
 
 func (wfInst *workflowInstance) setDeviceInfo(sourceUri string, field SetDeviceInfoType, value string) SetDeviceInfoResponse {
-    fmt.Println("setting device info field", field, "to", value)
+    log.Debug("setting device info field", field, "to", value)
     id := makeId()
     target := makeTargetMap(sourceUri)
     req := setDeviceInfoRequest{Type: "wf_api_set_device_info_request", Id: id, Target: target, Field: field, Value: value}
@@ -606,7 +605,7 @@ func (wfInst *workflowInstance) DisableLocation(sourceUri string) SetDeviceInfoR
 }
 
 func (wfInst *workflowInstance) GetGroupMembers(groupUri string) []string {
-    fmt.Println("retrieving members of ", groupUri)
+    log.Debug("retrieving members of ", groupUri)
     id := makeId()
     req := groupQueryRequest{Type: "wf_api_group_query_request", Id: id, GroupUri: groupUri, Query: "list_members"}
     call := wfInst.sendAndReceiveRequest(req, id)
@@ -630,7 +629,7 @@ func (wfInst *workflowInstance) IsGroupMember(groupNameUri string, potentialMemb
 }
 
 func (wfInst *workflowInstance) SetUserProfile(sourceUri string, username string, force bool) SetUserProfileResponse {
-    fmt.Println("setting user profile to", username, "force", force)
+    log.Debug("setting user profile to", username, "force", force)
     id := makeId()
     target := makeTargetMap(sourceUri)
     req := setUserProfileRequest{Type: "wf_api_set_user_profile_request", Id: id, Target: target, Username: username, Force: force}
@@ -641,7 +640,7 @@ func (wfInst *workflowInstance) SetUserProfile(sourceUri string, username string
 }
 
 func (wfInst *workflowInstance) SetChannel(sourceUri string, channelName string, suppressTTS bool, disableHomeChannel bool) SetChannelResponse {
-    fmt.Println("setting channel", channelName, "suppressTTS", suppressTTS, "disableHomeChannel", disableHomeChannel)
+    log.Debug("setting channel", channelName, "suppressTTS", suppressTTS, "disableHomeChannel", disableHomeChannel)
     id := makeId()
     target := makeTargetMap(sourceUri)
     req := setChannelRequest{Type: "wf_api_set_channel_request", Id: id, Target: target, ChannelName: channelName, SuppressTTS: suppressTTS, DisableHomeChannel: disableHomeChannel}
@@ -652,7 +651,7 @@ func (wfInst *workflowInstance) SetChannel(sourceUri string, channelName string,
 }
 
 func (wfInst *workflowInstance) SetDeviceMode(sourceUri string, mode DeviceMode) SetDeviceModeResponse {
-    fmt.Println("setting device mode", mode)
+    log.Debug("setting device mode", mode)
     id := makeId()
     target := makeTargetMap(sourceUri)
     req := setDeviceModeRequest{Type: "wf_api_set_device_mode_request", Id: id, Target: target, Mode: mode}
@@ -687,7 +686,7 @@ func (wfInst *workflowInstance) SetDeviceMode(sourceUri string, mode DeviceMode)
 // }
 
 func (wfInst *workflowInstance) PlaceCall(targetUri string, uri string) PlaceCallResponse {
-    fmt.Println("placing call to ", targetUri, "with uri", uri)
+    log.Debug("placing call to ", targetUri, "with uri", uri)
     id := makeId()
     target := makeTargetMap(targetUri)
     req := placeCallRequest{Type: "wf_api_call_request", Id: id, Target: target, Uri: uri}
@@ -698,7 +697,7 @@ func (wfInst *workflowInstance) PlaceCall(targetUri string, uri string) PlaceCal
 }
 
 func (wfInst *workflowInstance) AnswerCall(sourceUri string, callId string) AnswerResponse {
-    fmt.Println("calling device with call id", callId)
+    log.Debug("calling device with call id", callId)
     id := makeId()
     target := makeTargetMap(sourceUri)
     req := answerRequest{Type: "wf_api_answer_request", Id: id, Target: target, CallId: callId}
@@ -709,7 +708,7 @@ func (wfInst *workflowInstance) AnswerCall(sourceUri string, callId string) Answ
 }
 
 func (wfInst *workflowInstance) HangupCall(targetUri string, callId string) HangupCallResponse {
-    fmt.Println("hanging up call with", callId, "and target uri", targetUri)
+    log.Debug("hanging up call with", callId, "and target uri", targetUri)
     id := makeId()
     target := makeTargetMap(targetUri)
     req := hangupCallRequest{Type: "wf_api_hangup_request", Id: id, Target: target, CallId: callId}
@@ -720,7 +719,7 @@ func (wfInst *workflowInstance) HangupCall(targetUri string, callId string) Hang
 }
 
 func (wfInst *workflowInstance) Terminate() {
-    fmt.Println("terminating")
+    log.Debug("terminating")
     id := makeId()
     req := terminateRequest{Type: "wf_api_terminate_request", Id: id}
     wfInst.sendRequest(req)
@@ -744,7 +743,7 @@ func (wfInst *workflowInstance) updateAccessToken(refreshToken string, clientId 
     // Create a new POST request with the URL and query parameters
     req, err := http.NewRequest("POST", grantUrl, bytes.NewBuffer(grantPayload))
     if err != nil {
-        log.Fatal(err)
+        log.Error(err)
     }
 
     // Set the headers
@@ -755,21 +754,21 @@ func (wfInst *workflowInstance) updateAccessToken(refreshToken string, clientId 
     client.Timeout = time.Second * 30
     res, err := client.Do(req)
     if err != nil {
-        log.Fatal(err)
+        log.Error(err)
     }
 
     defer res.Body.Close()
 
     // Ensure a 200 status code
     if res.StatusCode != http.StatusOK {
-        log.Fatal("Failed to retrieve access token with status code ", res.StatusCode)
+        log.Error("Failed to retrieve access token with status code ", res.StatusCode)
     }
 
     // Convert the JSON response into a map and return the access token
     var accessTokenRes map[string]interface{}
     error := json.NewDecoder(res.Body).Decode(&accessTokenRes)
     if error != nil {
-        log.Fatal(err)
+        log.Error(err)
     }
     return accessTokenRes["access_token"].(string)
     
@@ -791,20 +790,20 @@ func (wfInst *workflowInstance) TriggerWorkflow(accessToken string, refreshToken
     if(len(actionArgs) > 0) {
         actionArgsString, err := json.Marshal(actionArgs)
         if err != nil {
-            log.Fatal(err)
+            log.Error(err)
         }
         triggerPayload["action_args"] = string(actionArgsString)
     }
     triggerPayloadString, err := json.Marshal(triggerPayload)
     if err != nil {
-        log.Fatal(err)
+        log.Error(err)
     }
     var payload = []byte(string(triggerPayloadString))
 
     // Create a requst to be sent with the triggerUrl and payload bytes
     req, err := http.NewRequest("POST", triggerUrl, bytes.NewBuffer(payload))
     if err != nil {
-        log.Fatal(err)
+        log.Error(err)
     }
 
     // Set the headers
@@ -816,7 +815,7 @@ func (wfInst *workflowInstance) TriggerWorkflow(accessToken string, refreshToken
     client.Timeout = time.Second * 30
     res, err := client.Do(req)
     if err != nil {
-        log.Fatal(err)
+        log.Error(err)
     }
 
     defer res.Body.Close()
@@ -828,7 +827,7 @@ func (wfInst *workflowInstance) TriggerWorkflow(accessToken string, refreshToken
         req.Header.Set("Authorization", "Bearer " + accessToken)
         res, err = client.Do(req)
         if err != nil {
-            log.Fatal(err)
+            log.Error(err)
         }
         defer res.Body.Close()
     }
@@ -836,7 +835,7 @@ func (wfInst *workflowInstance) TriggerWorkflow(accessToken string, refreshToken
     // Convert the respoonse body into bytes, so that it can then be converted into a string that is readable to the client
     bytes, err := ioutil.ReadAll(res.Body)
     if err != nil {
-        log.Fatal(err)
+        log.Error(err)
     }
 
     // Return a map containing the response and the access token
@@ -859,7 +858,7 @@ func (wfInst *workflowInstance) FetchDevice(accessToken string, refreshToken str
     client.Timeout = time.Second * 30
     req, err := http.NewRequest("GET", url, nil)
     if err != nil {
-        log.Fatal(err)
+        log.Error(err)
     }
 
     // Set the headers and perform the request
@@ -867,7 +866,7 @@ func (wfInst *workflowInstance) FetchDevice(accessToken string, refreshToken str
     req.Header.Set("Authorization", "Bearer " + accessToken)
     res, err := client.Do(req)
     if err != nil {
-        log.Fatal(err)
+        log.Error(err)
     }
 
     defer res.Body.Close()
@@ -879,7 +878,7 @@ func (wfInst *workflowInstance) FetchDevice(accessToken string, refreshToken str
         req.Header.Set("Authorization", "Bearer " + accessToken)
         res, err = client.Do(req)
         if err != nil {
-            log.Fatal(err)
+            log.Error(err)
         }
         defer res.Body.Close()
     }
@@ -887,7 +886,7 @@ func (wfInst *workflowInstance) FetchDevice(accessToken string, refreshToken str
     // Convert the response body into types, so that it can then be converted into a string that is readable to the client
     bytes, err := ioutil.ReadAll(res.Body)
     if err != nil {
-        log.Fatal(err)
+        log.Error(err)
     }
 
     // Return a map containing the response and the access token
