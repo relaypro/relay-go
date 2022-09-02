@@ -10,7 +10,7 @@ import (
 var port = ":8080"
 
 func main() {
-    log.SetLevel(log.DebugLevel)
+    log.SetLevel(log.InfoLevel)
 
     sdk.AddWorkflow("helloworld", func(api sdk.RelayApi) {
         var sourceUri string
