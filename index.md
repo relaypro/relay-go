@@ -11,111 +11,202 @@ import "command-line-arguments"
 - [Constants](<#constants>)
 - [Variables](<#variables>)
 - [func AddWorkflow(workflowName string, fn func(api RelayApi))](<#func-addworkflow>)
+- [func DeviceId(id string) string](<#func-deviceid>)
+- [func DeviceName(name string) string](<#func-devicename>)
+- [func GroupId(id string) string](<#func-groupid>)
+- [func GroupMember(group string, device string) string](<#func-groupmember>)
+- [func GroupName(name string) string](<#func-groupname>)
 - [func InitializeRelaySdk(port string)](<#func-initializerelaysdk>)
+- [func IsInteractionUri(uri string) bool](<#func-isinteractionuri>)
+- [func IsRelayUri(uri string) bool](<#func-isrelayuri>)
+- [func ParseDeviceId(uri string) string](<#func-parsedeviceid>)
+- [func ParseDeviceName(uri string) string](<#func-parsedevicename>)
+- [func ParseGroupId(uri string) string](<#func-parsegroupid>)
+- [func ParseGroupName(uri string) string](<#func-parsegroupname>)
+- [func construct(resourceType string, idtype string, idOrName string) string](<#func-construct>)
 - [func convert(arr []interface{}) string](<#func-convert>)
 - [func handleWs(w http.ResponseWriter, r *http.Request)](<#func-handlews>)
 - [func makeId() string](<#func-makeid>)
 - [func makeTargetMap(sourceUri string) map[string][]string](<#func-maketargetmap>)
-- [func startWorkflow(wfInst *workflowInstance)](<#func-startworkflow>)
+- [func parseMessage(msg []byte) (map[string]interface{}, Event, string)](<#func-parsemessage>)
+- [func startWorkflow(wfInst *workflowInstance, workflowName string)](<#func-startworkflow>)
+- [type AnswerResponse](<#type-answerresponse>)
 - [type ButtonEvent](<#type-buttonevent>)
 - [type Call](<#type-call>)
 - [type ClearTimerResponse](<#type-cleartimerresponse>)
+- [type CreateIncidentResponse](<#type-createincidentresponse>)
 - [type DeviceInfoQuery](<#type-deviceinfoquery>)
 - [type DeviceMode](<#type-devicemode>)
 - [type DevicePowerOffResponse](<#type-devicepoweroffresponse>)
 - [type EndInteractionResponse](<#type-endinteractionresponse>)
 - [type Event](<#type-event>)
-  - [func parseMessage(msg []byte) (map[string]interface{}, Event, string)](<#func-parsemessage>)
 - [type EventWrapper](<#type-eventwrapper>)
 - [type GetDeviceInfoResponse](<#type-getdeviceinforesponse>)
+- [type GetVarResponse](<#type-getvarresponse>)
+- [type GroupQueryResponse](<#type-groupqueryresponse>)
+- [type HangupCallResponse](<#type-hangupcallresponse>)
+- [type InboxCountResponse](<#type-inboxcountresponse>)
 - [type InteractionLifecycleEvent](<#type-interactionlifecycleevent>)
+- [type Language](<#type-language>)
 - [type LedColors](<#type-ledcolors>)
+  - [func setLedColors(index string, color string) LedColors](<#func-setledcolors>)
 - [type LedEffect](<#type-ledeffect>)
 - [type LedInfo](<#type-ledinfo>)
+- [type ListenResponse](<#type-listenresponse>)
+- [type LogAnalyticsEventResponse](<#type-loganalyticseventresponse>)
+- [type NotificationOptions](<#type-notificationoptions>)
+- [type NotificationPriority](<#type-notificationpriority>)
+- [type NotificationSound](<#type-notificationsound>)
+- [type PlaceCallResponse](<#type-placecallresponse>)
+- [type PlayInboxMessagesResponse](<#type-playinboxmessagesresponse>)
 - [type PlayResponse](<#type-playresponse>)
 - [type PromptEvent](<#type-promptevent>)
 - [type RelayApi](<#type-relayapi>)
+- [type ResolveIncidentResponse](<#type-resolveincidentresponse>)
 - [type SayResponse](<#type-sayresponse>)
+- [type SendNotificationResponse](<#type-sendnotificationresponse>)
 - [type SetChannelResponse](<#type-setchannelresponse>)
 - [type SetDeviceInfoResponse](<#type-setdeviceinforesponse>)
 - [type SetDeviceInfoType](<#type-setdeviceinfotype>)
 - [type SetDeviceModeResponse](<#type-setdevicemoderesponse>)
+- [type SetHomeChannelStateResponse](<#type-sethomechannelstateresponse>)
 - [type SetLedResponse](<#type-setledresponse>)
 - [type SetTimerResponse](<#type-settimerresponse>)
 - [type SetUserProfileResponse](<#type-setuserprofileresponse>)
+- [type SetVarResponse](<#type-setvarresponse>)
+- [type SpeechEvent](<#type-speechevent>)
 - [type StartEvent](<#type-startevent>)
 - [type StartInteractionResponse](<#type-startinteractionresponse>)
+- [type StartTimerResponse](<#type-starttimerresponse>)
 - [type StopEvent](<#type-stopevent>)
 - [type StopPlaybackResponse](<#type-stopplaybackresponse>)
+- [type StopTimerResponse](<#type-stoptimerresponse>)
 - [type TimeoutType](<#type-timeouttype>)
+- [type TimerEvent](<#type-timerevent>)
 - [type TimerFiredEvent](<#type-timerfiredevent>)
 - [type TimerType](<#type-timertype>)
+- [type TranslateResponse](<#type-translateresponse>)
 - [type Trigger](<#type-trigger>)
 - [type TriggerArgs](<#type-triggerargs>)
 - [type TriggerType](<#type-triggertype>)
+- [type UnsetVarResponse](<#type-unsetvarresponse>)
 - [type VibrateResponse](<#type-vibrateresponse>)
+- [type answerRequest](<#type-answerrequest>)
 - [type clearTimerRequest](<#type-cleartimerrequest>)
+- [type createIncidentRequest](<#type-createincidentrequest>)
 - [type devicePowerOffRequest](<#type-devicepoweroffrequest>)
 - [type endInteractionRequest](<#type-endinteractionrequest>)
 - [type getDeviceInfoRequest](<#type-getdeviceinforequest>)
+- [type getVarRequest](<#type-getvarrequest>)
+- [type groupQueryRequest](<#type-groupqueryrequest>)
+- [type hangupCallRequest](<#type-hangupcallrequest>)
+- [type inboxCountRequest](<#type-inboxcountrequest>)
+- [type listenRequest](<#type-listenrequest>)
+- [type logAnalyticsEventRequest](<#type-loganalyticseventrequest>)
+- [type placeCallRequest](<#type-placecallrequest>)
+- [type playInboxMessagesRequest](<#type-playinboxmessagesrequest>)
 - [type playRequest](<#type-playrequest>)
+- [type resolveIncidentRequest](<#type-resolveincidentrequest>)
 - [type sayRequest](<#type-sayrequest>)
+- [type sendNotificationRequest](<#type-sendnotificationrequest>)
 - [type setChannelRequest](<#type-setchannelrequest>)
 - [type setDeviceInfoRequest](<#type-setdeviceinforequest>)
 - [type setDeviceModeRequest](<#type-setdevicemoderequest>)
+- [type setHomeChannelStateRequest](<#type-sethomechannelstaterequest>)
 - [type setLedRequest](<#type-setledrequest>)
 - [type setTimerRequest](<#type-settimerrequest>)
 - [type setUserProfileRequest](<#type-setuserprofilerequest>)
+- [type setVarRequest](<#type-setvarrequest>)
 - [type startInteractionRequest](<#type-startinteractionrequest>)
+- [type startTimerRequest](<#type-starttimerrequest>)
 - [type stopPlaybackRequest](<#type-stopplaybackrequest>)
+- [type stopTimerRequest](<#type-stoptimerrequest>)
 - [type terminateRequest](<#type-terminaterequest>)
+- [type translateRequest](<#type-translaterequest>)
+- [type unsetVarRequest](<#type-unsetvarrequest>)
 - [type vibrateRequest](<#type-vibraterequest>)
 - [type workflowInstance](<#type-workflowinstance>)
-  - [func (wfInst *workflowInstance) Breathe(sourceUri string, color string) SetLedResponse](<#func-workflowinstance-breathe>)
+  - [func (wfInst *workflowInstance) Alert(target string, originator string, name string, text string, pushOptions NotificationOptions) SendNotificationResponse](<#func-workflowinstance-alert>)
+  - [func (wfInst *workflowInstance) AnswerCall(sourceUri string, callId string) AnswerResponse](<#func-workflowinstance-answercall>)
+  - [func (wfInst *workflowInstance) Breathe(sourceUri string, color string, count int64) SetLedResponse](<#func-workflowinstance-breathe>)
+  - [func (wfInst *workflowInstance) Broadcast(target string, originator string, name string, text string, pushOptions NotificationOptions) SendNotificationResponse](<#func-workflowinstance-broadcast>)
+  - [func (wfInst *workflowInstance) CancelAlert(target string, name string) SendNotificationResponse](<#func-workflowinstance-cancelalert>)
+  - [func (wfInst *workflowInstance) CancelBroadcast(target string, name string) SendNotificationResponse](<#func-workflowinstance-cancelbroadcast>)
   - [func (wfInst *workflowInstance) ClearTimer(name string) ClearTimerResponse](<#func-workflowinstance-cleartimer>)
+  - [func (wfInst *workflowInstance) CreateIncident(originator string, itype string) CreateIncidentResponse](<#func-workflowinstance-createincident>)
+  - [func (wfInst *workflowInstance) DisableHomeChannel(sourceUri string) SetHomeChannelStateResponse](<#func-workflowinstance-disablehomechannel>)
   - [func (wfInst *workflowInstance) DisableLocation(sourceUri string) SetDeviceInfoResponse](<#func-workflowinstance-disablelocation>)
+  - [func (wfInst *workflowInstance) EnableHomeChannel(sourceUri string) SetHomeChannelStateResponse](<#func-workflowinstance-enablehomechannel>)
   - [func (wfInst *workflowInstance) EnableLocation(sourceUri string) SetDeviceInfoResponse](<#func-workflowinstance-enablelocation>)
   - [func (wfInst *workflowInstance) EndInteraction(sourceUri string, name string) EndInteractionResponse](<#func-workflowinstance-endinteraction>)
-  - [func (wfInst *workflowInstance) Flash(sourceUri string, color string) SetLedResponse](<#func-workflowinstance-flash>)
+  - [func (wfInst *workflowInstance) FetchDevice(accessToken string, refreshToken string, clientId string, subscriberId string, userId string) map[string]string](<#func-workflowinstance-fetchdevice>)
+  - [func (wfInst *workflowInstance) Flash(sourceUri string, color string, count int64) SetLedResponse](<#func-workflowinstance-flash>)
   - [func (wfInst *workflowInstance) GetDeviceAddress(sourceUri string, refresh bool) string](<#func-workflowinstance-getdeviceaddress>)
   - [func (wfInst *workflowInstance) GetDeviceBattery(sourceUri string, refresh bool) uint64](<#func-workflowinstance-getdevicebattery>)
+  - [func (wfInst *workflowInstance) GetDeviceCoordinates(sourceUri string, refresh bool) []float64](<#func-workflowinstance-getdevicecoordinates>)
   - [func (wfInst *workflowInstance) GetDeviceId(sourceUri string, refresh bool) string](<#func-workflowinstance-getdeviceid>)
   - [func (wfInst *workflowInstance) GetDeviceIndoorLocation(sourceUri string, refresh bool) string](<#func-workflowinstance-getdeviceindoorlocation>)
   - [func (wfInst *workflowInstance) GetDeviceLatLong(sourceUri string, refresh bool) []float64](<#func-workflowinstance-getdevicelatlong>)
+  - [func (wfInst *workflowInstance) GetDeviceLocation(sourceUri string, refresh bool) string](<#func-workflowinstance-getdevicelocation>)
   - [func (wfInst *workflowInstance) GetDeviceLocationEnabled(sourceUri string, refresh bool) bool](<#func-workflowinstance-getdevicelocationenabled>)
   - [func (wfInst *workflowInstance) GetDeviceName(sourceUri string, refresh bool) string](<#func-workflowinstance-getdevicename>)
   - [func (wfInst *workflowInstance) GetDeviceType(sourceUri string, refresh bool) string](<#func-workflowinstance-getdevicetype>)
   - [func (wfInst *workflowInstance) GetDeviceUsername(sourceUri string, refresh bool) string](<#func-workflowinstance-getdeviceusername>)
+  - [func (wfInst *workflowInstance) GetGroupMembers(groupUri string) []string](<#func-workflowinstance-getgroupmembers>)
+  - [func (wfInst *workflowInstance) GetNumberVar(name string, defaultValue int) int](<#func-workflowinstance-getnumbervar>)
+  - [func (wfInst *workflowInstance) GetUnreadInboxSize(sourceUri string) int](<#func-workflowinstance-getunreadinboxsize>)
+  - [func (wfInst *workflowInstance) GetVar(name string, defaultValue string) string](<#func-workflowinstance-getvar>)
+  - [func (wfInst *workflowInstance) HangupCall(targetUri string, callId string) HangupCallResponse](<#func-workflowinstance-hangupcall>)
+  - [func (wfInst *workflowInstance) IsGroupMember(groupNameUri string, potentialMemberUri string) bool](<#func-workflowinstance-isgroupmember>)
+  - [func (wfInst *workflowInstance) Listen(sourceUri string, phrases []string, transcribe bool, alt_lang string, timeout int) string](<#func-workflowinstance-listen>)
+  - [func (wfInst *workflowInstance) LogMessage(message string, category string) LogAnalyticsEventResponse](<#func-workflowinstance-logmessage>)
+  - [func (wfInst *workflowInstance) LogUserMessage(message string, sourceUri string, category string) LogAnalyticsEventResponse](<#func-workflowinstance-logusermessage>)
   - [func (wfInst *workflowInstance) OnButton(fn func(buttonEvent ButtonEvent))](<#func-workflowinstance-onbutton>)
   - [func (wfInst *workflowInstance) OnInteractionLifecycle(fn func(interactionLifecycleEvent InteractionLifecycleEvent))](<#func-workflowinstance-oninteractionlifecycle>)
   - [func (wfInst *workflowInstance) OnPrompt(fn func(promptEvent PromptEvent))](<#func-workflowinstance-onprompt>)
+  - [func (wfInst *workflowInstance) OnSpeech(fn func(speechEvent SpeechEvent))](<#func-workflowinstance-onspeech>)
   - [func (wfInst *workflowInstance) OnStart(fn func(startEvent StartEvent))](<#func-workflowinstance-onstart>)
+  - [func (wfInst *workflowInstance) OnTimer(fn func(timerEvent TimerEvent))](<#func-workflowinstance-ontimer>)
   - [func (wfInst *workflowInstance) OnTimerFired(fn func(timerFiredEvent TimerFiredEvent))](<#func-workflowinstance-ontimerfired>)
+  - [func (wfInst *workflowInstance) PlaceCall(targetUri string, uri string) PlaceCallResponse](<#func-workflowinstance-placecall>)
   - [func (wfInst *workflowInstance) Play(sourceUri string, filename string) string](<#func-workflowinstance-play>)
-  - [func (wfInst *workflowInstance) PowerDownDevice(sourceUri string) DevicePowerOffResponse](<#func-workflowinstance-powerdowndevice>)
+  - [func (wfInst *workflowInstance) PlayAndWait(sourceUri string, filename string) string](<#func-workflowinstance-playandwait>)
+  - [func (wfInst *workflowInstance) PlayUnreadInboxMessages(sourceUri string) PlayInboxMessagesResponse](<#func-workflowinstance-playunreadinboxmessages>)
   - [func (wfInst *workflowInstance) Rainbow(sourceUri string, rotations int64) SetLedResponse](<#func-workflowinstance-rainbow>)
-  - [func (wfInst *workflowInstance) RestartDevice(sourceUri string) DevicePowerOffResponse](<#func-workflowinstance-restartdevice>)
-  - [func (wfInst *workflowInstance) Rotate(sourceUri string, color string) SetLedResponse](<#func-workflowinstance-rotate>)
-  - [func (wfInst *workflowInstance) Say(sourceUri string, text string, lang string) SayResponse](<#func-workflowinstance-say>)
+  - [func (wfInst *workflowInstance) ResolveIncident(incidentId string, reason string) ResolveIncidentResponse](<#func-workflowinstance-resolveincident>)
+  - [func (wfInst *workflowInstance) Rotate(sourceUri string, color string, rotations int64) SetLedResponse](<#func-workflowinstance-rotate>)
+  - [func (wfInst *workflowInstance) Say(sourceUri string, text string, lang Language) SayResponse](<#func-workflowinstance-say>)
+  - [func (wfInst *workflowInstance) SayAndWait(sourceUri string, text string, lang Language) SayResponse](<#func-workflowinstance-sayandwait>)
   - [func (wfInst *workflowInstance) SetChannel(sourceUri string, channelName string, suppressTTS bool, disableHomeChannel bool) SetChannelResponse](<#func-workflowinstance-setchannel>)
   - [func (wfInst *workflowInstance) SetDeviceMode(sourceUri string, mode DeviceMode) SetDeviceModeResponse](<#func-workflowinstance-setdevicemode>)
   - [func (wfInst *workflowInstance) SetDeviceName(sourceUri string, name string) SetDeviceInfoResponse](<#func-workflowinstance-setdevicename>)
   - [func (wfInst *workflowInstance) SetLeds(sourceUri string, effect LedEffect, args LedInfo) SetLedResponse](<#func-workflowinstance-setleds>)
   - [func (wfInst *workflowInstance) SetTimer(timerType TimerType, name string, timeout uint64, timeoutType TimeoutType) SetTimerResponse](<#func-workflowinstance-settimer>)
   - [func (wfInst *workflowInstance) SetUserProfile(sourceUri string, username string, force bool) SetUserProfileResponse](<#func-workflowinstance-setuserprofile>)
+  - [func (wfInst *workflowInstance) SetVar(name string, value string) SetVarResponse](<#func-workflowinstance-setvar>)
   - [func (wfInst *workflowInstance) StartInteraction(sourceUri string, name string) StartInteractionResponse](<#func-workflowinstance-startinteraction>)
+  - [func (wfInst *workflowInstance) StartTimer(timeout int) StartTimerResponse](<#func-workflowinstance-starttimer>)
   - [func (wfInst *workflowInstance) StopPlayback(sourceUri string, ids []string) StopPlaybackResponse](<#func-workflowinstance-stopplayback>)
+  - [func (wfInst *workflowInstance) StopTimer() StopTimerResponse](<#func-workflowinstance-stoptimer>)
   - [func (wfInst *workflowInstance) SwitchAllLedOff(sourceUri string) SetLedResponse](<#func-workflowinstance-switchallledoff>)
   - [func (wfInst *workflowInstance) SwitchAllLedOn(sourceUri string, color string) SetLedResponse](<#func-workflowinstance-switchallledon>)
+  - [func (wfInst *workflowInstance) SwitchLedOn(sourceUri string, led int, color string) SetLedResponse](<#func-workflowinstance-switchledon>)
   - [func (wfInst *workflowInstance) Terminate()](<#func-workflowinstance-terminate>)
+  - [func (wfInst *workflowInstance) Translate(sourceUri string, text string, from Language, to Language) string](<#func-workflowinstance-translate>)
+  - [func (wfInst *workflowInstance) TriggerWorkflow(accessToken string, refreshToken string, clientId string, workflowId string, subscriberId string, userId string, targets []string, actionArgs map[string]string) map[string]string](<#func-workflowinstance-triggerworkflow>)
+  - [func (wfInst *workflowInstance) UnsetVar(name string) UnsetVarResponse](<#func-workflowinstance-unsetvar>)
   - [func (wfInst *workflowInstance) Vibrate(sourceUri string, pattern []uint64) VibrateResponse](<#func-workflowinstance-vibrate>)
   - [func (wfInst *workflowInstance) getDeviceInfo(sourceUri string, query DeviceInfoQuery, refresh bool) GetDeviceInfoResponse](<#func-workflowinstance-getdeviceinfo>)
   - [func (wfInst *workflowInstance) handleEvent(eventWrapper EventWrapper) error](<#func-workflowinstance-handleevent>)
   - [func (wfInst *workflowInstance) handleResponse(eventWrapper EventWrapper) error](<#func-workflowinstance-handleresponse>)
   - [func (wfInst *workflowInstance) receiveWs()](<#func-workflowinstance-receivews>)
   - [func (wfInst *workflowInstance) sendAndReceiveRequest(msg interface{}, id string) *Call](<#func-workflowinstance-sendandreceiverequest>)
+  - [func (wfInst *workflowInstance) sendAndReceiveRequestWait(msg interface{}, id string) *Call](<#func-workflowinstance-sendandreceiverequestwait>)
+  - [func (wfInst *workflowInstance) sendNotification(target string, originator string, itype string, name string, text string, pushOptions NotificationOptions) SendNotificationResponse](<#func-workflowinstance-sendnotification>)
   - [func (wfInst *workflowInstance) sendRequest(msg interface{})](<#func-workflowinstance-sendrequest>)
   - [func (wfInst *workflowInstance) setDeviceInfo(sourceUri string, field SetDeviceInfoType, value string) SetDeviceInfoResponse](<#func-workflowinstance-setdeviceinfo>)
+  - [func (wfInst *workflowInstance) setHomeChannelState(sourceUri string, enabled bool) SetHomeChannelStateResponse](<#func-workflowinstance-sethomechannelstate>)
+  - [func (wfInst *workflowInstance) updateAccessToken(refreshToken string, clientId string) string](<#func-workflowinstance-updateaccesstoken>)
 
 
 ## Constants
@@ -128,6 +219,7 @@ const (
     INTERACTION_LIFECYCLE       = "interaction_lifecycle"
     BUTTON                      = "button"
     TIMER                       = "timer"
+    SPEECH                      = "speech"
     NOTIFICATION                = "notification"
     INCIDENT                    = "incident"
     PROMPT_START                = "prompt_start"
@@ -156,6 +248,46 @@ const (
 
 ```go
 const (
+    ENGLISH    = `en-US`
+    GERMAN     = `de-DE`
+    SPANISH    = `es-ES`
+    FRENCH     = `fr-FR`
+    ITALIAN    = `it-IT`
+    RUSSIAN    = `ru-RU`
+    SWEDISH    = `sv-SE`
+    TURKISH    = `tr-TR`
+    HINDI      = `hi-IN`
+    ICELANDIC  = `is-IS`
+    JAPANESE   = `ja-JP`
+    KOREAN     = `ko-KR`
+    POLISH     = `pl-PK`
+    PORTUGUESE = `pt-BR`
+    NORWEGIAN  = `nb-NO`
+    DUTCH      = `nl-NL`
+    CHINESE    = `zh`
+    ARABIC     = `ar`
+    VIETNAMESE = `vi-VN`
+    INDONESIAN = `id-ID`
+    FILIPINO   = `fil-PH`
+    DANISH     = `da-DK`
+    CZECH      = `cs-CZ`
+    GUJURATI   = `gu-IN`
+    HUNGARIAN  = `hu-HU`
+    TAMIL      = `ta-IN`
+    UKRANIAN   = `uk-UA`
+    SLOVAK     = `sk-SK`
+    ROMANIAN   = `ro-RO`
+    PUNJABI    = `pa-IN`
+    MALAY      = `ms-MY`
+    BENGALI    = `bn-IN`
+    GREEK      = `el-GR`
+    KANNADA    = `kn-IN`
+    FINNISH    = `fi-FI`
+)
+```
+
+```go
+const (
     TIMEOUT_TIMER_TYPE  = "timeout"
     INTERVAL_TIMER_TYPE = "interval"
 )
@@ -167,17 +299,6 @@ const (
     SECS_TIMEOUT_TYPE = "secs"
     MINS_TIMEOUT_TYPE = "mins"
     HRS_TIMEOUT_TYPE  = "hrs"
-)
-```
-
-```go
-const (
-    LED_RAINBOW = "rainbow"
-    LED_ROTATE  = "rotate"
-    LED_FLASH   = "flash"
-    LED_BREATHE = "breathe"
-    LED_STATIC  = "static"
-    LED_OFF     = "off"
 )
 ```
 
@@ -197,8 +318,33 @@ const (
 
 ```go
 const (
-    SET_DEVICE_INFO_LABEL = "label"
-    //     SET_DEVICE_INFO_CHANNEL = "channel"
+    NORMAL   = `normal`
+    HIGH     = `high`
+    CRITICAL = `critical`
+)
+```
+
+```go
+const (
+    DEFAULT = `default`
+    SOS     = `sos`
+)
+```
+
+```go
+const (
+    LED_RAINBOW = "rainbow"
+    LED_ROTATE  = "rotate"
+    LED_FLASH   = "flash"
+    LED_BREATHE = "breathe"
+    LED_STATIC  = "static"
+    LED_OFF     = "off"
+)
+```
+
+```go
+const (
+    SET_DEVICE_INFO_LABEL            = "label"
     SET_DEVICE_INFO_LOCATION_ENABLED = "location_enabled"
 )
 ```
@@ -214,6 +360,46 @@ const (
 ## Variables
 
 ```go
+var DEVICE string = "device"
+```
+
+```go
+var DEVICE_PATTERN string = "?device="
+```
+
+```go
+var GROUP string = "group"
+```
+
+```go
+var ID string = "id"
+```
+
+```go
+var INTERACTION_URI_ID string = "urn:relay-resource:id:interaction"
+```
+
+```go
+var INTERACTION_URI_NAME string = "urn:relay-resource:name:interaction"
+```
+
+```go
+var NAME string = "name"
+```
+
+```go
+var ROOT string = "relay-resource"
+```
+
+```go
+var SCHEME string = "urn"
+```
+
+```go
+var auth_hostname string = "auth.relaygo.com"
+```
+
+```go
 var eventRegex = regexp.MustCompile(`^wf_api_(.+)_event$`)
 ```
 
@@ -222,10 +408,24 @@ var responseRegex = regexp.MustCompile(`^wf_api_(.+)_response$`)
 ```
 
 ```go
+var serverHostname string = "all-main-pro-ibot.relaysvr.com"
+```
+
+boolean variable used to keep track of whether or not streaming is complete on the device.  Mainly used for the functions SayAndWait and PlayAndWait, which require streaming to complete on the device before continuing through the workflow.
+
+```go
+var streamingComplete bool
+```
+
+```go
 var upgrader = websocket.Upgrader{
     ReadBufferSize:  1024,
     WriteBufferSize: 1024,
 }
+```
+
+```go
+var version string = "relay-sdk-go/2.0.0"
 ```
 
 ```go
@@ -238,6 +438,36 @@ var workflowMap map[string]func(api RelayApi) = make(map[string]func(api RelayAp
 func AddWorkflow(workflowName string, fn func(api RelayApi))
 ```
 
+## func DeviceId
+
+```go
+func DeviceId(id string) string
+```
+
+## func DeviceName
+
+```go
+func DeviceName(name string) string
+```
+
+## func GroupId
+
+```go
+func GroupId(id string) string
+```
+
+## func GroupMember
+
+```go
+func GroupMember(group string, device string) string
+```
+
+## func GroupName
+
+```go
+func GroupName(name string) string
+```
+
 ## func InitializeRelaySdk
 
 ```go
@@ -245,6 +475,48 @@ func InitializeRelaySdk(port string)
 ```
 
 this should return an interface that has a workflow\(\) function that they can pass their workflow implementations to
+
+## func IsInteractionUri
+
+```go
+func IsInteractionUri(uri string) bool
+```
+
+## func IsRelayUri
+
+```go
+func IsRelayUri(uri string) bool
+```
+
+## func ParseDeviceId
+
+```go
+func ParseDeviceId(uri string) string
+```
+
+## func ParseDeviceName
+
+```go
+func ParseDeviceName(uri string) string
+```
+
+## func ParseGroupId
+
+```go
+func ParseGroupId(uri string) string
+```
+
+## func ParseGroupName
+
+```go
+func ParseGroupName(uri string) string
+```
+
+## func construct
+
+```go
+func construct(resourceType string, idtype string, idOrName string) string
+```
 
 ## func convert
 
@@ -270,10 +542,25 @@ func makeId() string
 func makeTargetMap(sourceUri string) map[string][]string
 ```
 
+## func parseMessage
+
+```go
+func parseMessage(msg []byte) (map[string]interface{}, Event, string)
+```
+
 ## func startWorkflow
 
 ```go
-func startWorkflow(wfInst *workflowInstance)
+func startWorkflow(wfInst *workflowInstance, workflowName string)
+```
+
+## type AnswerResponse
+
+```go
+type AnswerResponse struct {
+    _id   string `json:"_id"`
+    _type string `json:"_type"`
+}
 ```
 
 ## type ButtonEvent
@@ -307,6 +594,16 @@ type Call struct {
 type ClearTimerResponse struct {
     _type string `json:"_type"`
     _id   string `json:"_id"`
+}
+```
+
+## type CreateIncidentResponse
+
+```go
+type CreateIncidentResponse struct {
+    _id        string `json:"_id"`
+    _type      string `json:"_type"`
+    IncidentId string `json:"incident_id"`
 }
 ```
 
@@ -347,12 +644,6 @@ type EndInteractionResponse struct {
 type Event string
 ```
 
-### func parseMessage
-
-```go
-func parseMessage(msg []byte) (map[string]interface{}, Event, string)
-```
-
 ## type EventWrapper
 
 ```go
@@ -381,6 +672,46 @@ type GetDeviceInfoResponse struct {
 }
 ```
 
+## type GetVarResponse
+
+```go
+type GetVarResponse struct {
+    _id   string `json:"_id"`
+    _type string `json:"_type"`
+    Value string `json:"value"`
+}
+```
+
+## type GroupQueryResponse
+
+```go
+type GroupQueryResponse struct {
+    _id        string   `json:"_id"`
+    _type      string   `json:"_type"`
+    MemberUris []string `json:"member_uris"`
+    IsMember   bool     `json:"is_member"`
+}
+```
+
+## type HangupCallResponse
+
+```go
+type HangupCallResponse struct {
+    _id   string `json:"_id"`
+    _type string `json:"_type"`
+}
+```
+
+## type InboxCountResponse
+
+```go
+type InboxCountResponse struct {
+    _id   string `json:"_id"`
+    _type string `json:"_type"`
+    Count string `json:"count"`
+}
+```
+
 ## type InteractionLifecycleEvent
 
 ```go
@@ -389,6 +720,12 @@ type InteractionLifecycleEvent struct {
     SourceUri     string `json:"source_uri"`
     LifecycleType string `json:"type"` // started, resumed
 }
+```
+
+## type Language
+
+```go
+type Language string
 ```
 
 ## type LedColors
@@ -415,6 +752,12 @@ type LedColors struct {
 }
 ```
 
+### func setLedColors
+
+```go
+func setLedColors(index string, color string) LedColors
+```
+
 ## type LedEffect
 
 ```go
@@ -431,6 +774,66 @@ type LedInfo struct {
     RepeatDelay    uint64    `json:"repeat_delay,omitempty"`
     PatternRepeats uint64    `json:"pattern_repeats,omitempty"`
     Colors         LedColors `json:"colors,omitempty"`
+}
+```
+
+## type ListenResponse
+
+```go
+type ListenResponse struct {
+    _id   string `json:"_id"`
+    _type string `json:"_type"`
+}
+```
+
+## type LogAnalyticsEventResponse
+
+```go
+type LogAnalyticsEventResponse struct {
+    _id   string `json:"_id"`
+    _type string `json:"_type"`
+}
+```
+
+## type NotificationOptions
+
+```go
+type NotificationOptions struct {
+    priority NotificationPriority
+    title    string
+    body     string
+    sound    NotificationSound
+}
+```
+
+## type NotificationPriority
+
+```go
+type NotificationPriority string
+```
+
+## type NotificationSound
+
+```go
+type NotificationSound string
+```
+
+## type PlaceCallResponse
+
+```go
+type PlaceCallResponse struct {
+    _id     string `json:"_id"`
+    _type   string `json:"_type"`
+    call_id string `json:"call_id"`
+}
+```
+
+## type PlayInboxMessagesResponse
+
+```go
+type PlayInboxMessagesResponse struct {
+    _id   string `json:"_id"`
+    _type string `json:"_type"`
 }
 ```
 
@@ -464,34 +867,60 @@ type RelayApi interface {
     OnPrompt(func(promptEvent PromptEvent)) // seperate into start and stop?
     OnTimerFired(func(timerFiredEvent TimerFiredEvent))
     OnButton(func(buttonEvent ButtonEvent))
+    OnTimer(fn func(timerEvent TimerEvent))
+    OnSpeech(fn func(speechEvent SpeechEvent))
 
     // api
     StartInteraction(sourceUri string, name string) StartInteractionResponse
     EndInteraction(sourceUri string, name string) EndInteractionResponse
     SetTimer(timerType TimerType, name string, timeout uint64, timeoutType TimeoutType) SetTimerResponse
     ClearTimer(name string) ClearTimerResponse
-    Say(sourceUri string, text string, lang string) SayResponse
+    StartTimer(timeout int) StartTimerResponse // need to test timers
+    CreateIncident(originator string, itype string) CreateIncidentResponse
+    ResolveIncident(incidentId string, reason string) ResolveIncidentResponse
+    Say(sourceUri string, text string, lang Language) SayResponse
+    Alert(target string, originator string, name string, text string, pushOptions NotificationOptions) SendNotificationResponse
+    SayAndWait(sourceUri string, text string, lang Language) SayResponse
+    Listen(sourceUri string, phrases []string, transcribe bool, alt_lang string, timeout int) string
+    Translate(sourceUri string, text string, from Language, to Language) string
+    LogMessage(message string, category string) LogAnalyticsEventResponse
+    LogUserMessage(message string, sourceUri string, category string) LogAnalyticsEventResponse
+    SetVar(name string, value string) SetVarResponse
+    UnsetVar(name string) UnsetVarResponse
+    GetVar(name string, defaultValue string) string
+    GetNumberVar(name string, defaultValue int) int
     Play(sourceUri string, filename string) string
+    PlayAndWait(sourceUri string, filename string) string
     StopPlayback(sourceUri string, ids []string) StopPlaybackResponse
+    GetUnreadInboxSize(sourceUri string) int
+    PlayUnreadInboxMessages(sourceUri string) PlayInboxMessagesResponse
+    SwitchLedOn(sourceUri string, ledIndex int, color string) SetLedResponse
     SwitchAllLedOn(sourceUri string, color string) SetLedResponse
     SwitchAllLedOff(sourceUri string) SetLedResponse
     Rainbow(sourceUri string, rotations int64) SetLedResponse
-    Rotate(sourceUri string, color string) SetLedResponse
-    Flash(sourceUri string, color string) SetLedResponse
-    Breathe(sourceUri string, color string) SetLedResponse
+    Rotate(sourceUri string, color string, rotations int64) SetLedResponse
+    Flash(sourceUri string, color string, count int64) SetLedResponse
+    Breathe(sourceUri string, color string, count int64) SetLedResponse
     SetLeds(sourceUri string, effect LedEffect, args LedInfo) SetLedResponse
     Vibrate(sourceUri string, pattern []uint64) VibrateResponse
+    Broadcast(target string, originator string, name string, text string, pushOptions NotificationOptions) SendNotificationResponse
     GetDeviceName(sourceUri string, refresh bool) string
     GetDeviceId(sourceUri string, refresh bool) string
     GetDeviceAddress(sourceUri string, refresh bool) string
+    GetDeviceLocation(sourceUri string, refresh bool) string
     GetDeviceLatLong(sourceUri string, refresh bool) []float64
+    IsGroupMember(groupNameUri string, potentialMemberUri string) bool
+    GetGroupMembers(groupUri string) []string
+    GetDeviceCoordinates(sourceUri string, refresh bool) []float64
     GetDeviceIndoorLocation(sourceUri string, refresh bool) string
     GetDeviceBattery(sourceUri string, refresh bool) uint64
     GetDeviceType(sourceUri string, refresh bool) string
     GetDeviceUsername(sourceUri string, refresh bool) string
     GetDeviceLocationEnabled(sourceUri string, refresh bool) bool
     SetDeviceName(sourceUri string, name string) SetDeviceInfoResponse
-    //     SetDeviceChannel(sourceUri string, channel string) SetDeviceInfoResponse
+    EnableHomeChannel(sourceUri string) SetHomeChannelStateResponse
+    DisableHomeChannel(sourceUri string) SetHomeChannelStateResponse
+    // SetDeviceChannel(sourceUri string, channel string) SetDeviceInfoResponse
     EnableLocation(sourceUri string) SetDeviceInfoResponse
     DisableLocation(sourceUri string) SetDeviceInfoResponse
     SetUserProfile(sourceUri string, username string, force bool) SetUserProfileResponse
@@ -499,9 +928,23 @@ type RelayApi interface {
 
     SetDeviceMode(sourceUri string, mode DeviceMode) SetDeviceModeResponse
 
-    RestartDevice(sourceUri string) DevicePowerOffResponse
-    PowerDownDevice(sourceUri string) DevicePowerOffResponse
+    // RestartDevice(sourceUri string) DevicePowerOffResponse
+    // PowerDownDevice(sourceUri string) DevicePowerOffResponse
+    PlaceCall(targetUri string, uri string) PlaceCallResponse
+    AnswerCall(sourceUri string, callId string) AnswerResponse
+    HangupCall(targetUri string, callId string) HangupCallResponse
     Terminate()
+    FetchDevice(accessToken string, refreshToken string, clientId string, subscriberId string, userId string) map[string]string
+    TriggerWorkflow(accessToken string, refreshToken string, clientId string, workflowId string, subscriberId string, userId string, targets []string, actionArgs map[string]string) map[string]string
+}
+```
+
+## type ResolveIncidentResponse
+
+```go
+type ResolveIncidentResponse struct {
+    _id   string `json:"_id"`
+    _type string `json:"_type"`
 }
 ```
 
@@ -512,6 +955,15 @@ type SayResponse struct {
     _type         string `json:"_type"`
     _id           string `json:"_id"`
     CorrelationId string `json:"id"`
+}
+```
+
+## type SendNotificationResponse
+
+```go
+type SendNotificationResponse struct {
+    _id   string `json:"_id"`
+    _type string `json:"_type"`
 }
 ```
 
@@ -548,6 +1000,15 @@ type SetDeviceModeResponse struct {
 }
 ```
 
+## type SetHomeChannelStateResponse
+
+```go
+type SetHomeChannelStateResponse struct {
+    _type string `json:"_type"`
+    Id    string `json:"_id"`
+}
+```
+
 ## type SetLedResponse
 
 ```go
@@ -575,6 +1036,32 @@ type SetUserProfileResponse struct {
 }
 ```
 
+## type SetVarResponse
+
+```go
+type SetVarResponse struct {
+    _id   string `json:"_id"`
+    _type string `json:"_type"`
+    Name  string `json:"name"`
+    IType string `json:"type"`
+    Value string `json:"value"`
+}
+```
+
+## type SpeechEvent
+
+```go
+type SpeechEvent struct {
+    _id       string `json:"_id"`
+    _type     string `json:"_type"`
+    SourceUri string `json:"source_uri"`
+    ReuqestId string `json:"request_id"`
+    Text      string `json:"text"`
+    Audio     string `json:"audio"`
+    Lang      string `json:"lang"`
+}
+```
+
 ## type StartEvent
 
 ```go
@@ -591,6 +1078,15 @@ type StartInteractionResponse struct {
     _type     string `json:"_type"`
     _id       string `json:"_id"`
     SourceUri string `json:"source_uri"`
+}
+```
+
+## type StartTimerResponse
+
+```go
+type StartTimerResponse struct {
+    _id   string `json:"_id"`
+    _type string `json:"_type"`
 }
 ```
 
@@ -612,10 +1108,27 @@ type StopPlaybackResponse struct {
 }
 ```
 
+## type StopTimerResponse
+
+```go
+type StopTimerResponse struct {
+    _id   string `json"_id"`
+    _type string `json:"_type"`
+}
+```
+
 ## type TimeoutType
 
 ```go
 type TimeoutType string
+```
+
+## type TimerEvent
+
+```go
+type TimerEvent struct {
+    _type string `json:"_type"`
+}
 ```
 
 ## type TimerFiredEvent
@@ -633,6 +1146,16 @@ type TimerFiredEvent struct {
 type TimerType string
 ```
 
+## type TranslateResponse
+
+```go
+type TranslateResponse struct {
+    _id   string `json:"_id"`
+    _type string `json:"_type"`
+    Text  string `json:"text"`
+}
+```
+
 ## type Trigger
 
 ```go
@@ -646,11 +1169,8 @@ type Trigger struct {
 
 ```go
 type TriggerArgs struct {
-    // TODO remove these when ibot serialization is fixed
-    UnparsedPhrase    []interface{} `json:"phrase"`
-    UnparsedSourceUri []interface{} `json:"source_uri"`
-    Phrase            string
-    SourceUri         string
+    Phrase    string `json:"phrase"`
+    SourceUri string `json:"source_uri"`
 }
 ```
 
@@ -658,6 +1178,15 @@ type TriggerArgs struct {
 
 ```go
 type TriggerType string
+```
+
+## type UnsetVarResponse
+
+```go
+type UnsetVarResponse struct {
+    _id   string `json:"_id"`
+    _type string `json:"_type"`
+}
 ```
 
 ## type VibrateResponse
@@ -669,6 +1198,17 @@ type VibrateResponse struct {
 }
 ```
 
+## type answerRequest
+
+```go
+type answerRequest struct {
+    Id     string              `json:"_id"`
+    Target map[string][]string `json:"_target"`
+    Type   string              `json:"_type"`
+    CallId string              `json:"call_id"`
+}
+```
+
 ## type clearTimerRequest
 
 ```go
@@ -676,6 +1216,17 @@ type clearTimerRequest struct {
     Type string `json:"_type"`
     Id   string `json:"_id"`
     Name string `json:"name"`
+}
+```
+
+## type createIncidentRequest
+
+```go
+type createIncidentRequest struct {
+    Id            string `json:"_id"`
+    Type          string `json:"_type"`
+    IncidentType  string `json:"type"`
+    OriginatorUri string `json:"originator_uri"`
 }
 ```
 
@@ -713,6 +1264,97 @@ type getDeviceInfoRequest struct {
 }
 ```
 
+## type getVarRequest
+
+```go
+type getVarRequest struct {
+    Id   string `json:"_id"`
+    Type string `json:"_type"`
+    Name string `json:"name"`
+}
+```
+
+## type groupQueryRequest
+
+```go
+type groupQueryRequest struct {
+    Id       string `json:"_id"`
+    Type     string `json:"_type"`
+    GroupUri string `json:"group_uri"`
+    Query    string `json:"query"`
+}
+```
+
+## type hangupCallRequest
+
+```go
+type hangupCallRequest struct {
+    Id     string              `json:"_id"`
+    Target map[string][]string `json:"_target"`
+    Type   string              `json:"_type"`
+    CallId string              `json:"call_id"`
+}
+```
+
+## type inboxCountRequest
+
+```go
+type inboxCountRequest struct {
+    Id     string              `json:"_id"`
+    Target map[string][]string `json:"_target"`
+    Type   string              `json:"_type"`
+}
+```
+
+## type listenRequest
+
+```go
+type listenRequest struct {
+    Id         string              `json:"_id"`
+    Target     map[string][]string `json:"_target"`
+    Type       string              `json:"_type"`
+    ReqestId   string              `json:"request_id"`
+    Phrases    []string            `json:"phrases"`
+    Transcribe bool                `json:"transcribe"`
+    Timeout    int                 `json:"timeout"`
+    AltLang    string              `json:"alt_lang"`
+}
+```
+
+## type logAnalyticsEventRequest
+
+```go
+type logAnalyticsEventRequest struct {
+    Id          string `json:"_id"`
+    Type        string `json:"_type"`
+    Content     string `json:"content"`
+    ContentType string `json:"content_type"`
+    Category    string `json:"category"`
+    DeviceUri   string `json":"device_uri,omitempty"`
+}
+```
+
+## type placeCallRequest
+
+```go
+type placeCallRequest struct {
+    Id     string              `json:"_id"`
+    Type   string              `json:"_type"`
+    Target map[string][]string `json:"_target"`
+    Uri    string              `json:"uri"`
+}
+```
+
+## type playInboxMessagesRequest
+
+```go
+type playInboxMessagesRequest struct {
+    Id     string              `json:"_id"`
+    Target map[string][]string `json:"_target"`
+    Type   string              `json:"_type"`
+}
+```
+
 ## type playRequest
 
 ```go
@@ -724,6 +1366,17 @@ type playRequest struct {
 }
 ```
 
+## type resolveIncidentRequest
+
+```go
+type resolveIncidentRequest struct {
+    Id         string `json:"_id"`
+    Type       string `json:"_type"`
+    IncidentId string `json:"incident_id"`
+    Reason     string `json:"reason"`
+}
+```
+
 ## type sayRequest
 
 ```go
@@ -732,7 +1385,23 @@ type sayRequest struct {
     Id     string              `json:"_id"`
     Target map[string][]string `json:"_target"`
     Text   string              `json:"text"`
-    Lang   string              `json:"lang"`
+    Lang   Language            `json:"lang"`
+}
+```
+
+## type sendNotificationRequest
+
+```go
+type sendNotificationRequest struct {
+    Type        string              `json:"_type"`
+    Id          string              `json:"_id"`
+    Target      map[string][]string `json:"_target"`
+    Originator  string              `json:"originator"`
+    IType       string              `json:"type"`
+    Name        string              `json:"name"`
+    Text        string              `json:"text"`
+    ITarget     map[string][]string `json:"target"`
+    PushOptions NotificationOptions `json:"push_opts"`
 }
 ```
 
@@ -769,6 +1438,17 @@ type setDeviceModeRequest struct {
     Id     string              `json:"_id"`
     Target map[string][]string `json:"_target"`
     Mode   DeviceMode          `json:"mode"`
+}
+```
+
+## type setHomeChannelStateRequest
+
+```go
+type setHomeChannelStateRequest struct {
+    Type    string              `json:"_type"`
+    Id      string              `json:"_id"`
+    Target  map[string][]string `json:"_target"`
+    Enabled bool                `json:"enabled"`
 }
 ```
 
@@ -809,6 +1489,17 @@ type setUserProfileRequest struct {
 }
 ```
 
+## type setVarRequest
+
+```go
+type setVarRequest struct {
+    Id    string `json:"_id"`
+    Type  string `json:"_type"`
+    Name  string `json:"name"`
+    Value string `json:"value"`
+}
+```
+
 ## type startInteractionRequest
 
 ```go
@@ -817,6 +1508,16 @@ type startInteractionRequest struct {
     Id      string              `json:"_id"`
     Targets map[string][]string `json:"_target"`
     Name    string              `json:"name"`
+}
+```
+
+## type startTimerRequest
+
+```go
+type startTimerRequest struct {
+    Id      string `json:"_id"`
+    Type    string `json:"_type"`
+    Timeout int    `json:"timeout"`
 }
 ```
 
@@ -831,12 +1532,43 @@ type stopPlaybackRequest struct {
 }
 ```
 
+## type stopTimerRequest
+
+```go
+type stopTimerRequest struct {
+    Id   string `json:"_id"`
+    Type string `json:"_type"`
+}
+```
+
 ## type terminateRequest
 
 ```go
 type terminateRequest struct {
     Type string `json:"_type"`
     Id   string `json:"_id"`
+}
+```
+
+## type translateRequest
+
+```go
+type translateRequest struct {
+    Id       string   `json:"_id"`
+    Type     string   `json:"_type"`
+    Text     string   `json:"text"`
+    FromLang Language `json:"from_lang"`
+    ToLang   Language `json:"to_lang"`
+}
+```
+
+## type unsetVarRequest
+
+```go
+type unsetVarRequest struct {
+    Id   string `json:"_id"`
+    Type string `json:"_type"`
+    Name string `json:"name"`
 }
 ```
 
@@ -871,13 +1603,45 @@ type workflowInstance struct {
     OnPromptHandler               func(promptEvent PromptEvent)
     OnButtonHandler               func(buttonEvent ButtonEvent)
     OnTimerFiredHandler           func(timerFiredEvent TimerFiredEvent)
+    OnTimerHandler                func(timerEvent TimerEvent)
+    OnSpeechHandler               func(speechEvent SpeechEvent)
 }
+```
+
+### func \(\*workflowInstance\) Alert
+
+```go
+func (wfInst *workflowInstance) Alert(target string, originator string, name string, text string, pushOptions NotificationOptions) SendNotificationResponse
+```
+
+### func \(\*workflowInstance\) AnswerCall
+
+```go
+func (wfInst *workflowInstance) AnswerCall(sourceUri string, callId string) AnswerResponse
 ```
 
 ### func \(\*workflowInstance\) Breathe
 
 ```go
-func (wfInst *workflowInstance) Breathe(sourceUri string, color string) SetLedResponse
+func (wfInst *workflowInstance) Breathe(sourceUri string, color string, count int64) SetLedResponse
+```
+
+### func \(\*workflowInstance\) Broadcast
+
+```go
+func (wfInst *workflowInstance) Broadcast(target string, originator string, name string, text string, pushOptions NotificationOptions) SendNotificationResponse
+```
+
+### func \(\*workflowInstance\) CancelAlert
+
+```go
+func (wfInst *workflowInstance) CancelAlert(target string, name string) SendNotificationResponse
+```
+
+### func \(\*workflowInstance\) CancelBroadcast
+
+```go
+func (wfInst *workflowInstance) CancelBroadcast(target string, name string) SendNotificationResponse
 ```
 
 ### func \(\*workflowInstance\) ClearTimer
@@ -886,10 +1650,28 @@ func (wfInst *workflowInstance) Breathe(sourceUri string, color string) SetLedRe
 func (wfInst *workflowInstance) ClearTimer(name string) ClearTimerResponse
 ```
 
+### func \(\*workflowInstance\) CreateIncident
+
+```go
+func (wfInst *workflowInstance) CreateIncident(originator string, itype string) CreateIncidentResponse
+```
+
+### func \(\*workflowInstance\) DisableHomeChannel
+
+```go
+func (wfInst *workflowInstance) DisableHomeChannel(sourceUri string) SetHomeChannelStateResponse
+```
+
 ### func \(\*workflowInstance\) DisableLocation
 
 ```go
 func (wfInst *workflowInstance) DisableLocation(sourceUri string) SetDeviceInfoResponse
+```
+
+### func \(\*workflowInstance\) EnableHomeChannel
+
+```go
+func (wfInst *workflowInstance) EnableHomeChannel(sourceUri string) SetHomeChannelStateResponse
 ```
 
 ### func \(\*workflowInstance\) EnableLocation
@@ -904,10 +1686,16 @@ func (wfInst *workflowInstance) EnableLocation(sourceUri string) SetDeviceInfoRe
 func (wfInst *workflowInstance) EndInteraction(sourceUri string, name string) EndInteractionResponse
 ```
 
+### func \(\*workflowInstance\) FetchDevice
+
+```go
+func (wfInst *workflowInstance) FetchDevice(accessToken string, refreshToken string, clientId string, subscriberId string, userId string) map[string]string
+```
+
 ### func \(\*workflowInstance\) Flash
 
 ```go
-func (wfInst *workflowInstance) Flash(sourceUri string, color string) SetLedResponse
+func (wfInst *workflowInstance) Flash(sourceUri string, color string, count int64) SetLedResponse
 ```
 
 ### func \(\*workflowInstance\) GetDeviceAddress
@@ -920,6 +1708,12 @@ func (wfInst *workflowInstance) GetDeviceAddress(sourceUri string, refresh bool)
 
 ```go
 func (wfInst *workflowInstance) GetDeviceBattery(sourceUri string, refresh bool) uint64
+```
+
+### func \(\*workflowInstance\) GetDeviceCoordinates
+
+```go
+func (wfInst *workflowInstance) GetDeviceCoordinates(sourceUri string, refresh bool) []float64
 ```
 
 ### func \(\*workflowInstance\) GetDeviceId
@@ -938,6 +1732,12 @@ func (wfInst *workflowInstance) GetDeviceIndoorLocation(sourceUri string, refres
 
 ```go
 func (wfInst *workflowInstance) GetDeviceLatLong(sourceUri string, refresh bool) []float64
+```
+
+### func \(\*workflowInstance\) GetDeviceLocation
+
+```go
+func (wfInst *workflowInstance) GetDeviceLocation(sourceUri string, refresh bool) string
 ```
 
 ### func \(\*workflowInstance\) GetDeviceLocationEnabled
@@ -964,6 +1764,60 @@ func (wfInst *workflowInstance) GetDeviceType(sourceUri string, refresh bool) st
 func (wfInst *workflowInstance) GetDeviceUsername(sourceUri string, refresh bool) string
 ```
 
+### func \(\*workflowInstance\) GetGroupMembers
+
+```go
+func (wfInst *workflowInstance) GetGroupMembers(groupUri string) []string
+```
+
+### func \(\*workflowInstance\) GetNumberVar
+
+```go
+func (wfInst *workflowInstance) GetNumberVar(name string, defaultValue int) int
+```
+
+### func \(\*workflowInstance\) GetUnreadInboxSize
+
+```go
+func (wfInst *workflowInstance) GetUnreadInboxSize(sourceUri string) int
+```
+
+### func \(\*workflowInstance\) GetVar
+
+```go
+func (wfInst *workflowInstance) GetVar(name string, defaultValue string) string
+```
+
+### func \(\*workflowInstance\) HangupCall
+
+```go
+func (wfInst *workflowInstance) HangupCall(targetUri string, callId string) HangupCallResponse
+```
+
+### func \(\*workflowInstance\) IsGroupMember
+
+```go
+func (wfInst *workflowInstance) IsGroupMember(groupNameUri string, potentialMemberUri string) bool
+```
+
+### func \(\*workflowInstance\) Listen
+
+```go
+func (wfInst *workflowInstance) Listen(sourceUri string, phrases []string, transcribe bool, alt_lang string, timeout int) string
+```
+
+### func \(\*workflowInstance\) LogMessage
+
+```go
+func (wfInst *workflowInstance) LogMessage(message string, category string) LogAnalyticsEventResponse
+```
+
+### func \(\*workflowInstance\) LogUserMessage
+
+```go
+func (wfInst *workflowInstance) LogUserMessage(message string, sourceUri string, category string) LogAnalyticsEventResponse
+```
+
 ### func \(\*workflowInstance\) OnButton
 
 ```go
@@ -982,10 +1836,22 @@ func (wfInst *workflowInstance) OnInteractionLifecycle(fn func(interactionLifecy
 func (wfInst *workflowInstance) OnPrompt(fn func(promptEvent PromptEvent))
 ```
 
+### func \(\*workflowInstance\) OnSpeech
+
+```go
+func (wfInst *workflowInstance) OnSpeech(fn func(speechEvent SpeechEvent))
+```
+
 ### func \(\*workflowInstance\) OnStart
 
 ```go
 func (wfInst *workflowInstance) OnStart(fn func(startEvent StartEvent))
+```
+
+### func \(\*workflowInstance\) OnTimer
+
+```go
+func (wfInst *workflowInstance) OnTimer(fn func(timerEvent TimerEvent))
 ```
 
 ### func \(\*workflowInstance\) OnTimerFired
@@ -994,16 +1860,28 @@ func (wfInst *workflowInstance) OnStart(fn func(startEvent StartEvent))
 func (wfInst *workflowInstance) OnTimerFired(fn func(timerFiredEvent TimerFiredEvent))
 ```
 
+### func \(\*workflowInstance\) PlaceCall
+
+```go
+func (wfInst *workflowInstance) PlaceCall(targetUri string, uri string) PlaceCallResponse
+```
+
 ### func \(\*workflowInstance\) Play
 
 ```go
 func (wfInst *workflowInstance) Play(sourceUri string, filename string) string
 ```
 
-### func \(\*workflowInstance\) PowerDownDevice
+### func \(\*workflowInstance\) PlayAndWait
 
 ```go
-func (wfInst *workflowInstance) PowerDownDevice(sourceUri string) DevicePowerOffResponse
+func (wfInst *workflowInstance) PlayAndWait(sourceUri string, filename string) string
+```
+
+### func \(\*workflowInstance\) PlayUnreadInboxMessages
+
+```go
+func (wfInst *workflowInstance) PlayUnreadInboxMessages(sourceUri string) PlayInboxMessagesResponse
 ```
 
 ### func \(\*workflowInstance\) Rainbow
@@ -1012,22 +1890,28 @@ func (wfInst *workflowInstance) PowerDownDevice(sourceUri string) DevicePowerOff
 func (wfInst *workflowInstance) Rainbow(sourceUri string, rotations int64) SetLedResponse
 ```
 
-### func \(\*workflowInstance\) RestartDevice
+### func \(\*workflowInstance\) ResolveIncident
 
 ```go
-func (wfInst *workflowInstance) RestartDevice(sourceUri string) DevicePowerOffResponse
+func (wfInst *workflowInstance) ResolveIncident(incidentId string, reason string) ResolveIncidentResponse
 ```
 
 ### func \(\*workflowInstance\) Rotate
 
 ```go
-func (wfInst *workflowInstance) Rotate(sourceUri string, color string) SetLedResponse
+func (wfInst *workflowInstance) Rotate(sourceUri string, color string, rotations int64) SetLedResponse
 ```
 
 ### func \(\*workflowInstance\) Say
 
 ```go
-func (wfInst *workflowInstance) Say(sourceUri string, text string, lang string) SayResponse
+func (wfInst *workflowInstance) Say(sourceUri string, text string, lang Language) SayResponse
+```
+
+### func \(\*workflowInstance\) SayAndWait
+
+```go
+func (wfInst *workflowInstance) SayAndWait(sourceUri string, text string, lang Language) SayResponse
 ```
 
 ### func \(\*workflowInstance\) SetChannel
@@ -1066,6 +1950,12 @@ func (wfInst *workflowInstance) SetTimer(timerType TimerType, name string, timeo
 func (wfInst *workflowInstance) SetUserProfile(sourceUri string, username string, force bool) SetUserProfileResponse
 ```
 
+### func \(\*workflowInstance\) SetVar
+
+```go
+func (wfInst *workflowInstance) SetVar(name string, value string) SetVarResponse
+```
+
 ### func \(\*workflowInstance\) StartInteraction
 
 ```go
@@ -1074,10 +1964,22 @@ func (wfInst *workflowInstance) StartInteraction(sourceUri string, name string) 
 
 This is a start interaction function.  It starts an interaction.
 
+### func \(\*workflowInstance\) StartTimer
+
+```go
+func (wfInst *workflowInstance) StartTimer(timeout int) StartTimerResponse
+```
+
 ### func \(\*workflowInstance\) StopPlayback
 
 ```go
 func (wfInst *workflowInstance) StopPlayback(sourceUri string, ids []string) StopPlaybackResponse
+```
+
+### func \(\*workflowInstance\) StopTimer
+
+```go
+func (wfInst *workflowInstance) StopTimer() StopTimerResponse
 ```
 
 ### func \(\*workflowInstance\) SwitchAllLedOff
@@ -1092,10 +1994,34 @@ func (wfInst *workflowInstance) SwitchAllLedOff(sourceUri string) SetLedResponse
 func (wfInst *workflowInstance) SwitchAllLedOn(sourceUri string, color string) SetLedResponse
 ```
 
+### func \(\*workflowInstance\) SwitchLedOn
+
+```go
+func (wfInst *workflowInstance) SwitchLedOn(sourceUri string, led int, color string) SetLedResponse
+```
+
 ### func \(\*workflowInstance\) Terminate
 
 ```go
 func (wfInst *workflowInstance) Terminate()
+```
+
+### func \(\*workflowInstance\) Translate
+
+```go
+func (wfInst *workflowInstance) Translate(sourceUri string, text string, from Language, to Language) string
+```
+
+### func \(\*workflowInstance\) TriggerWorkflow
+
+```go
+func (wfInst *workflowInstance) TriggerWorkflow(accessToken string, refreshToken string, clientId string, workflowId string, subscriberId string, userId string, targets []string, actionArgs map[string]string) map[string]string
+```
+
+### func \(\*workflowInstance\) UnsetVar
+
+```go
+func (wfInst *workflowInstance) UnsetVar(name string) UnsetVarResponse
 ```
 
 ### func \(\*workflowInstance\) Vibrate
@@ -1134,6 +2060,18 @@ func (wfInst *workflowInstance) receiveWs()
 func (wfInst *workflowInstance) sendAndReceiveRequest(msg interface{}, id string) *Call
 ```
 
+### func \(\*workflowInstance\) sendAndReceiveRequestWait
+
+```go
+func (wfInst *workflowInstance) sendAndReceiveRequestWait(msg interface{}, id string) *Call
+```
+
+### func \(\*workflowInstance\) sendNotification
+
+```go
+func (wfInst *workflowInstance) sendNotification(target string, originator string, itype string, name string, text string, pushOptions NotificationOptions) SendNotificationResponse
+```
+
 ### func \(\*workflowInstance\) sendRequest
 
 ```go
@@ -1144,6 +2082,18 @@ func (wfInst *workflowInstance) sendRequest(msg interface{})
 
 ```go
 func (wfInst *workflowInstance) setDeviceInfo(sourceUri string, field SetDeviceInfoType, value string) SetDeviceInfoResponse
+```
+
+### func \(\*workflowInstance\) setHomeChannelState
+
+```go
+func (wfInst *workflowInstance) setHomeChannelState(sourceUri string, enabled bool) SetHomeChannelStateResponse
+```
+
+### func \(\*workflowInstance\) updateAccessToken
+
+```go
+func (wfInst *workflowInstance) updateAccessToken(refreshToken string, clientId string) string
 ```
 
 
