@@ -65,11 +65,11 @@ func handleWs(w http.ResponseWriter, r *http.Request) {
         Pending: make(map[string]*Call), 
         EventChannel: make(chan EventWrapper, 100),
     }
-    go startWorkflow(wfInst)
+    go startWorkflow(wfInst, wfName)
     
 }
 
-func startWorkflow(wfInst *workflowInstance) {
+func startWorkflow(wfInst *workflowInstance, workflowName string) {
     // this thread blocks in 2 places, when waiting for a message to come over the ws, or when waiting for a response to 
     // a request that was sent. ws listening in done on a separate coroutine, event messages are sent to this coroutine,
     // and response messages are handled on the listening corouting to complete the call object since this coroutine will
@@ -82,6 +82,8 @@ func startWorkflow(wfInst *workflowInstance) {
     // listen for ws messages in a coroutine so we can receive responses while blocking on this coroutine
     go wfInst.receiveWs()
 
+    log.Info("Workflow instance started for ", workflowName)
+
     // loop forever handling events and responses    
     var err error 
     for err == nil {
@@ -91,6 +93,7 @@ func startWorkflow(wfInst *workflowInstance) {
         }
     }
     log.Debug("exiting, err is ", err)
+    log.Info("Workflow instance terminating, reason: ", err)
 }
 
 var eventRegex = regexp.MustCompile(`^wf_api_(.+)_event$`)

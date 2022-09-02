@@ -3,7 +3,6 @@
 package sdk
 
 import (
-    "fmt"
     "math/rand"
     log "github.com/sirupsen/logrus"
     "encoding/hex"
@@ -40,7 +39,7 @@ func (wfInst *workflowInstance) sendAndReceiveRequest(msg interface{}, id string
         delete(wfInst.Pending, id)
         wfInst.Mutex.Unlock()
     }
-    fmt.Println("Sent request:", msg)
+    log.Debug("Sent request:", msg)
     // here we block to receive from the call's channel
     select {
         case <-call.Done:
@@ -67,7 +66,7 @@ func (wfInst *workflowInstance) sendAndReceiveRequestWait(msg interface{}, id st
         delete(wfInst.Pending, id)
         wfInst.Mutex.Unlock()
     }
-    fmt.Println("Sent request:", msg)
+    log.Debug("Sent request:", msg)
     // here we block to receive from the call's channel
     select {
         // once the call is done, wait until your receive a prompt event before returning the call
@@ -78,7 +77,7 @@ func (wfInst *workflowInstance) sendAndReceiveRequestWait(msg interface{}, id st
             log.Debug("Waiting for prompt stopped")
             for !streamingComplete {
                 if(time.Since(startTime).Seconds() >= 30) {
-                    fmt.Println("Timed out waiting for prompt event")
+                    log.Debug("Timed out waiting for prompt event")
                     break
                 }
             }
@@ -130,7 +129,7 @@ func (wfInst *workflowInstance) handleEvent(eventWrapper EventWrapper) error {
                 log.Debug("ignoring event ", eventWrapper.EventName, "no handler registered")                
             }
         case "stop":
-            log.Debug("received stop event ", string(eventWrapper.Msg))
+            log.Info("Workflow instance terminating, reason: ", eventWrapper.ParsedMsg["reason"])
             var params StopEvent
             json.Unmarshal(eventWrapper.Msg, &params)
             wfInst.StopReason = params.Reason
