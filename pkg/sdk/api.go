@@ -164,6 +164,7 @@ func (wfInst *workflowInstance) OnSpeech(fn func(speechEvent SpeechEvent)) {
 
 // API functions
 
+// This is a start interaction function.  It starts an interaction.
 func (wfInst *workflowInstance) StartInteraction(sourceUri string, name string) StartInteractionResponse {
     id := makeId()
     target := makeTargetMap(sourceUri)
