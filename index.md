@@ -54,6 +54,7 @@ import "command-line-arguments"
 - [type LedInfo](<#type-ledinfo>)
 - [type ListenResponse](<#type-listenresponse>)
 - [type LogAnalyticsEventResponse](<#type-loganalyticseventresponse>)
+- [type MessageType](<#type-messagetype>)
 - [type NotificationOptions](<#type-notificationoptions>)
 - [type NotificationPriority](<#type-notificationpriority>)
 - [type NotificationSound](<#type-notificationsound>)
@@ -222,6 +223,7 @@ const (
     SPEECH                      = "speech"
     NOTIFICATION                = "notification"
     INCIDENT                    = "incident"
+    PROMPT                      = "prompt"
     PROMPT_START                = "prompt_start"
     PROMPT_STOP                 = "prompt_stop"
     CALL_RINGING                = "call_ringing"
@@ -230,6 +232,7 @@ const (
     CALL_FAILED                 = "call_failed"
     CALL_RECEIVED               = "call_received"
     CALL_START_REQUEST          = "call_start_request"
+    TIMER_FIRED                 = "timer_fired"
 )
 ```
 
@@ -243,6 +246,13 @@ const (
     CALENDAR_TRIGGER  = "calendar"
     GEOFENCE_TRIGGER  = "geofence"
     TELEPHONY_TRIGGER = "telephony"
+)
+```
+
+```go
+const (
+    EVENT    = "event"
+    RESPONSE = "response"
 )
 ```
 
@@ -793,6 +803,12 @@ type LogAnalyticsEventResponse struct {
     _id   string `json:"_id"`
     _type string `json:"_type"`
 }
+```
+
+## type MessageType
+
+```go
+type MessageType string
 ```
 
 ## type NotificationOptions
