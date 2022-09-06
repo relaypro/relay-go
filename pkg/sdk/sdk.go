@@ -109,10 +109,10 @@ func parseMessage(msg []byte) (map[string]interface{}, Event, string) {
     msgType := parsedMsg["_type"].(string)
     if eventRegex.MatchString(msgType) {
         matches = eventRegex.FindStringSubmatch(msgType)
-        messageType = "event"
+        messageType = EVENT
     } else {
         matches = responseRegex.FindStringSubmatch(msgType)
-        messageType = "response"
+        messageType = RESPONSE
     }
     
     return parsedMsg, Event(matches[1]), messageType

@@ -28,18 +28,18 @@ func (wfInst *workflowInstance) receiveWs() {
         eventWrapper := EventWrapper{ParsedMsg: parsedMsg, Msg: msg, EventName: eventName}
         
         // including speech event so that it can be passed to handleResponse for a listen API call
-        if messageType == "response" || eventName == "speech" {
+        if messageType == RESPONSE || eventName == SPEECH {
             // pair with callback
             err = wfInst.handleResponse(EventWrapper{ParsedMsg: parsedMsg, Msg: msg, EventName: eventName})
             if err != nil {
                 log.Debug("Error from response handler ", err)
                 return
             }
-        } else if messageType == "event" {
+        } else if messageType == EVENT {
             // send events to event channel
             select {
                 case wfInst.EventChannel <- eventWrapper:
-                    if eventName == "prompt" && eventWrapper.ParsedMsg["type"].(string) == "stopped" {
+                    if eventName == PROMPT && eventWrapper.ParsedMsg["type"].(string) == "stopped" {
                         streamingComplete = true
                     }
 
