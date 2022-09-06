@@ -155,6 +155,7 @@ import "command-line-arguments"
   - [func (wfInst *workflowInstance) GetDeviceUsername(sourceUri string, refresh bool) string](<#func-workflowinstance-getdeviceusername>)
   - [func (wfInst *workflowInstance) GetGroupMembers(groupUri string) []string](<#func-workflowinstance-getgroupmembers>)
   - [func (wfInst *workflowInstance) GetNumberVar(name string, defaultValue int) int](<#func-workflowinstance-getnumbervar>)
+  - [func (wfInst *workflowInstance) GetSourceUri(startEvent StartEvent) string](<#func-workflowinstance-getsourceuri>)
   - [func (wfInst *workflowInstance) GetUnreadInboxSize(sourceUri string) int](<#func-workflowinstance-getunreadinboxsize>)
   - [func (wfInst *workflowInstance) GetVar(name string, defaultValue string) string](<#func-workflowinstance-getvar>)
   - [func (wfInst *workflowInstance) HangupCall(targetUri string, callId string) HangupCallResponse](<#func-workflowinstance-hangupcall>)
@@ -887,6 +888,7 @@ type RelayApi interface {
     OnSpeech(fn func(speechEvent SpeechEvent))
 
     // api
+    GetSourceUri(startEvent StartEvent) string
     StartInteraction(sourceUri string, name string) StartInteractionResponse
     EndInteraction(sourceUri string, name string) EndInteractionResponse
     SetTimer(timerType TimerType, name string, timeout uint64, timeoutType TimeoutType) SetTimerResponse
@@ -1790,6 +1792,12 @@ func (wfInst *workflowInstance) GetGroupMembers(groupUri string) []string
 
 ```go
 func (wfInst *workflowInstance) GetNumberVar(name string, defaultValue int) int
+```
+
+### func \(\*workflowInstance\) GetSourceUri
+
+```go
+func (wfInst *workflowInstance) GetSourceUri(startEvent StartEvent) string
 ```
 
 ### func \(\*workflowInstance\) GetUnreadInboxSize
