@@ -16,7 +16,7 @@ func main() {
         var sourceUri string
         
         api.OnStart(func(startEvent sdk.StartEvent) {
-            sourceUri := startEvent.Trigger.Args.SourceUri
+            sourceUri := api.GetSourceUri(startEvent)
             log.Debug("Started hello wf from sourceUri: ", sourceUri, " trigger: ", startEvent.Trigger)
             api.StartInteraction(sourceUri, "hello interaction")
         })
