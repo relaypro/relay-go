@@ -8,8 +8,6 @@ on:
 
 jobs:
   build:
-    env:
-      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
     runs-on: ubuntu-latest
 
