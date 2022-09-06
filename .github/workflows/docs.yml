@@ -2,14 +2,12 @@ name: docs
 
 on:
   push:
-    branches: [ master ]
+    branches: [ master, remove-NPM-token ]
 
   workflow_dispatch:
 
 jobs:
   build:
-    env:
-      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
     runs-on: ubuntu-latest
 
