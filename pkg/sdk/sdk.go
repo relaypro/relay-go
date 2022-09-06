@@ -18,7 +18,7 @@ var upgrader = websocket.Upgrader{
 
 // this should return an interface that has a workflow() function that they can pass their workflow implementations to
 func InitializeRelaySdk(port string) {
-    log.Info("starting http server on", port)
+    log.Info("starting http server on ", port)
     
     // use gorilla mux router
     r := mux.NewRouter()
@@ -31,24 +31,24 @@ func InitializeRelaySdk(port string) {
 func AddWorkflow(workflowName string, fn func(api RelayApi)) {
     // here we just register the wf by name, when a ws connects it will call the ws function passing the websocket in
     workflowMap[workflowName] = fn
-    log.Info("Added workflow named", workflowName, "map is ", workflowMap)
+    log.Info("Added workflow named ", workflowName, " map is ", workflowMap)
 }
 
 func handleWs(w http.ResponseWriter, r *http.Request) {
     vars := mux.Vars(r)
     wfName := vars["workflowname"]
-    log.Debug("workflow name requested:", wfName)
+    log.Debug("workflow name requested: ", wfName)
     
     wfFunc, ok := workflowMap[wfName]
     if !ok {
-        log.Debug("no workflow named ", wfName, "is registered", workflowMap)
+        log.Debug("no workflow named ", wfName, " is registered ", workflowMap)
         return
     }
         
     conn, upgradeErr := upgrader.Upgrade(w, r, nil)
 
     if upgradeErr != nil {
-        log.Debug("upgrade error", upgradeErr)
+        log.Debug("upgrade error ", upgradeErr)
         return
     }
     

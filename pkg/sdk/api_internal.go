@@ -66,7 +66,7 @@ func (wfInst *workflowInstance) sendAndReceiveRequestWait(msg interface{}, id st
         delete(wfInst.Pending, id)
         wfInst.Mutex.Unlock()
     }
-    log.Debug("Sent request:", msg)
+    log.Debug("Sent request: ", msg)
     // here we block to receive from the call's channel
     select {
         // once the call is done, wait until your receive a prompt event before returning the call
@@ -99,16 +99,16 @@ func (wfInst *workflowInstance) handleEvent(eventWrapper EventWrapper) error {
             if wfInst.OnStartHandler != nil {
                 wfInst.OnStartHandler(params)
             } else {
-                log.Debug("ignoring event", eventWrapper.EventName, "no handler registered")                
+                log.Debug("ignoring event ", eventWrapper.EventName, " no handler registered")                
             }
         case INTERACTION_LIFECYCLE:
-            log.Debug("interaction lifecycle event:", string(eventWrapper.Msg))
+            log.Debug("interaction lifecycle event: ", string(eventWrapper.Msg))
             var params InteractionLifecycleEvent
             json.Unmarshal(eventWrapper.Msg, &params)
             if wfInst.OnInteractionLifecycleHandler != nil {
                 wfInst.OnInteractionLifecycleHandler(params)
             } else {
-                log.Debug("ignoring event", eventWrapper.EventName, "no handler registered")                
+                log.Debug("ignoring event ", eventWrapper.EventName, " no handler registered")                
             }
         case PROMPT:
             var params PromptEvent
@@ -117,7 +117,7 @@ func (wfInst *workflowInstance) handleEvent(eventWrapper EventWrapper) error {
             if wfInst.OnPromptHandler != nil {
                 wfInst.OnPromptHandler(params)
             } else {
-                log.Debug("ignoring event", eventWrapper.EventName, "no handler registered")                
+                log.Debug("ignoring event ", eventWrapper.EventName, " no handler registered")                
             }
         case BUTTON:
             log.Debug("button event ", string(eventWrapper.Msg))
@@ -126,7 +126,7 @@ func (wfInst *workflowInstance) handleEvent(eventWrapper EventWrapper) error {
             if wfInst.OnButtonHandler != nil {
                 wfInst.OnButtonHandler(params)
             } else {
-                log.Debug("ignoring event ", eventWrapper.EventName, "no handler registered")                
+                log.Debug("ignoring event ", eventWrapper.EventName, " no handler registered")                
             }
         case STOP:
             log.Info("Workflow instance terminating, reason: ", eventWrapper.ParsedMsg["reason"])

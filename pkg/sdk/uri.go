@@ -30,7 +30,7 @@ func construct(resourceType string, idtype string, idOrName string) string {
 
 func ParseDeviceName(uri string) string {
 	uriUnescaped, err := url.PathUnescape(uri)
-	log.Error("error", err)
+	log.Error("error ", err)
 	if(!IsInteractionUri(uriUnescaped)) {
 		components := strings.Split(uriUnescaped, ":")
 		if(components[2] == NAME) {
@@ -47,7 +47,7 @@ func ParseDeviceName(uri string) string {
 
 func ParseDeviceId(uri string) string {
 	uriUnescaped, err := url.PathUnescape(uri)
-	log.Error("error", err)
+	log.Error("error ", err)
 	if(!IsInteractionUri(uriUnescaped)) {
 		components := strings.Split(uriUnescaped, ":")
 		if(components[2] == ID) {
@@ -66,7 +66,7 @@ func ParseDeviceId(uri string) string {
 func ParseGroupName(uri string) string {
 	components := strings.Split(uri, ":")
 	parsedGroupName, err := url.PathUnescape(components[4])
-	log.Error("error", err)
+	log.Error("error ", err)
 	if(components[2] == NAME && components[3] == GROUP) {
 		return parsedGroupName
 	}
@@ -77,7 +77,7 @@ func ParseGroupName(uri string) string {
 func ParseGroupId(uri string) string {
 	components := strings.Split(uri, ":")
 	parsedGroupId, err := url.PathUnescape(components[4])
-	log.Error("error", err)
+	log.Error("error ", err)
 	if(components[2] == ID && components[3] == GROUP) {
 		return parsedGroupId
 	}

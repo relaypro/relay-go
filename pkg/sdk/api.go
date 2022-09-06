@@ -262,7 +262,7 @@ func(wfInst *workflowInstance) SayAndWait(sourceUri string, text string, lang La
     if lang == "" {
         lang = ENGLISH
     }
-    log.Debug("saying ", text, "to", sourceUri, "with lang", lang)
+    log.Debug("saying ", text, " to ", sourceUri, " with lang ", lang)
     id := makeId()
     target := makeTargetMap(sourceUri)
     req := sayRequest{Type: "wf_api_say_request", Id: id, Target: target, Text: text, Lang: lang}
@@ -294,7 +294,7 @@ func(wfInst *workflowInstance) Translate(sourceUri string, text string, from Lan
 }
 
 func(wfInst *workflowInstance) LogMessage(message string, category string) LogAnalyticsEventResponse {
-    log.Debug("logging analytic event with the message", message)
+    log.Debug("logging analytic event with the message ", message)
     id := makeId()
     req := logAnalyticsEventRequest{Type: "wf_api_log_analytics_event_request", Id: id, Content: message, ContentType: "default", Category: category}
     call := wfInst.sendAndReceiveRequest(req, id)
@@ -304,7 +304,7 @@ func(wfInst *workflowInstance) LogMessage(message string, category string) LogAn
 }
 
 func(wfInst *workflowInstance) LogUserMessage(message string, sourceUri string, category string) LogAnalyticsEventResponse {
-    log.Debug("logging analytic event with the message", message)
+    log.Debug("logging analytic event with the message ", message)
     id := makeId()
     req := logAnalyticsEventRequest{Type: "wf_api_log_analytics_event_request", Id: id, Content: message, ContentType: "default", Category: category, DeviceUri: sourceUri}
     call := wfInst.sendAndReceiveRequest(req, id)
@@ -314,7 +314,7 @@ func(wfInst *workflowInstance) LogUserMessage(message string, sourceUri string, 
 }
 
 func(wfInst *workflowInstance) SetVar(name string, value string) SetVarResponse {
-    log.Debug("setting variable with name", name, "and value", value)
+    log.Debug("setting variable with name ", name, " and value ", value)
     id := makeId()
     req := setVarRequest{Type: "wf_api_set_var_request", Id: id, Name: name, Value: value}
     call := wfInst.sendAndReceiveRequest(req, id)
@@ -324,7 +324,7 @@ func(wfInst *workflowInstance) SetVar(name string, value string) SetVarResponse 
 }
 
 func(wfInst *workflowInstance) UnsetVar(name string) UnsetVarResponse {
-    log.Debug("unsetting variable with name", name)
+    log.Debug("unsetting variable with name ", name)
     id := makeId()
     req := unsetVarRequest{Type: "wf_api_unset_var_request", Id: id, Name: name}
     call := wfInst.sendAndReceiveRequest(req, id)
@@ -334,7 +334,7 @@ func(wfInst *workflowInstance) UnsetVar(name string) UnsetVarResponse {
 }
 
 func(wfInst *workflowInstance) GetVar(name string, defaultValue string) string {
-    log.Debug("getting variable with name", name, "and default value", defaultValue)
+    log.Debug("getting variable with name ", name, " and default value ", defaultValue)
     id := makeId()
     req := getVarRequest{Type: "wf_api_get_var_request", Id: id, Name: name}
     call := wfInst.sendAndReceiveRequest(req, id)
@@ -353,7 +353,7 @@ func(wfInst *workflowInstance) GetNumberVar(name string, defaultValue int) int {
 }
 
 func (wfInst *workflowInstance) Play(sourceUri string, filename string) string {
-    log.Debug("playing file ", filename, "to", sourceUri)
+    log.Debug("playing file ", filename, " to ", sourceUri)
     id := makeId()
     target := makeTargetMap(sourceUri)
     req := playRequest{Type: "wf_api_play_request", Id: id, Target: target, Filename: filename}
@@ -364,7 +364,7 @@ func (wfInst *workflowInstance) Play(sourceUri string, filename string) string {
 }
 
 func (wfInst *workflowInstance) PlayAndWait(sourceUri string, filename string) string{
-    log.Debug("playing file ", filename, "to", sourceUri)
+    log.Debug("playing file ", filename, " to ", sourceUri)
     id := makeId()
     target := makeTargetMap(sourceUri)
     req := playRequest{Type: "wf_api_play_request", Id: id, Target: target, Filename: filename}
@@ -375,7 +375,7 @@ func (wfInst *workflowInstance) PlayAndWait(sourceUri string, filename string) s
 }
 
 func (wfInst *workflowInstance) StopPlayback(sourceUri string, ids []string) StopPlaybackResponse {
-    log.Debug("stopping playback for", ids)
+    log.Debug("stopping playback for ", ids)
     id := makeId()
     target := makeTargetMap(sourceUri)
     req := stopPlaybackRequest{Type: "wf_api_stop_playback_request", Id: id, Target: target, Ids: ids}
@@ -386,7 +386,7 @@ func (wfInst *workflowInstance) StopPlayback(sourceUri string, ids []string) Sto
 }
 
 func (wfInst *workflowInstance) GetUnreadInboxSize(sourceUri string) int {
-    log.Debug("playing unread inbox messages for", sourceUri)
+    log.Debug("playing unread inbox messages for ", sourceUri)
     id := makeId()
     target := makeTargetMap(sourceUri)
     req := inboxCountRequest{Type: "wf_api_inbox_count_request", Id: id, Target: target}
@@ -399,7 +399,7 @@ func (wfInst *workflowInstance) GetUnreadInboxSize(sourceUri string) int {
 }
 
 func (wfInst *workflowInstance) PlayUnreadInboxMessages(sourceUri string) PlayInboxMessagesResponse {
-    log.Debug("playing unread inbox messages for", sourceUri)
+    log.Debug("playing unread inbox messages for ", sourceUri)
     id := makeId()
     target := makeTargetMap(sourceUri)
     req := playInboxMessagesRequest{Type: "wf_api_play_inbox_messages_request", Id: id, Target: target}
@@ -410,7 +410,7 @@ func (wfInst *workflowInstance) PlayUnreadInboxMessages(sourceUri string) PlayIn
 }
 
 func (wfInst *workflowInstance) setHomeChannelState(sourceUri string, enabled bool) SetHomeChannelStateResponse {
-    log.Debug("setting home channel for", sourceUri, "with state", enabled)
+    log.Debug("setting home channel for ", sourceUri, " with state ", enabled)
     id := makeId()
     target := makeTargetMap(sourceUri)
     req := setHomeChannelStateRequest{Type: "wf_api_set_home_channel_state_request", Id: id, Target: target, Enabled: enabled}
@@ -429,7 +429,7 @@ func(wfInst *workflowInstance) DisableHomeChannel(sourceUri string) SetHomeChann
 }
 
 func (wfInst *workflowInstance) SetLeds(sourceUri string, effect LedEffect, args LedInfo) SetLedResponse {
-    log.Debug("setting leds", effect, "with args", args)
+    log.Debug("setting leds ", effect, " with args ", args)
     id := makeId()
     target := makeTargetMap(sourceUri)
     req := setLedRequest{Type: "wf_api_set_led_request", Id: id, Target: target, Effect: effect, Args: args}
@@ -469,7 +469,7 @@ func (wfInst *workflowInstance) Breathe(sourceUri string, color string, count in
 
 
 func (wfInst *workflowInstance) Vibrate(sourceUri string, pattern []uint64) VibrateResponse {
-    log.Debug("vibrating with pattern", pattern)
+    log.Debug("vibrating with pattern ", pattern)
     id := makeId()
     target := makeTargetMap(sourceUri)
     req := vibrateRequest{Type: "wf_api_vibrate_request", Id: id, Target: target, Pattern: pattern}
@@ -509,7 +509,7 @@ func (wfInst *workflowInstance) CancelAlert(target string, name string) SendNoti
     return wfInst.sendNotification(target, "", "cancel", name, "", pushOptions)}
 
 func (wfInst *workflowInstance) getDeviceInfo(sourceUri string, query DeviceInfoQuery, refresh bool) GetDeviceInfoResponse {
-    log.Debug("getting device info with query", query, "refresh", refresh)
+    log.Debug("getting device info with query ", query, " refresh ", refresh)
     id := makeId()
     target := makeTargetMap(sourceUri)
     req := getDeviceInfoRequest{Type: "wf_api_get_device_info_request", Id: id, Target: target, Query: query, Refresh: refresh}
@@ -521,19 +521,19 @@ func (wfInst *workflowInstance) getDeviceInfo(sourceUri string, query DeviceInfo
 
 func (wfInst *workflowInstance) GetDeviceName(sourceUri string, refresh bool) string {
     resp := wfInst.getDeviceInfo(sourceUri, DEVICE_INFO_QUERY_NAME, refresh)
-    log.Debug("device info name", resp.Name)
+    log.Debug("device info name ", resp.Name)
     return resp.Name
 }
 
 func (wfInst *workflowInstance) GetDeviceId(sourceUri string, refresh bool) string {
     resp := wfInst.getDeviceInfo(sourceUri, DEVICE_INFO_QUERY_ID, refresh)
-    log.Debug("device info id", resp.Id)
+    log.Debug("device info id ", resp.Id)
     return resp.Id
 }
 
 func (wfInst *workflowInstance) GetDeviceLocation(sourceUri string, refresh bool) string {
     resp := wfInst.getDeviceInfo(sourceUri, DEVICE_INFO_QUERY_ADDRESS, refresh)
-    log.Debug("device info address", resp.Address)
+    log.Debug("device info address ", resp.Address)
     return resp.Address
 }
 
@@ -543,7 +543,7 @@ func (wfInst *workflowInstance) GetDeviceAddress(sourceUri string, refresh bool)
 
 func (wfInst *workflowInstance) GetDeviceCoordinates(sourceUri string, refresh bool) []float64 {
     resp := wfInst.getDeviceInfo(sourceUri, DEVICE_INFO_QUERY_LATLONG, refresh)
-    log.Debug("device info latlong", resp.LatLong)
+    log.Debug("device info latlong ", resp.LatLong)
     return resp.LatLong
 }
 
@@ -553,36 +553,36 @@ func (wfInst *workflowInstance) GetDeviceLatLong(sourceUri string, refresh bool)
 
 func (wfInst *workflowInstance) GetDeviceIndoorLocation(sourceUri string, refresh bool) string {
     resp := wfInst.getDeviceInfo(sourceUri, DEVICE_INFO_QUERY_INDOOR_LOCATION, refresh)
-    log.Debug("device info indoor location", resp.IndoorLocation)
+    log.Debug("device info indoor location ", resp.IndoorLocation)
     return resp.IndoorLocation
 }
 
 func (wfInst *workflowInstance) GetDeviceBattery(sourceUri string, refresh bool) uint64 {
     resp := wfInst.getDeviceInfo(sourceUri, DEVICE_INFO_QUERY_BATTERY, refresh)
-    log.Debug("device info battery", resp.Battery)
+    log.Debug("device info battery ", resp.Battery)
     return resp.Battery
 }
 
 func (wfInst *workflowInstance) GetDeviceType(sourceUri string, refresh bool) string {
     resp := wfInst.getDeviceInfo(sourceUri, DEVICE_INFO_QUERY_TYPE, refresh)
-    log.Debug("device info type", resp.Type)
+    log.Debug("device info type ", resp.Type)
     return resp.Type
 }
 
 func (wfInst *workflowInstance) GetDeviceUsername(sourceUri string, refresh bool) string {
     resp := wfInst.getDeviceInfo(sourceUri, DEVICE_INFO_QUERY_USERNAME, refresh)
-    log.Debug("device info username", resp.Username)
+    log.Debug("device info username ", resp.Username)
     return resp.Username
 }
 
 func (wfInst *workflowInstance) GetDeviceLocationEnabled(sourceUri string, refresh bool) bool {
     resp := wfInst.getDeviceInfo(sourceUri, DEVICE_INFO_QUERY_LOCATION_ENABLED, refresh)
-    log.Debug("device info location enabled", resp.LocationEnabled)
+    log.Debug("device info location enabled ", resp.LocationEnabled)
     return resp.LocationEnabled
 }
 
 func (wfInst *workflowInstance) setDeviceInfo(sourceUri string, field SetDeviceInfoType, value string) SetDeviceInfoResponse {
-    log.Debug("setting device info field", field, "to", value)
+    log.Debug("setting device info field ", field, " to ", value)
     id := makeId()
     target := makeTargetMap(sourceUri)
     req := setDeviceInfoRequest{Type: "wf_api_set_device_info_request", Id: id, Target: target, Field: field, Value: value}
@@ -625,7 +625,7 @@ func (wfInst *workflowInstance) IsGroupMember(groupNameUri string, potentialMemb
     var deviceName string = ParseDeviceName(potentialMemberUri)
     var groupUri string = GroupMember(groupName, deviceName)
 
-    fmt.Println("retrieving whether", deviceName, "is a part of group", groupName)
+    fmt.Println("retrieving whether ", deviceName, " is a part of group ", groupName)
     id := makeId()
     req := groupQueryRequest{Type: "wf_api_group_query_request", Id: id, GroupUri: groupUri, Query: "is_member"}
     call := wfInst.sendAndReceiveRequest(req, id)
@@ -635,7 +635,7 @@ func (wfInst *workflowInstance) IsGroupMember(groupNameUri string, potentialMemb
 }
 
 func (wfInst *workflowInstance) SetUserProfile(sourceUri string, username string, force bool) SetUserProfileResponse {
-    log.Debug("setting user profile to", username, "force", force)
+    log.Debug("setting user profile to ", username, " force ", force)
     id := makeId()
     target := makeTargetMap(sourceUri)
     req := setUserProfileRequest{Type: "wf_api_set_user_profile_request", Id: id, Target: target, Username: username, Force: force}
@@ -646,7 +646,7 @@ func (wfInst *workflowInstance) SetUserProfile(sourceUri string, username string
 }
 
 func (wfInst *workflowInstance) SetChannel(sourceUri string, channelName string, suppressTTS bool, disableHomeChannel bool) SetChannelResponse {
-    log.Debug("setting channel", channelName, "suppressTTS", suppressTTS, "disableHomeChannel", disableHomeChannel)
+    log.Debug("setting channel ", channelName, " suppressTTS ", suppressTTS, " disableHomeChannel ", disableHomeChannel)
     id := makeId()
     target := makeTargetMap(sourceUri)
     req := setChannelRequest{Type: "wf_api_set_channel_request", Id: id, Target: target, ChannelName: channelName, SuppressTTS: suppressTTS, DisableHomeChannel: disableHomeChannel}
@@ -657,7 +657,7 @@ func (wfInst *workflowInstance) SetChannel(sourceUri string, channelName string,
 }
 
 func (wfInst *workflowInstance) SetDeviceMode(sourceUri string, mode DeviceMode) SetDeviceModeResponse {
-    log.Debug("setting device mode", mode)
+    log.Debug("setting device mode ", mode)
     id := makeId()
     target := makeTargetMap(sourceUri)
     req := setDeviceModeRequest{Type: "wf_api_set_device_mode_request", Id: id, Target: target, Mode: mode}
@@ -692,7 +692,7 @@ func (wfInst *workflowInstance) SetDeviceMode(sourceUri string, mode DeviceMode)
 // }
 
 func (wfInst *workflowInstance) PlaceCall(targetUri string, uri string) PlaceCallResponse {
-    log.Debug("placing call to ", targetUri, "with uri", uri)
+    log.Debug("placing call to ", targetUri, " with uri ", uri)
     id := makeId()
     target := makeTargetMap(targetUri)
     req := placeCallRequest{Type: "wf_api_call_request", Id: id, Target: target, Uri: uri}
@@ -703,7 +703,7 @@ func (wfInst *workflowInstance) PlaceCall(targetUri string, uri string) PlaceCal
 }
 
 func (wfInst *workflowInstance) AnswerCall(sourceUri string, callId string) AnswerResponse {
-    log.Debug("calling device with call id", callId)
+    log.Debug("calling device with call id ", callId)
     id := makeId()
     target := makeTargetMap(sourceUri)
     req := answerRequest{Type: "wf_api_answer_request", Id: id, Target: target, CallId: callId}
@@ -714,7 +714,7 @@ func (wfInst *workflowInstance) AnswerCall(sourceUri string, callId string) Answ
 }
 
 func (wfInst *workflowInstance) HangupCall(targetUri string, callId string) HangupCallResponse {
-    log.Debug("hanging up call with", callId, "and target uri", targetUri)
+    log.Debug("hanging up call with ", callId, " and target uri ", targetUri)
     id := makeId()
     target := makeTargetMap(targetUri)
     req := hangupCallRequest{Type: "wf_api_hangup_request", Id: id, Target: target, CallId: callId}
