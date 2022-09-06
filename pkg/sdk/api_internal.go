@@ -92,7 +92,7 @@ func (wfInst *workflowInstance) handleEvent(eventWrapper EventWrapper) error {
     log.Debug("Handling event of type ", eventWrapper.ParsedMsg["_type"])
     // call the appropriate handler function, if it was set by the user implementation
     switch eventWrapper.EventName {
-        case "start":
+        case START:
             var params StartEvent
             json.Unmarshal(eventWrapper.Msg, &params)
 
@@ -101,7 +101,7 @@ func (wfInst *workflowInstance) handleEvent(eventWrapper EventWrapper) error {
             } else {
                 log.Debug("ignoring event", eventWrapper.EventName, "no handler registered")                
             }
-        case "interaction_lifecycle":
+        case INTERACTION_LIFECYCLE:
             log.Debug("interaction lifecycle event:", string(eventWrapper.Msg))
             var params InteractionLifecycleEvent
             json.Unmarshal(eventWrapper.Msg, &params)
@@ -110,7 +110,7 @@ func (wfInst *workflowInstance) handleEvent(eventWrapper EventWrapper) error {
             } else {
                 log.Debug("ignoring event", eventWrapper.EventName, "no handler registered")                
             }
-        case "prompt":
+        case PROMPT:
             var params PromptEvent
             json.Unmarshal(eventWrapper.Msg, &params)
             log.Debug("prompt event: ", params)
@@ -119,7 +119,7 @@ func (wfInst *workflowInstance) handleEvent(eventWrapper EventWrapper) error {
             } else {
                 log.Debug("ignoring event", eventWrapper.EventName, "no handler registered")                
             }
-        case "button":
+        case BUTTON:
             log.Debug("button event ", string(eventWrapper.Msg))
             var params ButtonEvent
             json.Unmarshal(eventWrapper.Msg, &params)
@@ -128,12 +128,12 @@ func (wfInst *workflowInstance) handleEvent(eventWrapper EventWrapper) error {
             } else {
                 log.Debug("ignoring event ", eventWrapper.EventName, "no handler registered")                
             }
-        case "stop":
+        case STOP:
             log.Info("Workflow instance terminating, reason: ", eventWrapper.ParsedMsg["reason"])
             var params StopEvent
             json.Unmarshal(eventWrapper.Msg, &params)
             wfInst.StopReason = params.Reason
-        case "timer_fired":
+        case TIMER_FIRED:
             log.Debug("received timer fired event")
             var params TimerFiredEvent
             json.Unmarshal(eventWrapper.Msg, &params)
@@ -142,7 +142,7 @@ func (wfInst *workflowInstance) handleEvent(eventWrapper EventWrapper) error {
             } else {
                 log.Debug("ignoring event ", eventWrapper.EventName, " no handler registered")                
             }
-        case "timer":
+        case TIMER:
             log.Debug("received timer event ", string(eventWrapper.Msg))
             var params TimerEvent
             json.Unmarshal(eventWrapper.Msg, &params)
@@ -151,7 +151,7 @@ func (wfInst *workflowInstance) handleEvent(eventWrapper EventWrapper) error {
             } else {
                 log.Debug("ignoring event ", eventWrapper.EventName, " no handler registered")
             }
-        case "speech":
+        case SPEECH:
             log.Debug("received speech event ", string(eventWrapper.Msg))
             var params SpeechEvent
             json.Unmarshal(eventWrapper.Msg, &params)

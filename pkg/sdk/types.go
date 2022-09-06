@@ -13,6 +13,7 @@ const(
     SPEECH = "speech"
     NOTIFICATION = "notification"
     INCIDENT = "incident"
+    PROMPT = "prompt"
     PROMPT_START = "prompt_start"
     PROMPT_STOP = "prompt_stop"
     CALL_RINGING = "call_ringing"
@@ -21,6 +22,7 @@ const(
     CALL_FAILED = "call_failed"
     CALL_RECEIVED = "call_received"
     CALL_START_REQUEST = "call_start_request"
+    TIMER_FIRED = "timer_fired"
 )
 
 type TriggerType string
@@ -33,6 +35,12 @@ const (
 	CALENDAR_TRIGGER = "calendar"
 	GEOFENCE_TRIGGER = "geofence"
 	TELEPHONY_TRIGGER = "telephony"
+)
+
+type MessageType string 
+const (
+    EVENT = "event"
+    RESPONSE = "response"
 )
 
 type Language string 
