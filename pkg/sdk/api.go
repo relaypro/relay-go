@@ -29,6 +29,7 @@ type RelayApi interface {            // this is interface of your custom workflo
     OnSpeech(fn func(speechEvent SpeechEvent))
 
     // api
+    GetSourceUri(startEvent StartEvent) string
     StartInteraction(sourceUri string, name string) StartInteractionResponse
     EndInteraction(sourceUri string, name string) EndInteractionResponse
     SetTimer(timerType TimerType, name string, timeout uint64, timeoutType TimeoutType) SetTimerResponse
@@ -163,6 +164,10 @@ func (wfInst *workflowInstance) OnSpeech(fn func(speechEvent SpeechEvent)) {
 
 
 // API functions
+
+func (wfInst *workflowInstance) GetSourceUri(startEvent StartEvent) string {
+    return startEvent.Trigger.Args.SourceUri
+}
 
 // This is a start interaction function.  It starts an interaction.
 func (wfInst *workflowInstance) StartInteraction(sourceUri string, name string) StartInteractionResponse {
