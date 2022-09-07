@@ -17,8 +17,6 @@ The generated documentation is available at https://relaypro.github.io/relay-go/
 It also uses [github.com/gorilla/websocket](https://github.com/gorilla/websocket) as a 
 websocket implementation.
 <pre>
-// Copyright © 2022 Relay Inc.
-
 package main
 
 import (
