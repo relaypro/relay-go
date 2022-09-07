@@ -14,7 +14,10 @@ func (wfInst *workflowInstance) receiveWs() {
         // Read message from websocket connection
         _, msg, err := wfInst.WebsocketConnection.ReadMessage()
         if err != nil {
-            if wfInst.StopReason != "" {
+            if wfInst.StopReason == "normal" {
+                // eat it
+                return
+            } else if wfInst.StopReason != "" {
                 log.Info("websocket closed with reason: ", wfInst.StopReason)
                 return
             } else {
