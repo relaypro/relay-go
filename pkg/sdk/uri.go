@@ -39,7 +39,8 @@ func construct(resourceType string, idtype string, idOrName string) string {
 	return SCHEME + ":" + ROOT + ":" + idtype + ":" + resourceType + ":" + idOrName 
 }
 
-// Parses out a device name from a device or interaction URN. 
+// Parses out a device name from a device or interaction URN. Returns the 
+// name of the device as a string.
 func ParseDeviceName(uri string) string {
 	uriUnescaped, err := url.PathUnescape(uri)
 	log.Error("error ", err)
@@ -57,7 +58,8 @@ func ParseDeviceName(uri string) string {
 	return ""
 }
 
-// Parses out a device ID from a device or interaction URN.
+// Parses out a device ID from a device or interaction URN. Returns the ID of the
+// device as a string.
 func ParseDeviceId(uri string) string {
 	uriUnescaped, err := url.PathUnescape(uri)
 	log.Error("error ", err)
@@ -75,7 +77,8 @@ func ParseDeviceId(uri string) string {
 	return ""
 }
 
-// Parses out a group name from a group URN.
+// Parses out a group name from a group URN. Returns the name of the group
+// as a string.
 func ParseGroupName(uri string) string {
 	components := strings.Split(uri, ":")
 	parsedGroupName, err := url.PathUnescape(components[4])
@@ -87,7 +90,8 @@ func ParseGroupName(uri string) string {
 	return ""
 }
 
-// Parses out a group ID from a group URN.
+// Parses out a group ID from a group URN. Returns the ID of a group as a 
+// string.
 func ParseGroupId(uri string) string {
 	components := strings.Split(uri, ":")
 	parsedGroupId, err := url.PathUnescape(components[4])
@@ -99,33 +103,33 @@ func ParseGroupId(uri string) string {
 	return ""
 }
 
-// Creates a URN from a group ID. 
+// Creates a URN from a group ID. Returns the constructed URN as a string.
 func GroupId(id string) string {
 	return construct(GROUP, ID, url.PathEscape(id))
 }
 
-// Creates a URN from a group name. 
+// Creates a URN from a group name. Returns the constructed URN as a string.
 func GroupName(name string) string {
 	return construct(GROUP, NAME, url.PathEscape(name))
 }
 
-// Creates a URN for a group member.
+// Creates a URN for a group member. Returns the constructed URN as a string.
 func GroupMember(group string, device string) string {
 	return SCHEME + ":" + ROOT + ":" + NAME + ":" + GROUP + ":" + url.PathEscape(group) + DEVICE_PATTERN + url.PathEscape(SCHEME + ":" + 
 			ROOT + ":" + NAME + ":" + DEVICE + ":" + device)
 }
 
-// Creates a URN from a device ID. 
+// Creates a URN from a device ID. Returns the constructed URN as a string.
 func DeviceId(id string) string {
 	return construct(DEVICE, ID, url.PathEscape(id))
 }
 
-// Creates a URN from a device name.
+// Creates a URN from a device name. Returns the constructed URN as a string.
 func DeviceName(name string) string {
 	return construct(DEVICE, NAME, url.PathEscape(name))
 }
 
-// Checks if the URN is for an interaction.
+// Checks if the URN is for an interaction. Returns true if the URN is for an interaction, false otherwise.
 func IsInteractionUri(uri string) bool {
 	if(strings.Contains(uri, INTERACTION_URI_NAME) || strings.Contains(uri, INTERACTION_URI_ID)) {
 		return true
@@ -133,7 +137,7 @@ func IsInteractionUri(uri string) bool {
 	return false
 }
 
-// Checks if the URN is a Relay URN. 
+// Checks if the URN is a Relay URN. Returns true if the URN is a Relay URN, false otherwise.
 func IsRelayUri(uri string) bool {
 	if (strings.HasPrefix(uri, SCHEME + ":" + ROOT)) {
 		return true
