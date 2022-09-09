@@ -369,37 +369,55 @@ const (
 
 ## Variables
 
+Usedto specify that the URN is for a device.
+
 ```go
 var DEVICE string = "device"
 ```
+
+Pattern used when creating an interaction URN.
 
 ```go
 var DEVICE_PATTERN string = "?device="
 ```
 
+Used to specify that the URN is for a group.
+
 ```go
 var GROUP string = "group"
 ```
+
+Used to specify that the URN is for an ID.
 
 ```go
 var ID string = "id"
 ```
 
+Beginning of an interaction URN that uses the ID of a device.
+
 ```go
 var INTERACTION_URI_ID string = "urn:relay-resource:id:interaction"
 ```
+
+Beginning of an interaction URN that uses the name of a device.
 
 ```go
 var INTERACTION_URI_NAME string = "urn:relay-resource:name:interaction"
 ```
 
+Used to specify that the URN is for a name.
+
 ```go
 var NAME string = "name"
 ```
 
+The root used for creating a URN.
+
 ```go
 var ROOT string = "relay-resource"
 ```
+
+The scheme used for creating a URN.
 
 ```go
 var SCHEME string = "urn"
@@ -454,11 +472,15 @@ func AddWorkflow(workflowName string, fn func(api RelayApi))
 func DeviceId(id string) string
 ```
 
+Creates a URN from a device ID.
+
 ## func DeviceName
 
 ```go
 func DeviceName(name string) string
 ```
+
+Creates a URN from a device name.
 
 ## func GroupId
 
@@ -466,17 +488,23 @@ func DeviceName(name string) string
 func GroupId(id string) string
 ```
 
+Creates a URN from a group ID.
+
 ## func GroupMember
 
 ```go
 func GroupMember(group string, device string) string
 ```
 
+Creates a URN for a group member.
+
 ## func GroupName
 
 ```go
 func GroupName(name string) string
 ```
+
+Creates a URN from a group name.
 
 ## func InitializeRelaySdk
 
@@ -492,11 +520,15 @@ this should return an interface that has a workflow\(\) function that they can p
 func IsInteractionUri(uri string) bool
 ```
 
+Checks if the URN is for an interaction.
+
 ## func IsRelayUri
 
 ```go
 func IsRelayUri(uri string) bool
 ```
+
+Checks if the URN is a Relay URN.
 
 ## func ParseDeviceId
 
@@ -504,11 +536,15 @@ func IsRelayUri(uri string) bool
 func ParseDeviceId(uri string) string
 ```
 
+Parses out a device ID from a device or interaction URN.
+
 ## func ParseDeviceName
 
 ```go
 func ParseDeviceName(uri string) string
 ```
+
+Parses out a device name from a device or interaction URN.
 
 ## func ParseGroupId
 
@@ -516,11 +552,15 @@ func ParseDeviceName(uri string) string
 func ParseGroupId(uri string) string
 ```
 
+Parses out a group ID from a group URN.
+
 ## func ParseGroupName
 
 ```go
 func ParseGroupName(uri string) string
 ```
+
+Parses out a group name from a group URN.
 
 ## func construct
 
