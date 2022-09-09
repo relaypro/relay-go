@@ -1986,7 +1986,9 @@ func (wfInst *workflowInstance) SetVar(name string, value string) SetVarResponse
 func (wfInst *workflowInstance) StartInteraction(sourceUri string, name string) StartInteractionResponse
 ```
 
-This is a start interaction function.  It starts an interaction.
+Starts an interaction with the user.  Triggers an INTERACTION\_STARTED event and allows the user to interact with the device via functions that require an interaction URN.
+
+target \(target\): the device that you would like to start an interaction with. name \(str\): a name for your interaction. options \(optional\): can be color, home channel, or input types. Defaults to None.
 
 ### func \(\*workflowInstance\) StartTimer
 
