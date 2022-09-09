@@ -172,7 +172,6 @@ func (wfInst *workflowInstance) GetSourceUri(startEvent StartEvent) string {
 // Starts an interaction with the user.  Triggers an INTERACTION_STARTED event
 // and allows the user to interact with the device via functions that require an 
 // interaction URN.
-//
 // target (target): the device that you would like to start an interaction with.
 // name (str): a name for your interaction.
 // options (optional): can be color, home channel, or input types. Defaults to None.
