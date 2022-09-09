@@ -472,7 +472,7 @@ func AddWorkflow(workflowName string, fn func(api RelayApi))
 func DeviceId(id string) string
 ```
 
-Creates a URN from a device ID.
+Creates a URN from a device ID. Returns the constructed URN as a string.
 
 ## func DeviceName
 
@@ -480,7 +480,7 @@ Creates a URN from a device ID.
 func DeviceName(name string) string
 ```
 
-Creates a URN from a device name.
+Creates a URN from a device name. Returns the constructed URN as a string.
 
 ## func GroupId
 
@@ -488,7 +488,7 @@ Creates a URN from a device name.
 func GroupId(id string) string
 ```
 
-Creates a URN from a group ID.
+Creates a URN from a group ID. Returns the constructed URN as a string.
 
 ## func GroupMember
 
@@ -496,7 +496,7 @@ Creates a URN from a group ID.
 func GroupMember(group string, device string) string
 ```
 
-Creates a URN for a group member.
+Creates a URN for a group member. Returns the constructed URN as a string.
 
 ## func GroupName
 
@@ -504,7 +504,7 @@ Creates a URN for a group member.
 func GroupName(name string) string
 ```
 
-Creates a URN from a group name.
+Creates a URN from a group name. Returns the constructed URN as a string.
 
 ## func InitializeRelaySdk
 
@@ -520,7 +520,7 @@ this should return an interface that has a workflow\(\) function that they can p
 func IsInteractionUri(uri string) bool
 ```
 
-Checks if the URN is for an interaction.
+Checks if the URN is for an interaction. Returns true if the URN is for an interaction, false otherwise.
 
 ## func IsRelayUri
 
@@ -528,7 +528,7 @@ Checks if the URN is for an interaction.
 func IsRelayUri(uri string) bool
 ```
 
-Checks if the URN is a Relay URN.
+Checks if the URN is a Relay URN. Returns true if the URN is a Relay URN, false otherwise.
 
 ## func ParseDeviceId
 
@@ -536,7 +536,7 @@ Checks if the URN is a Relay URN.
 func ParseDeviceId(uri string) string
 ```
 
-Parses out a device ID from a device or interaction URN.
+Parses out a device ID from a device or interaction URN. Returns the ID of the device as a string.
 
 ## func ParseDeviceName
 
@@ -544,7 +544,7 @@ Parses out a device ID from a device or interaction URN.
 func ParseDeviceName(uri string) string
 ```
 
-Parses out a device name from a device or interaction URN.
+Parses out a device name from a device or interaction URN. Returns the name of the device as a string.
 
 ## func ParseGroupId
 
@@ -552,7 +552,7 @@ Parses out a device name from a device or interaction URN.
 func ParseGroupId(uri string) string
 ```
 
-Parses out a group ID from a group URN.
+Parses out a group ID from a group URN. Returns the ID of a group as a string.
 
 ## func ParseGroupName
 
@@ -560,7 +560,7 @@ Parses out a group ID from a group URN.
 func ParseGroupName(uri string) string
 ```
 
-Parses out a group name from a group URN.
+Parses out a group name from a group URN. Returns the name of the group as a string.
 
 ## func construct
 
@@ -1668,7 +1668,7 @@ type workflowInstance struct {
 func (wfInst *workflowInstance) Alert(target string, originator string, name string, text string, pushOptions NotificationOptions) SendNotificationResponse
 ```
 
-Sends out an alert to the specified group of devices and the Relay Dash.
+Sends out an alert to the specified group of devices and the Relay Dash. Returns a SendNotificationResponse.
 
 ### func \(\*workflowInstance\) AnswerCall
 
@@ -1676,7 +1676,7 @@ Sends out an alert to the specified group of devices and the Relay Dash.
 func (wfInst *workflowInstance) AnswerCall(sourceUri string, callId string) AnswerResponse
 ```
 
-Answers a call on your device.
+Answers a call on your device. Returns an AnswerResponse.
 
 ### func \(\*workflowInstance\) Breathe
 
@@ -1684,7 +1684,7 @@ Answers a call on your device.
 func (wfInst *workflowInstance) Breathe(sourceUri string, color string, count int64) SetLedResponse
 ```
 
-Switches all of the LEDs on a device to a certain color and creates a 'breathing' effect, where the LEDs will slowly light up a specified number of times.
+Switches all of the LEDs on a device to a certain color and creates a 'breathing' effect, where the LEDs will slowly light up a specified number of times. Returns a SetLedResponse.
 
 ### func \(\*workflowInstance\) Broadcast
 
@@ -1692,7 +1692,7 @@ Switches all of the LEDs on a device to a certain color and creates a 'breathing
 func (wfInst *workflowInstance) Broadcast(target string, originator string, name string, text string, pushOptions NotificationOptions) SendNotificationResponse
 ```
 
-Sends out a broadcasted message to a group of devices.  The message is played out on all devices, as well as sent to the Relay Dash.
+Sends out a broadcasted message to a group of devices.  The message is played out on all devices, as well as sent to the Relay Dash. Returns a SendNotificationResponse.
 
 ### func \(\*workflowInstance\) CancelAlert
 
@@ -1700,7 +1700,7 @@ Sends out a broadcasted message to a group of devices.  The message is played ou
 func (wfInst *workflowInstance) CancelAlert(target string, name string) SendNotificationResponse
 ```
 
-Cancels an alert that was sent to a group of devices.  Particularly useful if you would like to cancel the alert on all devices after one device has acknowledged the alert.
+Cancels an alert that was sent to a group of devices.  Particularly useful if you would like to cancel the alert on all devices after one device has acknowledged the alert. Returns a SendNotificationResponse.
 
 ### func \(\*workflowInstance\) CancelBroadcast
 
@@ -1708,7 +1708,7 @@ Cancels an alert that was sent to a group of devices.  Particularly useful if yo
 func (wfInst *workflowInstance) CancelBroadcast(target string, name string) SendNotificationResponse
 ```
 
-Cancels the broadcsat that was sent to a group of devices.
+Cancels the broadcsat that was sent to a group of devices. Returns a SendNotificationResponse.
 
 ### func \(\*workflowInstance\) ClearTimer
 
@@ -1716,7 +1716,7 @@ Cancels the broadcsat that was sent to a group of devices.
 func (wfInst *workflowInstance) ClearTimer(name string) ClearTimerResponse
 ```
 
-Clears the specified timer.
+Clears the specified timer. Returns a ClearTimerResponse.
 
 ### func \(\*workflowInstance\) CreateIncident
 
@@ -1724,7 +1724,7 @@ Clears the specified timer.
 func (wfInst *workflowInstance) CreateIncident(originator string, itype string) CreateIncidentResponse
 ```
 
-Creates an incident that will alert the Relay Dash.
+Creates an incident that will alert the Relay Dash. Returns a CreateIncidentResponse.
 
 ### func \(\*workflowInstance\) DisableHomeChannel
 
@@ -1732,7 +1732,7 @@ Creates an incident that will alert the Relay Dash.
 func (wfInst *workflowInstance) DisableHomeChannel(sourceUri string) SetHomeChannelStateResponse
 ```
 
-Disables the home channel on the device.
+Disables the home channel on the device. Returns the SetHomeChannelStateResponse.
 
 ### func \(\*workflowInstance\) DisableLocation
 
@@ -1740,7 +1740,7 @@ Disables the home channel on the device.
 func (wfInst *workflowInstance) DisableLocation(sourceUri string) SetDeviceInfoResponse
 ```
 
-Disables location services on a device.  Location services will remain disabled until they are enabled on the Relay Dash or through a workflow.
+Disables location services on a device.  Location services will remain disabled until they are enabled on the Relay Dash or through a workflow. Returns a SendNotificationResponse.
 
 ### func \(\*workflowInstance\) EnableHomeChannel
 
@@ -1748,7 +1748,7 @@ Disables location services on a device.  Location services will remain disabled 
 func (wfInst *workflowInstance) EnableHomeChannel(sourceUri string) SetHomeChannelStateResponse
 ```
 
-Enables the home channel on the device.
+Enables the home channel on the device. Returns the SetHomeChannelStateResponse.
 
 ### func \(\*workflowInstance\) EnableLocation
 
@@ -1764,7 +1764,7 @@ Enables location services on a device.  Location services will remain enabled un
 func (wfInst *workflowInstance) EndInteraction(sourceUri string, name string) EndInteractionResponse
 ```
 
-Ends an interaction with the user.  Triggers an INTERACTION\_ENDED event to signify that the user is done interacting with the device.
+Ends an interaction with the user.  Triggers an INTERACTION\_ENDED event to signify that the user is done interacting with the device.  Returns an EndInteractionResponse.
 
 ### func \(\*workflowInstance\) FetchDevice
 
@@ -1780,7 +1780,7 @@ A convenience method for getting all the details of a device. This will return q
 func (wfInst *workflowInstance) Flash(sourceUri string, color string, count int64) SetLedResponse
 ```
 
-Switches all of the LEDs on a device to a certain color and flashes them a specified number of times.
+Switches all of the LEDs on a device to a certain color and flashes them a specified number of times. Returns a SetLedResponse.
 
 ### func \(\*workflowInstance\) GetDeviceAddress
 
@@ -1788,7 +1788,7 @@ Switches all of the LEDs on a device to a certain color and flashes them a speci
 func (wfInst *workflowInstance) GetDeviceAddress(sourceUri string, refresh bool) string
 ```
 
-Returns the address of a targeted device.
+Returns the address of a targeted device as a string.
 
 ### func \(\*workflowInstance\) GetDeviceBattery
 
@@ -1796,7 +1796,7 @@ Returns the address of a targeted device.
 func (wfInst *workflowInstance) GetDeviceBattery(sourceUri string, refresh bool) uint64
 ```
 
-Returns the battery of a targeted device.
+Returns the battery of a targeted device as a string.
 
 ### func \(\*workflowInstance\) GetDeviceCoordinates
 
@@ -1804,7 +1804,7 @@ Returns the battery of a targeted device.
 func (wfInst *workflowInstance) GetDeviceCoordinates(sourceUri string, refresh bool) []float64
 ```
 
-Retrieves the coordinates of the device's location.
+Retrieves the coordinates of the device's location. Returns a float64 array containing the coordinates of the device.
 
 ### func \(\*workflowInstance\) GetDeviceId
 
@@ -1812,7 +1812,7 @@ Retrieves the coordinates of the device's location.
 func (wfInst *workflowInstance) GetDeviceId(sourceUri string, refresh bool) string
 ```
 
-Returns the ID of the targeted device.
+Returns the ID of the targeted device as a string.
 
 ### func \(\*workflowInstance\) GetDeviceIndoorLocation
 
@@ -1820,7 +1820,7 @@ Returns the ID of the targeted device.
 func (wfInst *workflowInstance) GetDeviceIndoorLocation(sourceUri string, refresh bool) string
 ```
 
-Returns the indoor location of a targeted device.
+Returns the indoor location of a targeted device as a string.
 
 ### func \(\*workflowInstance\) GetDeviceLatLong
 
@@ -1828,7 +1828,7 @@ Returns the indoor location of a targeted device.
 func (wfInst *workflowInstance) GetDeviceLatLong(sourceUri string, refresh bool) []float64
 ```
 
-Returns the latitude and longitude coordinates of a targeted device.
+Returns the latitude and longitude coordinates of a targeted device. Returns a float64 array containing thecoordinates of the device.
 
 ### func \(\*workflowInstance\) GetDeviceLocation
 
@@ -1836,7 +1836,7 @@ Returns the latitude and longitude coordinates of a targeted device.
 func (wfInst *workflowInstance) GetDeviceLocation(sourceUri string, refresh bool) string
 ```
 
-Returns the location of a targeted device.
+Returns the location of a targeted device as a string.
 
 ### func \(\*workflowInstance\) GetDeviceLocationEnabled
 
@@ -1844,7 +1844,7 @@ Returns the location of a targeted device.
 func (wfInst *workflowInstance) GetDeviceLocationEnabled(sourceUri string, refresh bool) bool
 ```
 
-Returns whether the location services on a device are enabled.
+Returns whether the location services on a device are enabled as a boolean.
 
 ### func \(\*workflowInstance\) GetDeviceName
 
@@ -1852,7 +1852,7 @@ Returns whether the location services on a device are enabled.
 func (wfInst *workflowInstance) GetDeviceName(sourceUri string, refresh bool) string
 ```
 
-Returns the name of a targeted device.
+Returns the name of a targeted device as a string.
 
 ### func \(\*workflowInstance\) GetDeviceType
 
@@ -1860,7 +1860,7 @@ Returns the name of a targeted device.
 func (wfInst *workflowInstance) GetDeviceType(sourceUri string, refresh bool) string
 ```
 
-Returns the device type of a targeted device, i.e. gen 2, gen 3, etc.
+Returns the device type of a targeted device, i.e. gen 2, gen 3, etc. as a string.
 
 ### func \(\*workflowInstance\) GetGroupMembers
 
@@ -1868,7 +1868,7 @@ Returns the device type of a targeted device, i.e. gen 2, gen 3, etc.
 func (wfInst *workflowInstance) GetGroupMembers(groupUri string) []string
 ```
 
-Returns the members of a particular group.
+Returns the members of a particular group as a string array.
 
 ### func \(\*workflowInstance\) GetNumberVar
 
@@ -1876,7 +1876,7 @@ Returns the members of a particular group.
 func (wfInst *workflowInstance) GetNumberVar(name string, defaultValue int) int
 ```
 
-Retrieves a variable that was set either during workflow registration or through the set\_var\(\) function of type integer.  The variable can be retrieved anywhere within the workflow, but is erased after the workflow terminates.
+Retrieves a variable that was set either during workflow registration or through the set\_var\(\) function of type integer.  The variable can be retrieved anywhere within the workflow, but is erased after the workflow terminates. Returns the requested variable's value as an integer.
 
 ### func \(\*workflowInstance\) GetSourceUri
 
@@ -1892,7 +1892,7 @@ Helper method for parsing out the source URN from a start event trigger.
 func (wfInst *workflowInstance) GetUnreadInboxSize(sourceUri string) int
 ```
 
-Retrieves the number of messages in device's inbox.
+Retrieves the number of messages in device's inbox. Returns the number of unread messages in the device's inbox as an integer.
 
 ### func \(\*workflowInstance\) GetUserProfile
 
@@ -1900,7 +1900,7 @@ Retrieves the number of messages in device's inbox.
 func (wfInst *workflowInstance) GetUserProfile(sourceUri string, refresh bool) string
 ```
 
-Returns the user profile of a targeted device.
+Returns the user profile of a targeted device as a string.
 
 ### func \(\*workflowInstance\) GetVar
 
@@ -1908,7 +1908,7 @@ Returns the user profile of a targeted device.
 func (wfInst *workflowInstance) GetVar(name string, defaultValue string) string
 ```
 
-Retrieves a variable that was set either during workflow registration or through the set\_var\(\) function.  The variable can be retrieved anywhere within the workflow, but is erased after the workflow terminates.
+Retrieves a variable that was set either during workflow registration or through the set\_var\(\) function.  The variable can be retrieved anywhere within the workflow, but is erased after the workflow terminates. Returns the requested variable's value as a string.
 
 ### func \(\*workflowInstance\) HangupCall
 
@@ -1916,7 +1916,7 @@ Retrieves a variable that was set either during workflow registration or through
 func (wfInst *workflowInstance) HangupCall(targetUri string, callId string) HangupCallResponse
 ```
 
-Ends a call on your device.  Note that target can only have one item.
+Ends a call on your device.  Note that target can only have one item. Returns a HangupCallResponse.
 
 ### func \(\*workflowInstance\) IsGroupMember
 
@@ -1924,7 +1924,7 @@ Ends a call on your device.  Note that target can only have one item.
 func (wfInst *workflowInstance) IsGroupMember(groupNameUri string, potentialMemberUri string) bool
 ```
 
-Checks whether a device is a member of a particular group.
+Checks whether a device is a member of a particular group. Returns true if the device is a member of the specified group, false otherwise.
 
 ### func \(\*workflowInstance\) Listen
 
@@ -1932,7 +1932,7 @@ Checks whether a device is a member of a particular group.
 func (wfInst *workflowInstance) Listen(sourceUri string, phrases []string, transcribe bool, alt_lang string, timeout int) string
 ```
 
-Listens for the user to speak into the device.  Utilizes speech to text functionality to interact with the user.
+Listens for the user to speak into the device.  Utilizes speech to text functionality to interact with the user. Returns the text that the device parsed from the speech as a string.
 
 ### func \(\*workflowInstance\) LogMessage
 
@@ -1940,7 +1940,7 @@ Listens for the user to speak into the device.  Utilizes speech to text function
 func (wfInst *workflowInstance) LogMessage(message string, category string) LogAnalyticsEventResponse
 ```
 
-Log an analytics event from a workflow with the specified content and under a specified category. This does not log the device who triggered the workflow that called this function.
+Log an analytics event from a workflow with the specified content and under a specified category. This does not log the device who triggered the workflow that called this function. Returns a LogAnalyticsEventResponse.
 
 ### func \(\*workflowInstance\) LogUserMessage
 
@@ -1948,7 +1948,7 @@ Log an analytics event from a workflow with the specified content and under a sp
 func (wfInst *workflowInstance) LogUserMessage(message string, sourceUri string, category string) LogAnalyticsEventResponse
 ```
 
-Log an analytic event from a workflow with the specified content and under a specified category.  This includes the device who triggered the workflow that called this function.
+Log an analytic event from a workflow with the specified content and under a specified category.  This includes the device who triggered the workflow that called this function. Returns a LogAnalyticsEventResponse.
 
 ### func \(\*workflowInstance\) OnButton
 
@@ -1998,7 +1998,7 @@ func (wfInst *workflowInstance) OnTimerFired(fn func(timerFiredEvent TimerFiredE
 func (wfInst *workflowInstance) PlaceCall(targetUri string, uri string) PlaceCallResponse
 ```
 
-Places a call to another device.
+Places a call to another device. Returns a PlaceCallResonse.
 
 ### func \(\*workflowInstance\) Play
 
@@ -2006,7 +2006,7 @@ Places a call to another device.
 func (wfInst *workflowInstance) Play(sourceUri string, filename string) string
 ```
 
-Plays a custom audio file that was uploaded by the user.
+Plays a custom audio file that was uploaded by the user. Returns the correlation ID retrieved from the PlayResponse as a string.
 
 ### func \(\*workflowInstance\) PlayAndWait
 
@@ -2014,7 +2014,7 @@ Plays a custom audio file that was uploaded by the user.
 func (wfInst *workflowInstance) PlayAndWait(sourceUri string, filename string) string
 ```
 
-Plays a custom audio file that was uploaded by the user. Waits until the audio file has finished playing before continuing through the workflow.
+Plays a custom audio file that was uploaded by the user. Waits until the audio file has finished playing before continuing through the workflow. Returns the correlation ID retrieved from the PlayResponse as a string.
 
 ### func \(\*workflowInstance\) PlayUnreadInboxMessages
 
@@ -2022,7 +2022,7 @@ Plays a custom audio file that was uploaded by the user. Waits until the audio f
 func (wfInst *workflowInstance) PlayUnreadInboxMessages(sourceUri string) PlayInboxMessagesResponse
 ```
 
-Play a targeted device's inbox messages.
+Play a targeted device's inbox messages. Returns the PlayInboxMessagesResponse.
 
 ### func \(\*workflowInstance\) Rainbow
 
@@ -2030,7 +2030,7 @@ Play a targeted device's inbox messages.
 func (wfInst *workflowInstance) Rainbow(sourceUri string, rotations int64) SetLedResponse
 ```
 
-Switches all the LEDs on to a configured rainbow pattern and rotates the rainbow a specified number of times.
+Switches all the LEDs on to a configured rainbow pattern and rotates the rainbow a specified number of times. Returns a SetLedResponse.
 
 ### func \(\*workflowInstance\) ResolveIncident
 
@@ -2038,7 +2038,7 @@ Switches all the LEDs on to a configured rainbow pattern and rotates the rainbow
 func (wfInst *workflowInstance) ResolveIncident(incidentId string, reason string) ResolveIncidentResponse
 ```
 
-Resolved an incident that was created.
+Resolved an incident that was created. Returns a ResolveIncidentResponse.
 
 ### func \(\*workflowInstance\) Rotate
 
@@ -2046,7 +2046,7 @@ Resolved an incident that was created.
 func (wfInst *workflowInstance) Rotate(sourceUri string, color string, rotations int64) SetLedResponse
 ```
 
-Switches all of the LEDs on a device to a certain color and rotates them a specified number of times.
+Switches all of the LEDs on a device to a certain color and rotates them a specified number of times. Returns a SetLedResponse.
 
 ### func \(\*workflowInstance\) Say
 
@@ -2054,7 +2054,7 @@ Switches all of the LEDs on a device to a certain color and rotates them a speci
 func (wfInst *workflowInstance) Say(sourceUri string, text string, lang Language) SayResponse
 ```
 
-Utilizes text to speech capabilities to make the device 'speak' to the user.
+Utilizes text to speech capabilities to make the device 'speak' to the user. Returns a SayResponse.
 
 ### func \(\*workflowInstance\) SayAndWait
 
@@ -2062,7 +2062,7 @@ Utilizes text to speech capabilities to make the device 'speak' to the user.
 func (wfInst *workflowInstance) SayAndWait(sourceUri string, text string, lang Language) SayResponse
 ```
 
-Utilizes text to speech capabilities to make the device 'speak' to the user. Waits until the text is fully played out on the device before continuing.
+Utilizes text to speech capabilities to make the device 'speak' to the user. Waits until the text is fully played out on the device before continuing. Returns a SayResponse.
 
 ### func \(\*workflowInstance\) SetChannel
 
@@ -2070,7 +2070,7 @@ Utilizes text to speech capabilities to make the device 'speak' to the user. Wai
 func (wfInst *workflowInstance) SetChannel(sourceUri string, channelName string, suppressTTS bool, disableHomeChannel bool) SetChannelResponse
 ```
 
-Sets the channel that a device is on.  This can be used to change the channel of a device during a workflow, where the channel will also be updated on the Relay Dash.
+Sets the channel that a device is on.  This can be used to change the channel of a device during a workflow, where the channel will also be updated on the Relay Dash. Returns a SetChannelResponse.
 
 ### func \(\*workflowInstance\) SetDeviceName
 
@@ -2078,7 +2078,7 @@ Sets the channel that a device is on.  This can be used to change the channel of
 func (wfInst *workflowInstance) SetDeviceName(sourceUri string, name string) SetDeviceInfoResponse
 ```
 
-Sets the name of a targeted device and updates it on the Relay Dash. The name remains updated until it is set again via a workflow or updated manually on the Relay Dash.
+Sets the name of a targeted device and updates it on the Relay Dash. The name remains updated until it is set again via a workflow or updated manually on the Relay Dash.  Returns a SendNotificationResponse.
 
 ### func \(\*workflowInstance\) SetTimer
 
@@ -2086,7 +2086,7 @@ Sets the name of a targeted device and updates it on the Relay Dash. The name re
 func (wfInst *workflowInstance) SetTimer(timerType TimerType, name string, timeout uint64, timeoutType TimeoutType) SetTimerResponse
 ```
 
-Serves as a named timer that can be either interval or timeout.  Allows you to specify the unit of time.
+Serves as a named timer that can be either interval or timeout.  Allows you to specify the unit of time. Returns a SetTimerResponse.
 
 ### func \(\*workflowInstance\) SetUserProfile
 
@@ -2094,7 +2094,7 @@ Serves as a named timer that can be either interval or timeout.  Allows you to s
 func (wfInst *workflowInstance) SetUserProfile(sourceUri string, username string, force bool) SetUserProfileResponse
 ```
 
-Sets the profile of a user by updating the username.
+Sets the profile of a user by updating the username. Returns a SetUserProfileResponse.
 
 ### func \(\*workflowInstance\) SetVar
 
@@ -2102,7 +2102,7 @@ Sets the profile of a user by updating the username.
 func (wfInst *workflowInstance) SetVar(name string, value string) SetVarResponse
 ```
 
-Sets a variable with the corresponding name and value. Scope of the variable is from start to end of a workflow.  Note that you can only set values of type string.
+Sets a variable with the corresponding name and value. Scope of the variable is from start to end of a workflow.  Note that you can only set values of type string. Returns a SetVarResponse.
 
 ### func \(\*workflowInstance\) StartInteraction
 
@@ -2110,7 +2110,7 @@ Sets a variable with the corresponding name and value. Scope of the variable is 
 func (wfInst *workflowInstance) StartInteraction(sourceUri string, name string) StartInteractionResponse
 ```
 
-Starts an interaction with the user.  Triggers an INTERACTION\_STARTED event and allows the user to interact with the device via functions that require an interaction URN.
+Starts an interaction with the user.  Triggers an INTERACTION\_STARTED event and allows the user to interact with the device via functions that require an interaction URN. Returns a StartInteractionResponse.
 
 ### func \(\*workflowInstance\) StartTimer
 
@@ -2118,7 +2118,7 @@ Starts an interaction with the user.  Triggers an INTERACTION\_STARTED event and
 func (wfInst *workflowInstance) StartTimer(timeout int) StartTimerResponse
 ```
 
-Starts an unnamed timer, meaning this will be the only timer on your device. The timer will fire when it reaches the value of the 'timeout' parameter.
+Starts an unnamed timer, meaning this will be the only timer on your device. The timer will fire when it reaches the value of the 'timeout' parameter. Returns a StartTimerResponse.
 
 ### func \(\*workflowInstance\) StopPlayback
 
@@ -2126,7 +2126,7 @@ Starts an unnamed timer, meaning this will be the only timer on your device. The
 func (wfInst *workflowInstance) StopPlayback(sourceUri string, ids []string) StopPlaybackResponse
 ```
 
-Stops a playback request on the device.
+Stops a playback request on the device. Returns the StopPlaybackResponse.
 
 ### func \(\*workflowInstance\) StopTimer
 
@@ -2134,7 +2134,7 @@ Stops a playback request on the device.
 func (wfInst *workflowInstance) StopTimer() StopTimerResponse
 ```
 
-Stops an unnamed timer.
+Stops an unnamed timer.  Returns a StopTimerResponse.
 
 ### func \(\*workflowInstance\) SwitchAllLedOff
 
@@ -2142,7 +2142,7 @@ Stops an unnamed timer.
 func (wfInst *workflowInstance) SwitchAllLedOff(sourceUri string) SetLedResponse
 ```
 
-Swithes all of the LEDs on a device off.
+Swithes all of the LEDs on a device off. Returns a SetLedResponse.
 
 ### func \(\*workflowInstance\) SwitchAllLedOn
 
@@ -2150,7 +2150,7 @@ Swithes all of the LEDs on a device off.
 func (wfInst *workflowInstance) SwitchAllLedOn(sourceUri string, color string) SetLedResponse
 ```
 
-Switches all the LEDs on a device on to a specified color.
+Switches all the LEDs on a device on to a specified color. Returns a SetLedResponse.
 
 ### func \(\*workflowInstance\) SwitchLedOn
 
@@ -2158,7 +2158,7 @@ Switches all the LEDs on a device on to a specified color.
 func (wfInst *workflowInstance) SwitchLedOn(sourceUri string, led int, color string) SetLedResponse
 ```
 
-Switches on an LED at a particules index to a specified color.
+Switches on an LED at a particules index to a specified color. Returns a SetLedResponse.
 
 ### func \(\*workflowInstance\) Terminate
 
@@ -2174,7 +2174,7 @@ Terminates a workflow.  This method is usually called after your workflow has co
 func (wfInst *workflowInstance) Translate(sourceUri string, text string, from Language, to Language) string
 ```
 
-Translates text from one language to another.
+Translates text from one language to another. Returns the translated text in the specified language as a string.
 
 ### func \(\*workflowInstance\) TriggerWorkflow
 
@@ -2190,7 +2190,7 @@ A convenience method for sending an HTTP trigger to the Relay server. This gener
 func (wfInst *workflowInstance) UnsetVar(name string) UnsetVarResponse
 ```
 
-Unsets the value of a variable.
+Unsets the value of a variable. Returns an UnsetVarResponse.
 
 ### func \(\*workflowInstance\) Vibrate
 
@@ -2198,7 +2198,7 @@ Unsets the value of a variable.
 func (wfInst *workflowInstance) Vibrate(sourceUri string, pattern []uint64) VibrateResponse
 ```
 
-Makes the device vibrate in a particular pattern.  You can specify how many vibrations you would like, the duration of each vibration in milliseconds, and how long you would like the pauses between each vibration to last in milliseconds.
+Makes the device vibrate in a particular pattern.  You can specify how many vibrations you would like, the duration of each vibration in milliseconds, and how long you would like the pauses between each vibration to last in milliseconds. Returns a VibrateResponse.
 
 ### func \(\*workflowInstance\) getDeviceInfo
 
