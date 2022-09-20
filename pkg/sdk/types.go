@@ -16,12 +16,31 @@ const(
     PROMPT = "prompt"
     PROMPT_START = "prompt_start"
     PROMPT_STOP = "prompt_stop"
+
+    // The device we called is ringing. We are waiting for them to answer.
+    // This event can occur on the caller.
     CALL_RINGING = "call_ringing"
+
+    // A call attempt that was ringing, progressing, or incoming is now fully
+    // connected. This event can occur on both the caller and the callee.
     CALL_CONNECTED = "call_connected"
+
+    // A call that was once connected has become disconnected. This event can
+    // occur on both the caller and the callee.
     CALL_DISCONNECTED = "call_disconnected"
+
+    // A call failed to get connected. This event can occur on both the caller
+    // and the callee.
     CALL_FAILED = "call_failed"
+
+    // The device is receiving an inbound call request. This event can occur
+    // on the callee.
     CALL_RECEIVED = "call_received"
+
+    // There is a request to make an outbound call. This event can occur on
+    // the caller after using the "Call X" voice command on the Assistant.
     CALL_START_REQUEST = "call_start_request"
+
     TIMER_FIRED = "timer_fired"
 )
 
