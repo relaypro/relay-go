@@ -784,7 +784,7 @@ func (wfInst *workflowInstance) SetChannel(sourceUri string, channelName string,
 //     return res
 // }
 
-// Places a call to another device. Returns a PlaceCallResonse.
+// Places a call to another device. Returns a PlaceCallResponse.
 func (wfInst *workflowInstance) PlaceCall(targetUri string, uri string) PlaceCallResponse {
     log.Debug("placing call to ", targetUri, " with uri ", uri)
     id := makeId()
