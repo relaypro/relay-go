@@ -48,7 +48,7 @@ func main() {
                 var pharses = []string {}
                 var name = api.Listen(sourceUri, pharses, false, "en-US", 30)
                 api.Say(sourceUri, "Hello " + name + " you are currently using " + deviceName, "en-US")
-                api.EndInteraction(sourceUri, "hello interaction")
+                api.EndInteraction(sourceUri)
             }
 
             if interactionLifecycleEvent.LifecycleType == "ended" {
@@ -110,7 +110,7 @@ applications will show log messages from INFO level and above.  If you wish to s
 detail from the SDK, and you continue to use Logrus, then call the `SetLevel` function to use
 the DEBUG log level:
 
-    log.SetLevel(DebugLevel)
+    log.SetLevel(log.DebugLevel)
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)

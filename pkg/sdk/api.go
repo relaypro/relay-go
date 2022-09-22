@@ -31,7 +31,7 @@ type RelayApi interface {            // this is interface of your custom workflo
     // api
     GetSourceUri(startEvent StartEvent) string
     StartInteraction(sourceUri string, name string) StartInteractionResponse
-    EndInteraction(sourceUri string, name string) EndInteractionResponse
+    EndInteraction(sourceUri string) EndInteractionResponse
     SetTimer(timerType TimerType, name string, timeout uint64, timeoutType TimeoutType) SetTimerResponse
     ClearTimer(name string) ClearTimerResponse
     StartTimer(timeout int) StartTimerResponse // need to test timers
@@ -182,10 +182,10 @@ func (wfInst *workflowInstance) StartInteraction(sourceUri string, name string) 
 
 // Ends an interaction with the user.  Triggers an INTERACTION_ENDED event to signify
 // that the user is done interacting with the device.  Returns an EndInteractionResponse.
-func (wfInst *workflowInstance) EndInteraction(sourceUri string, name string) EndInteractionResponse {
+func (wfInst *workflowInstance) EndInteraction(sourceUri string) EndInteractionResponse {
     id:= makeId()
     target:= makeTargetMap(sourceUri)
-    req := endInteractionRequest{Type: "wf_api_end_interaction_request", Id: id, Targets: target, Name: name}
+    req := endInteractionRequest{Type: "wf_api_end_interaction_request", Id: id, Targets: target}
     call := wfInst.sendAndReceiveRequest(req, id)
     res:= EndInteractionResponse{}
     json.Unmarshal(call.EventWrapper.Msg, &res)
