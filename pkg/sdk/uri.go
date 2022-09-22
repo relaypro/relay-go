@@ -23,11 +23,14 @@ var ID string = "id"
 // Used to specify that the URN is for a name.
 var NAME string = "name"
 
-// Usedto specify that the URN is for a device.
+// Used to specify that the URN is for a device.
 var DEVICE string = "device"
 
 // Pattern used when creating an interaction URN.
 var DEVICE_PATTERN string = "?device="
+
+// Used to specify that the URN is for an interaction.
+var INTERACTION string = "interaction"
 
 // Beginning of an interaction URN that uses the name of a device.
 var INTERACTION_URI_NAME string = "urn:relay-resource:name:interaction"
@@ -127,6 +130,11 @@ func DeviceId(id string) string {
 // Creates a URN from a device name. Returns the constructed URN as a string.
 func DeviceName(name string) string {
 	return construct(DEVICE, NAME, url.PathEscape(name))
+}
+
+// Creates a URN from an interaction name. Returns the constructed URN as a string.
+func InteractionName(name string) string {
+        return construct(INTERACTION, NAME, url.PathEscape(name))
 }
 
 // Checks if the URN is for an interaction. Returns true if the URN is for an interaction, false otherwise.
