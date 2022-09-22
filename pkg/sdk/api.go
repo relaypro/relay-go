@@ -832,7 +832,7 @@ func (wfInst *workflowInstance) Terminate() {
 }
 
 var serverHostname string = "all-main-pro-ibot.relaysvr.com";
-var version string = "relay-sdk-go/2.0.0"
+var version string = "relay-sdk-go/2.0.0-pre"
 var auth_hostname string = "auth.relaygo.com"
 
 func (wfInst *workflowInstance) updateAccessToken(refreshToken string, clientId string) string {
