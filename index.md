@@ -17,6 +17,7 @@ import "command-line-arguments"
 - [func GroupMember(group string, device string) string](<#func-groupmember>)
 - [func GroupName(name string) string](<#func-groupname>)
 - [func InitializeRelaySdk(port string)](<#func-initializerelaysdk>)
+- [func InteractionName(name string) string](<#func-interactionname>)
 - [func IsInteractionUri(uri string) bool](<#func-isinteractionuri>)
 - [func IsRelayUri(uri string) bool](<#func-isrelayuri>)
 - [func ParseDeviceId(uri string) string](<#func-parsedeviceid>)
@@ -139,7 +140,7 @@ import "command-line-arguments"
   - [func (wfInst *workflowInstance) DisableLocation(sourceUri string) SetDeviceInfoResponse](<#func-workflowinstance-disablelocation>)
   - [func (wfInst *workflowInstance) EnableHomeChannel(sourceUri string) SetHomeChannelStateResponse](<#func-workflowinstance-enablehomechannel>)
   - [func (wfInst *workflowInstance) EnableLocation(sourceUri string) SetDeviceInfoResponse](<#func-workflowinstance-enablelocation>)
-  - [func (wfInst *workflowInstance) EndInteraction(sourceUri string, name string) EndInteractionResponse](<#func-workflowinstance-endinteraction>)
+  - [func (wfInst *workflowInstance) EndInteraction(sourceUri string) EndInteractionResponse](<#func-workflowinstance-endinteraction>)
   - [func (wfInst *workflowInstance) FetchDevice(accessToken string, refreshToken string, clientId string, subscriberId string, userId string) map[string]string](<#func-workflowinstance-fetchdevice>)
   - [func (wfInst *workflowInstance) Flash(sourceUri string, color string, count int64) SetLedResponse](<#func-workflowinstance-flash>)
   - [func (wfInst *workflowInstance) GetDeviceAddress(sourceUri string, refresh bool) string](<#func-workflowinstance-getdeviceaddress>)
@@ -388,7 +389,7 @@ const (
 
 ## Variables
 
-Usedto specify that the URN is for a device.
+Used to specify that the URN is for a device.
 
 ```go
 var DEVICE string = "device"
@@ -410,6 +411,12 @@ Used to specify that the URN is for an ID.
 
 ```go
 var ID string = "id"
+```
+
+Used to specify that the URN is for an interaction.
+
+```go
+var INTERACTION string = "interaction"
 ```
 
 Beginning of an interaction URN that uses the ID of a device.
@@ -472,7 +479,7 @@ var upgrader = websocket.Upgrader{
 ```
 
 ```go
-var version string = "relay-sdk-go/2.0.0"
+var version string = "relay-sdk-go/2.0.0-pre"
 ```
 
 ```go
@@ -532,6 +539,14 @@ func InitializeRelaySdk(port string)
 ```
 
 this should return an interface that has a workflow\(\) function that they can pass their workflow implementations to
+
+## func InteractionName
+
+```go
+func InteractionName(name string) string
+```
+
+Creates a URN from an interaction name. Returns the constructed URN as a string.
 
 ## func IsInteractionUri
 
@@ -948,7 +963,7 @@ type RelayApi interface {
     // api
     GetSourceUri(startEvent StartEvent) string
     StartInteraction(sourceUri string, name string) StartInteractionResponse
-    EndInteraction(sourceUri string, name string) EndInteractionResponse
+    EndInteraction(sourceUri string) EndInteractionResponse
     SetTimer(timerType TimerType, name string, timeout uint64, timeoutType TimeoutType) SetTimerResponse
     ClearTimer(name string) ClearTimerResponse
     StartTimer(timeout int) StartTimerResponse // need to test timers
@@ -1321,7 +1336,6 @@ type endInteractionRequest struct {
     Type    string              `json:"_type"`
     Id      string              `json:"_id"`
     Targets map[string][]string `json:"_target"`
-    Name    string              `json:"name"`
 }
 ```
 
@@ -1780,7 +1794,7 @@ Enables location services on a device.  Location services will remain enabled un
 ### func \(\*workflowInstance\) EndInteraction
 
 ```go
-func (wfInst *workflowInstance) EndInteraction(sourceUri string, name string) EndInteractionResponse
+func (wfInst *workflowInstance) EndInteraction(sourceUri string) EndInteractionResponse
 ```
 
 Ends an interaction with the user.  Triggers an INTERACTION\_ENDED event to signify that the user is done interacting with the device.  Returns an EndInteractionResponse.
