@@ -13,13 +13,12 @@ func main() {
     log.SetLevel(log.InfoLevel)
 
     sdk.AddWorkflow("hellopath", func(api sdk.RelayApi) {
-        var interactionName = "hello interaction"
         var sourceUri string
         
         api.OnStart(func(startEvent sdk.StartEvent) {
             sourceUri := api.GetSourceUri(startEvent)
             log.Debug("Started hello wf from sourceUri: ", sourceUri, " trigger: ", startEvent.Trigger)
-            api.StartInteraction(sourceUri, interactionName)
+            api.StartInteraction(sourceUri, "hello interaction")
         })
         
         api.OnInteractionLifecycle(func(interactionLifecycleEvent sdk.InteractionLifecycleEvent) {
@@ -32,7 +31,7 @@ func main() {
                 var pharses = []string {}
                 var name = api.Listen(sourceUri, pharses, false, "en-US", 30)
                 api.Say(sourceUri, "Hello " + name + " you are currently using " + deviceName, "en-US")
-                api.EndInteraction(sourceUri, interactionName)
+                api.EndInteraction(sourceUri)
             }
 
             if interactionLifecycleEvent.LifecycleType == "ended" {

@@ -235,7 +235,6 @@ type endInteractionRequest struct {
     Type string `json:"_type"`
     Id string `json:"_id"`
     Targets map[string][]string `json:"_target"`
-    Name string `json:"name"`
     //Options ??
 }
 
