@@ -34,6 +34,13 @@ import "command-line-arguments"
 - [type AnswerResponse](<#type-answerresponse>)
 - [type ButtonEvent](<#type-buttonevent>)
 - [type Call](<#type-call>)
+- [type CallConnectedEvent](<#type-callconnectedevent>)
+- [type CallDisconnectedEvent](<#type-calldisconnectedevent>)
+- [type CallFailedEvent](<#type-callfailedevent>)
+- [type CallProgressingEvent](<#type-callprogressingevent>)
+- [type CallReceivedEvent](<#type-callreceivedevent>)
+- [type CallRingingEvent](<#type-callringingevent>)
+- [type CallStartEvent](<#type-callstartevent>)
 - [type ClearTimerResponse](<#type-cleartimerresponse>)
 - [type CreateIncidentResponse](<#type-createincidentresponse>)
 - [type DeviceInfoQuery](<#type-deviceinfoquery>)
@@ -47,6 +54,7 @@ import "command-line-arguments"
 - [type GroupQueryResponse](<#type-groupqueryresponse>)
 - [type HangupCallResponse](<#type-hangupcallresponse>)
 - [type InboxCountResponse](<#type-inboxcountresponse>)
+- [type IncidentEvent](<#type-incidentevent>)
 - [type InteractionLifecycleEvent](<#type-interactionlifecycleevent>)
 - [type Language](<#type-language>)
 - [type LedColors](<#type-ledcolors>)
@@ -56,15 +64,19 @@ import "command-line-arguments"
 - [type ListenResponse](<#type-listenresponse>)
 - [type LogAnalyticsEventResponse](<#type-loganalyticseventresponse>)
 - [type MessageType](<#type-messagetype>)
+- [type NotificationEvent](<#type-notificationevent>)
 - [type NotificationOptions](<#type-notificationoptions>)
 - [type NotificationPriority](<#type-notificationpriority>)
 - [type NotificationSound](<#type-notificationsound>)
 - [type PlaceCallResponse](<#type-placecallresponse>)
+- [type PlayInboxMessagesEvent](<#type-playinboxmessagesevent>)
 - [type PlayInboxMessagesResponse](<#type-playinboxmessagesresponse>)
 - [type PlayResponse](<#type-playresponse>)
+- [type ProgressEvent](<#type-progressevent>)
 - [type PromptEvent](<#type-promptevent>)
 - [type RelayApi](<#type-relayapi>)
 - [type ResolveIncidentResponse](<#type-resolveincidentresponse>)
+- [type ResumeEvent](<#type-resumeevent>)
 - [type SayResponse](<#type-sayresponse>)
 - [type SendNotificationResponse](<#type-sendnotificationresponse>)
 - [type SetChannelResponse](<#type-setchannelresponse>)
@@ -76,6 +88,7 @@ import "command-line-arguments"
 - [type SetTimerResponse](<#type-settimerresponse>)
 - [type SetUserProfileResponse](<#type-setuserprofileresponse>)
 - [type SetVarResponse](<#type-setvarresponse>)
+- [type SmsEvent](<#type-smsevent>)
 - [type SpeechEvent](<#type-speechevent>)
 - [type StartEvent](<#type-startevent>)
 - [type StartInteractionResponse](<#type-startinteractionresponse>)
@@ -165,10 +178,24 @@ import "command-line-arguments"
   - [func (wfInst *workflowInstance) LogMessage(message string, category string) LogAnalyticsEventResponse](<#func-workflowinstance-logmessage>)
   - [func (wfInst *workflowInstance) LogUserMessage(message string, sourceUri string, category string) LogAnalyticsEventResponse](<#func-workflowinstance-logusermessage>)
   - [func (wfInst *workflowInstance) OnButton(fn func(buttonEvent ButtonEvent))](<#func-workflowinstance-onbutton>)
+  - [func (wfInst *workflowInstance) OnCallConnected(fn func(callConnectedEvent CallConnectedEvent))](<#func-workflowinstance-oncallconnected>)
+  - [func (wfInst *workflowInstance) OnCallDisconnected(fn func(callDisconnected CallDisconnectedEvent))](<#func-workflowinstance-oncalldisconnected>)
+  - [func (wfInst *workflowInstance) OnCallFailed(fn func(callFailedEvent CallFailedEvent))](<#func-workflowinstance-oncallfailed>)
+  - [func (wfInst *workflowInstance) OnCallProgressing(fn func(callProgressingEvent CallProgressingEvent))](<#func-workflowinstance-oncallprogressing>)
+  - [func (wfInst *workflowInstance) OnCallReceived(fn func(callReceivedEvent CallReceivedEvent))](<#func-workflowinstance-oncallreceived>)
+  - [func (wfInst *workflowInstance) OnCallRinging(fn func(callRingingEvent CallRingingEvent))](<#func-workflowinstance-oncallringing>)
+  - [func (wfInst *workflowInstance) OnCallStartRequest(fn func(callStartEvent CallStartEvent))](<#func-workflowinstance-oncallstartrequest>)
+  - [func (wfInst *workflowInstance) OnIncident(fn func(incidentEvent IncidentEvent))](<#func-workflowinstance-onincident>)
   - [func (wfInst *workflowInstance) OnInteractionLifecycle(fn func(interactionLifecycleEvent InteractionLifecycleEvent))](<#func-workflowinstance-oninteractionlifecycle>)
+  - [func (wfInst *workflowInstance) OnNotification(fn func(notificationEvent NotificationEvent))](<#func-workflowinstance-onnotification>)
+  - [func (wfInst *workflowInstance) OnPlayInboxMessages(fn func(playInboxMessagesEvent PlayInboxMessagesEvent))](<#func-workflowinstance-onplayinboxmessages>)
+  - [func (wfInst *workflowInstance) OnProgress(fn func(progressEvent ProgressEvent))](<#func-workflowinstance-onprogress>)
   - [func (wfInst *workflowInstance) OnPrompt(fn func(promptEvent PromptEvent))](<#func-workflowinstance-onprompt>)
+  - [func (wfInst *workflowInstance) OnResume(fn func(resumeEvent ResumeEvent))](<#func-workflowinstance-onresume>)
+  - [func (wfInst *workflowInstance) OnSms(fn func(smsEvent SmsEvent))](<#func-workflowinstance-onsms>)
   - [func (wfInst *workflowInstance) OnSpeech(fn func(speechEvent SpeechEvent))](<#func-workflowinstance-onspeech>)
   - [func (wfInst *workflowInstance) OnStart(fn func(startEvent StartEvent))](<#func-workflowinstance-onstart>)
+  - [func (wfInst *workflowInstance) OnStop(fn func(stopEvent StopEvent))](<#func-workflowinstance-onstop>)
   - [func (wfInst *workflowInstance) OnTimer(fn func(timerEvent TimerEvent))](<#func-workflowinstance-ontimer>)
   - [func (wfInst *workflowInstance) OnTimerFired(fn func(timerFiredEvent TimerFiredEvent))](<#func-workflowinstance-ontimerfired>)
   - [func (wfInst *workflowInstance) PlaceCall(targetUri string, uri string) PlaceCallResponse](<#func-workflowinstance-placecall>)
@@ -672,6 +699,112 @@ type Call struct {
 }
 ```
 
+## type CallConnectedEvent
+
+```go
+type CallConnectedEvent struct {
+    _type            string `json:"_type"`
+    CallId           string `json:"call_id"`
+    Direction        string `json:"direction"`
+    DeviceId         string `json:"device_id"`
+    DeviceName       string `json:"device_name"`
+    Uri              string `json:"uri"`
+    OnNet            string `json:"onnet"`
+    StartTimeEpoch   string `json:"start_time_epoch"`
+    ConnectTimeEpoch string `json:"connect_time_epoch"`
+}
+```
+
+## type CallDisconnectedEvent
+
+```go
+type CallDisconnectedEvent struct {
+    _type            string `json:"_type"`
+    CallId           string `json:"call_id"`
+    Direction        string `json:"direction"`
+    DeviceId         string `json:"device_id"`
+    DeviceName       string `json:"device_name"`
+    Uri              string `json:"uri"`
+    OnNet            string `json:"onnet"`
+    Reason           string `json:"reason"`
+    StartTimeEpoch   string `json:"start_time_epoch"`
+    ConnectTimeEpoch string `json:"connect_time_epoch"`
+    EndTimeEpoch     string `json:"end_time_epoch"`
+}
+```
+
+## type CallFailedEvent
+
+```go
+type CallFailedEvent struct {
+    _type            string `json:"_type"`
+    CallId           string `json:"call_id"`
+    Direction        string `json:"direction"`
+    DeviceId         string `json:"device_id"`
+    DeviceName       string `json:"device_name"`
+    Uri              string `json:"uri"`
+    OnNet            string `json:"onnnet"`
+    Reason           string `json:"reason"`
+    StartTimeEpoch   string `json:"start_time_epoch"`
+    ConnectTimeEpoch string `json:"connect_time_epoch"`
+    EndTimeEpoch     string `json:"end_time_epoch"`
+}
+```
+
+## type CallProgressingEvent
+
+```go
+type CallProgressingEvent struct {
+    _type          string `json:"_type"`
+    CallId         string `json:"call_id"`
+    Direction      string `json:"direction"`
+    DeviceId       string `json:"device_id"`
+    DeviceName     string `json:"device_name"`
+    Uri            string `json:"uri"`
+    OnNet          string `json:"onnet"`
+    StartTimeEpoch string `json:"start_time_epoch"`
+}
+```
+
+## type CallReceivedEvent
+
+```go
+type CallReceivedEvent struct {
+    _type          string `json:"_type"`
+    CallId         string `json:"call_id"`
+    Direction      string `json:"direction"`
+    DeviceId       string `json:"device_id"`
+    DeviceName     string `json:"device_name"`
+    Uri            string `json:"uri"`
+    OnNet          string `json:"onnet"`
+    StartTimeEpoch string `json:"start_time_epoch"`
+}
+```
+
+## type CallRingingEvent
+
+```go
+type CallRingingEvent struct {
+    _type          string `json:"_type"`
+    CallId         string `json:"call_id"`
+    Direction      string `json:"direction"`
+    DeviceId       string `json:"device_id"`
+    DeviceName     string `json:"device_name"`
+    Uri            string `json:"uri"`
+    OnNet          string `json:"onnet"`
+    StartTimeEpoch string `json:"start_time_epoch"`
+}
+```
+
+## type CallStartEvent
+
+```go
+type CallStartEvent struct {
+    _type string `json:"_type"`
+    Uri   string `json:"uri"`
+}
+```
+
 ## type ClearTimerResponse
 
 ```go
@@ -796,6 +929,17 @@ type InboxCountResponse struct {
 }
 ```
 
+## type IncidentEvent
+
+```go
+type IncidentEvent struct {
+    _type      string `json:"_type"`
+    Type       string `json:"type"`
+    IncidentId string `json:"incident_id"`
+    Reason     string `json:"reason"`
+}
+```
+
 ## type InteractionLifecycleEvent
 
 ```go
@@ -885,6 +1029,18 @@ type LogAnalyticsEventResponse struct {
 type MessageType string
 ```
 
+## type NotificationEvent
+
+```go
+type NotificationEvent struct {
+    _type             string `json:"_type"`
+    Name              string `json:"name"`
+    Event             string `json:"event"`
+    SourceUri         string `json:"source_uri"`
+    NotificationState string `json:"notification_state"`
+}
+```
+
 ## type NotificationOptions
 
 ```go
@@ -918,6 +1074,15 @@ type PlaceCallResponse struct {
 }
 ```
 
+## type PlayInboxMessagesEvent
+
+```go
+type PlayInboxMessagesEvent struct {
+    _type  string `json:"_type"`
+    Action string `json:"action"`
+}
+```
+
 ## type PlayInboxMessagesResponse
 
 ```go
@@ -937,6 +1102,14 @@ type PlayResponse struct {
 }
 ```
 
+## type ProgressEvent
+
+```go
+type ProgressEvent struct {
+    _type string `json:"_type"`
+}
+```
+
 ## type PromptEvent
 
 ```go
@@ -953,12 +1126,26 @@ type PromptEvent struct {
 type RelayApi interface {
     // assigning callbacks
     OnStart(fn func(startEvent StartEvent))
-    OnInteractionLifecycle(func(interactionLifecycleEvent InteractionLifecycleEvent))
-    OnPrompt(func(promptEvent PromptEvent)) // seperate into start and stop?
-    OnTimerFired(func(timerFiredEvent TimerFiredEvent))
-    OnButton(func(buttonEvent ButtonEvent))
+    OnInteractionLifecycle(fn func(interactionLifecycleEvent InteractionLifecycleEvent))
+    OnPrompt(fn func(promptEvent PromptEvent)) // seperate into start and stop?
+    OnTimerFired(fn func(timerFiredEvent TimerFiredEvent))
+    OnButton(fn func(buttonEvent ButtonEvent))
     OnTimer(fn func(timerEvent TimerEvent))
     OnSpeech(fn func(speechEvent SpeechEvent))
+    OnStop(fn func(stopEvent StopEvent))
+    OnNotification(fn func(notificationEvent NotificationEvent))
+    OnProgress(fn func(progressEvent ProgressEvent))
+    OnPlayInboxMessages(fn func(playInboxMessagesEvent PlayInboxMessagesEvent))
+    OnCallConnected(fn func(callConnectedEvent CallConnectedEvent))
+    OnCallDisconnected(fn func(callDisconnected CallDisconnectedEvent))
+    OnCallFailed(fn func(callFailedEvent CallFailedEvent))
+    OnCallReceived(fn func(callReceivedEvent CallReceivedEvent))
+    OnCallRinging(fn func(callRingingEvent CallRingingEvent))
+    OnCallStartRequest(fn func(callStartEvent CallStartEvent))
+    OnCallProgressing(fn func(callProgressingEvent CallProgressingEvent))
+    OnSms(fn func(smsEvent SmsEvent))
+    OnIncident(fn func(incidentEvent IncidentEvent))
+    OnResume(fn func(resumeEvent ResumeEvent))
 
     // api
     GetSourceUri(startEvent StartEvent) string
@@ -1032,6 +1219,14 @@ type RelayApi interface {
 ```go
 type ResolveIncidentResponse struct {
     _id   string `json:"_id"`
+    _type string `json:"_type"`
+}
+```
+
+## type ResumeEvent
+
+```go
+type ResumeEvent struct {
     _type string `json:"_type"`
 }
 ```
@@ -1133,6 +1328,15 @@ type SetVarResponse struct {
     Name  string `json:"name"`
     IType string `json:"type"`
     Value string `json:"value"`
+}
+```
+
+## type SmsEvent
+
+```go
+type SmsEvent struct {
+    Id    string `json:"id"`
+    Event string `json:"event"`
 }
 ```
 
@@ -1692,6 +1896,20 @@ type workflowInstance struct {
     OnTimerFiredHandler           func(timerFiredEvent TimerFiredEvent)
     OnTimerHandler                func(timerEvent TimerEvent)
     OnSpeechHandler               func(speechEvent SpeechEvent)
+    OnStopHandler                 func(stopEvent StopEvent)
+    OnNotificationHandler         func(notificationEvent NotificationEvent)
+    OnProgressHandler             func(progressEvent ProgressEvent)
+    OnPlayInboxMessagesHandler    func(playInboxMessagesEvent PlayInboxMessagesEvent)
+    OnCallConnectedHandler        func(callConnectedEvent CallConnectedEvent)
+    OnCallDisconnectedHandler     func(callDisconnected CallDisconnectedEvent)
+    OnCallFailedHandler           func(callFailedEvent CallFailedEvent)
+    OnCallReceivedHandler         func(callReceivedEvent CallReceivedEvent)
+    OnCallRingingHandler          func(callRingingEvent CallRingingEvent)
+    OnCallStartRequestHandler     func(callStartEvent CallStartEvent)
+    OnCallProgressingHandler      func(callProgressingEvent CallProgressingEvent)
+    OnSmsHandler                  func(smsEvent SmsEvent)
+    OnIncidentHandler             func(incidentEvent IncidentEvent)
+    OnResumeHandler               func(resumeEvent ResumeEvent)
 }
 ```
 
@@ -1989,16 +2207,94 @@ Log an analytic event from a workflow with the specified content and under a spe
 func (wfInst *workflowInstance) OnButton(fn func(buttonEvent ButtonEvent))
 ```
 
+### func \(\*workflowInstance\) OnCallConnected
+
+```go
+func (wfInst *workflowInstance) OnCallConnected(fn func(callConnectedEvent CallConnectedEvent))
+```
+
+### func \(\*workflowInstance\) OnCallDisconnected
+
+```go
+func (wfInst *workflowInstance) OnCallDisconnected(fn func(callDisconnected CallDisconnectedEvent))
+```
+
+### func \(\*workflowInstance\) OnCallFailed
+
+```go
+func (wfInst *workflowInstance) OnCallFailed(fn func(callFailedEvent CallFailedEvent))
+```
+
+### func \(\*workflowInstance\) OnCallProgressing
+
+```go
+func (wfInst *workflowInstance) OnCallProgressing(fn func(callProgressingEvent CallProgressingEvent))
+```
+
+### func \(\*workflowInstance\) OnCallReceived
+
+```go
+func (wfInst *workflowInstance) OnCallReceived(fn func(callReceivedEvent CallReceivedEvent))
+```
+
+### func \(\*workflowInstance\) OnCallRinging
+
+```go
+func (wfInst *workflowInstance) OnCallRinging(fn func(callRingingEvent CallRingingEvent))
+```
+
+### func \(\*workflowInstance\) OnCallStartRequest
+
+```go
+func (wfInst *workflowInstance) OnCallStartRequest(fn func(callStartEvent CallStartEvent))
+```
+
+### func \(\*workflowInstance\) OnIncident
+
+```go
+func (wfInst *workflowInstance) OnIncident(fn func(incidentEvent IncidentEvent))
+```
+
 ### func \(\*workflowInstance\) OnInteractionLifecycle
 
 ```go
 func (wfInst *workflowInstance) OnInteractionLifecycle(fn func(interactionLifecycleEvent InteractionLifecycleEvent))
 ```
 
+### func \(\*workflowInstance\) OnNotification
+
+```go
+func (wfInst *workflowInstance) OnNotification(fn func(notificationEvent NotificationEvent))
+```
+
+### func \(\*workflowInstance\) OnPlayInboxMessages
+
+```go
+func (wfInst *workflowInstance) OnPlayInboxMessages(fn func(playInboxMessagesEvent PlayInboxMessagesEvent))
+```
+
+### func \(\*workflowInstance\) OnProgress
+
+```go
+func (wfInst *workflowInstance) OnProgress(fn func(progressEvent ProgressEvent))
+```
+
 ### func \(\*workflowInstance\) OnPrompt
 
 ```go
 func (wfInst *workflowInstance) OnPrompt(fn func(promptEvent PromptEvent))
+```
+
+### func \(\*workflowInstance\) OnResume
+
+```go
+func (wfInst *workflowInstance) OnResume(fn func(resumeEvent ResumeEvent))
+```
+
+### func \(\*workflowInstance\) OnSms
+
+```go
+func (wfInst *workflowInstance) OnSms(fn func(smsEvent SmsEvent))
 ```
 
 ### func \(\*workflowInstance\) OnSpeech
@@ -2011,6 +2307,12 @@ func (wfInst *workflowInstance) OnSpeech(fn func(speechEvent SpeechEvent))
 
 ```go
 func (wfInst *workflowInstance) OnStart(fn func(startEvent StartEvent))
+```
+
+### func \(\*workflowInstance\) OnStop
+
+```go
+func (wfInst *workflowInstance) OnStop(fn func(stopEvent StopEvent))
 ```
 
 ### func \(\*workflowInstance\) OnTimer
