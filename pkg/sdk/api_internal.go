@@ -95,7 +95,6 @@ func (wfInst *workflowInstance) handleEvent(eventWrapper EventWrapper) error {
         case START:
             var params StartEvent
             json.Unmarshal(eventWrapper.Msg, &params)
-
             if wfInst.OnStartHandler != nil {
                 wfInst.OnStartHandler(params)
             } else {
@@ -159,6 +158,60 @@ func (wfInst *workflowInstance) handleEvent(eventWrapper EventWrapper) error {
                 wfInst.OnSpeechHandler(params)
             } else {
                 log.Debug("ignoring event ", eventWrapper.EventName, " no handler registered")
+            }
+        case CALL_RINGING: 
+            log.Debug("received call ringing event ", string(eventWrapper.Msg))
+            var params CallRingingEvent
+            json.Unmarshal(eventWrapper.Msg, &params)
+            if(wfInst.OnCallRingingHandler != nil) {
+                wfInst.OnCallRingingHandler(params)
+            } else {
+                log.Debug("ignoring event", eventWrapper.EventName, " no handler registered")
+            }
+        case CALL_CONNECTED: 
+            log.Debug("received call connected event ", string(eventWrapper.Msg))
+            var params CallConnectedEvent
+            json.Unmarshal(eventWrapper.Msg, &params)
+            if(wfInst.OnCallConnectedHandler != nil) {
+                wfInst.OnCallConnectedHandler(params)
+            } else {
+                log.Debug("ignoring event", eventWrapper.EventName, " no handler registered")
+            }
+        case CALL_DISCONNECTED: 
+            log.Debug("received call disconnected event ", string(eventWrapper.Msg))
+            var params CallDisconnectedEvent
+            json.Unmarshal(eventWrapper.Msg, &params)
+            if(wfInst.OnCallDisconnectedHandler != nil) {
+                wfInst.OnCallDisconnectedHandler(params)
+            } else {
+                log.Debug("ignoring event", eventWrapper.EventName, " no handler registered")
+            }
+        case CALL_FAILED: 
+            log.Debug("received call failed event ", string(eventWrapper.Msg))
+            var params CallFailedEvent
+            json.Unmarshal(eventWrapper.Msg, &params)
+            if(wfInst.OnCallFailedHandler != nil) {
+                wfInst.OnCallFailedHandler(params)
+            } else {
+                log.Debug("ignoring event", eventWrapper.EventName, " no handler registered")
+            }
+        case CALL_RECEIVED: 
+            log.Debug("received call received event ", string(eventWrapper.Msg))
+            var params CallReceivedEvent
+            json.Unmarshal(eventWrapper.Msg, &params)
+            if(wfInst.OnCallReceivedHandler != nil) {
+                wfInst.OnCallReceivedHandler(params)
+            } else {
+                log.Debug("ignoring event", eventWrapper.EventName, " no handler registered")
+            }
+        case CALL_START_REQUEST: 
+            log.Debug("received call start request event ", string(eventWrapper.Msg))
+            var params CallStartEvent
+            json.Unmarshal(eventWrapper.Msg, &params)
+            if(wfInst.OnCallStartRequestHandler != nil) {
+                wfInst.OnCallStartRequestHandler(params)
+            } else {
+                log.Debug("ignoring event", eventWrapper.EventName, " no handler registered")
             }
         default:
             log.Debug("UNKNOWN EVENT ", eventWrapper.ParsedMsg);
