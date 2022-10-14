@@ -241,18 +241,50 @@ import "command-line-arguments"
 
 ```go
 const (
-    ERROR                 Event = "error"
-    START                       = "start"
-    STOP                        = "stop"
-    INTERACTION_LIFECYCLE       = "interaction_lifecycle"
-    BUTTON                      = "button"
-    TIMER                       = "timer"
-    SPEECH                      = "speech"
-    NOTIFICATION                = "notification"
-    INCIDENT                    = "incident"
-    PROMPT                      = "prompt"
-    PROMPT_START                = "prompt_start"
-    PROMPT_STOP                 = "prompt_stop"
+    // An error has occurred while running your workflow.  If you have DEBUG level
+    // logging turned on, take a look at the logs to track down the error.  In
+    // most cases, this occurrs when the wrong type of URN is sent in the payload
+    // to the server.
+    ERROR = "error"
+
+    // Your workflow has been triggered
+    START = "start"
+
+    // Your workflow has stopped, which might be due to a normal completion after you call
+    // terminate() or from an abnormal completion error.
+    STOP = "stop"
+
+    // An interaction lifecycle event has occurred.  This could indicate that an interaction
+    // has started, resumed, been suspended, ended, or failed.
+    INTERACTION_LIFECYCLE = "interaction_lifecycle"
+
+    // A button has been pressed on your device during a running workflow.  This event occurs on a single, double or triple
+    // tap of the action button or a tap of the assistant button.  Note this is separate from a button
+    // trigger.
+    BUTTON = "button"
+
+    // An unnamed timer has fired.
+    TIMER = "timer"
+
+    // You have spoken into the device by holding down the action button. Typically seen
+    // when the listen() funcitonis happening on a device.
+    SPEECH = "speech"
+
+    // A device has acknowledged an alert that was sent out to a group of devices.
+    NOTIFICATION = "notification"
+
+    // An incident has been resolved.
+    INCIDENT = "incident"
+
+    // When a text-to-speech is being streamed to a Relay device, this event will mark
+    // the beginning and end of that stream delivery.
+    PROMPT = "prompt"
+
+    // The beginning of text-to-speech on the device.
+    PROMPT_START = "prompt_start"
+
+    // The end of text-to-speech on the device.
+    PROMPT_STOP = "prompt_stop"
 
     // The device we called is ringing. We are waiting for them to answer.
     // This event can occur on the caller.
@@ -278,6 +310,7 @@ const (
     // the caller after using the "Call X" voice command on the Assistant.
     CALL_START_REQUEST = "call_start_request"
 
+    // A named timer has fired.
     TIMER_FIRED = "timer_fired"
 )
 ```
@@ -486,6 +519,8 @@ var eventRegex = regexp.MustCompile(`^wf_api_(.+)_event$`)
 ```go
 var responseRegex = regexp.MustCompile(`^wf_api_(.+)_response$`)
 ```
+
+Used only for TriggerWorkflow and FetchDevice
 
 ```go
 var serverHostname string = "all-main-pro-ibot.relaysvr.com"
@@ -819,6 +854,8 @@ type CreateIncidentResponse struct {
 
 ## type DeviceInfoQuery
 
+Information dealing with the device name, id, type, locatin, battery, and username.
+
 ```go
 type DeviceInfoQuery string
 ```
@@ -945,6 +982,8 @@ type InteractionLifecycleEvent struct {
 
 ## type Language
 
+The supported languages that can be used for speech, listening, or translation on the device.
+
 ```go
 type Language string
 ```
@@ -1017,6 +1056,8 @@ type LogAnalyticsEventResponse struct {
 ```
 
 ## type MessageType
+
+Whether the message back from the server is an event or response
 
 ```go
 type MessageType string
@@ -1404,6 +1445,8 @@ type StopTimerResponse struct {
 
 ## type TimeoutType
 
+The timeout type for a timer.  Can be either milliseconds, seconds, minutes or hours.
+
 ```go
 type TimeoutType string
 ```
@@ -1426,6 +1469,8 @@ type TimerFiredEvent struct {
 ```
 
 ## type TimerType
+
+Type of timer on the device.  Can be timeout or interval timer type.
 
 ```go
 type TimerType string
@@ -1460,6 +1505,8 @@ type TriggerArgs struct {
 ```
 
 ## type TriggerType
+
+The different types of triggers that can start a workflow.
 
 ```go
 type TriggerType string
@@ -2200,11 +2247,15 @@ Log an analytic event from a workflow with the specified content and under a spe
 func (wfInst *workflowInstance) OnButton(fn func(buttonEvent ButtonEvent))
 ```
 
+A decorator for a handler method for the BUTTON event \(the Talk button was pressed\).
+
 ### func \(\*workflowInstance\) OnCallConnected
 
 ```go
 func (wfInst *workflowInstance) OnCallConnected(fn func(callConnectedEvent CallConnectedEvent))
 ```
+
+A decorator for a handler method for the CALL\_CONNECTED event. A call attempt that was ringing, progressing, or incoming is now fully connected. This event can occur on both the caller and the callee.
 
 ### func \(\*workflowInstance\) OnCallDisconnected
 
@@ -2212,11 +2263,15 @@ func (wfInst *workflowInstance) OnCallConnected(fn func(callConnectedEvent CallC
 func (wfInst *workflowInstance) OnCallDisconnected(fn func(callDisconnected CallDisconnectedEvent))
 ```
 
+A decorator for a handler method for the CALL\_DISCONNECTED event. A call that was once connected has become disconnected. This event can occur on both the caller and the callee.
+
 ### func \(\*workflowInstance\) OnCallFailed
 
 ```go
 func (wfInst *workflowInstance) OnCallFailed(fn func(callFailedEvent CallFailedEvent))
 ```
+
+A decorator for a handler method for the CALL\_FAILED event. A call failed to get connected. This event can occur on both the caller and the callee.
 
 ### func \(\*workflowInstance\) OnCallProgressing
 
@@ -2224,11 +2279,15 @@ func (wfInst *workflowInstance) OnCallFailed(fn func(callFailedEvent CallFailedE
 func (wfInst *workflowInstance) OnCallProgressing(fn func(callProgressingEvent CallProgressingEvent))
 ```
 
+A decorator for a handler method for the CALL\_PROGRESSING event. The device we called is making progress on getting connected. This may be interspersed with on\_call\_ringing. This event can occur on the caller.
+
 ### func \(\*workflowInstance\) OnCallReceived
 
 ```go
 func (wfInst *workflowInstance) OnCallReceived(fn func(callReceivedEvent CallReceivedEvent))
 ```
+
+A decorator for a handler method for the CALL\_RECEIVED event. The device is receiving an inbound call request. This event can occur on the callee.
 
 ### func \(\*workflowInstance\) OnCallRinging
 
@@ -2236,11 +2295,15 @@ func (wfInst *workflowInstance) OnCallReceived(fn func(callReceivedEvent CallRec
 func (wfInst *workflowInstance) OnCallRinging(fn func(callRingingEvent CallRingingEvent))
 ```
 
+A decorator for a handler method for the CALL\_RINGING event. The device we called is ringing. We are waiting for them to answer. This event can occur on the caller.
+
 ### func \(\*workflowInstance\) OnCallStartRequest
 
 ```go
 func (wfInst *workflowInstance) OnCallStartRequest(fn func(callStartEvent CallStartEvent))
 ```
+
+A decorator for a handler method for the CALL\_START\_REQUEST event. There is a request to make an outbound call. This event can occur on the caller after using the "Call X" voice command on the Assistant.
 
 ### func \(\*workflowInstance\) OnIncident
 
@@ -2248,11 +2311,15 @@ func (wfInst *workflowInstance) OnCallStartRequest(fn func(callStartEvent CallSt
 func (wfInst *workflowInstance) OnIncident(fn func(incidentEvent IncidentEvent))
 ```
 
+A decorator for a handler method for the INCIDENT event \(an incident has been created\).
+
 ### func \(\*workflowInstance\) OnInteractionLifecycle
 
 ```go
 func (wfInst *workflowInstance) OnInteractionLifecycle(fn func(interactionLifecycleEvent InteractionLifecycleEvent))
 ```
+
+A decorator for a handler method for the INTERACTION\_LIFECYCLE event \(an interaction is starting, resuming, or ending\).
 
 ### func \(\*workflowInstance\) OnNotification
 
@@ -2260,11 +2327,15 @@ func (wfInst *workflowInstance) OnInteractionLifecycle(fn func(interactionLifecy
 func (wfInst *workflowInstance) OnNotification(fn func(notificationEvent NotificationEvent))
 ```
 
+A decorator for a handler method for the NOTIFICATION event \(a broadcast or alert was sent\).
+
 ### func \(\*workflowInstance\) OnPlayInboxMessages
 
 ```go
 func (wfInst *workflowInstance) OnPlayInboxMessages(fn func(playInboxMessagesEvent PlayInboxMessagesEvent))
 ```
+
+A decorator for a handler method for the PLAY\_INBOX\_MESSAGE event \(a missed message is being played\).
 
 ### func \(\*workflowInstance\) OnProgress
 
@@ -2272,11 +2343,15 @@ func (wfInst *workflowInstance) OnPlayInboxMessages(fn func(playInboxMessagesEve
 func (wfInst *workflowInstance) OnProgress(fn func(progressEvent ProgressEvent))
 ```
 
+A decorator for a handler method for the PROGRESS event \(a long running action is being performed across a large number of devices, may get called multiple times\).
+
 ### func \(\*workflowInstance\) OnPrompt
 
 ```go
 func (wfInst *workflowInstance) OnPrompt(fn func(promptEvent PromptEvent))
 ```
+
+A decorator for a handler method for the PROMPT event \(text\-to\-speech is streaming in\).
 
 ### func \(\*workflowInstance\) OnResume
 
@@ -2284,11 +2359,15 @@ func (wfInst *workflowInstance) OnPrompt(fn func(promptEvent PromptEvent))
 func (wfInst *workflowInstance) OnResume(fn func(resumeEvent ResumeEvent))
 ```
 
+A decorator for a handler method for the RESUME event \(TBD\).
+
 ### func \(\*workflowInstance\) OnSms
 
 ```go
 func (wfInst *workflowInstance) OnSms(fn func(smsEvent SmsEvent))
 ```
+
+A decorator for a handler method for the SMS event \(TBD\).
 
 ### func \(\*workflowInstance\) OnSpeech
 
@@ -2296,11 +2375,15 @@ func (wfInst *workflowInstance) OnSms(fn func(smsEvent SmsEvent))
 func (wfInst *workflowInstance) OnSpeech(fn func(speechEvent SpeechEvent))
 ```
 
+A decorator for a handler method for the SPEECH event \(the listen\(\) function is running\).
+
 ### func \(\*workflowInstance\) OnStart
 
 ```go
 func (wfInst *workflowInstance) OnStart(fn func(startEvent StartEvent))
 ```
+
+A decorator for a handler for the START event \(workflow is starting\).
 
 ### func \(\*workflowInstance\) OnStop
 
@@ -2308,17 +2391,23 @@ func (wfInst *workflowInstance) OnStart(fn func(startEvent StartEvent))
 func (wfInst *workflowInstance) OnStop(fn func(stopEvent StopEvent))
 ```
 
+A decorator for a handler method for the STOP event \(workflow is stopping\).
+
 ### func \(\*workflowInstance\) OnTimer
 
 ```go
 func (wfInst *workflowInstance) OnTimer(fn func(timerEvent TimerEvent))
 ```
 
+A decorator for a handler method for the TIMER event \(the unnamed timer fired\).
+
 ### func \(\*workflowInstance\) OnTimerFired
 
 ```go
 func (wfInst *workflowInstance) OnTimerFired(fn func(timerFiredEvent TimerFiredEvent))
 ```
+
+A decorator for a handler method for the TIMER\_FIRED event \(a named timer fired\).
 
 ### func \(\*workflowInstance\) PlaceCall
 
@@ -2510,7 +2599,7 @@ Translates text from one language to another. Returns the translated text in the
 func (wfInst *workflowInstance) TriggerWorkflow(accessToken string, refreshToken string, clientId string, workflowId string, subscriberId string, userId string, targets []string, actionArgs map[string]string) map[string]string
 ```
 
-A convenience method for sending an HTTP trigger to the Relay server. This generally would be used in a third\-party system to start a Relay workflow via an HTTP trigger and optionally pass data to it with action\_args.  Under the covers, this uses Python's "request" library for using the https protocol. If the access\_token has expired and the request gets a 401 response, a new access\_token will be automatically generated via the refresh\_token, and the request will be resubmitted with the new access\_token. Otherwise the refresh token won't be used. This method will return a tuple of \(requests.Response, access\_token\) where you can inspect the http response, and get the updated access\_token if it was updated \(otherwise the original access\_token will be returned\).
+A convenience method for sending an HTTP trigger to the Relay server. This generally would be used in a third\-party system to start a Relay workflow via an HTTP trigger and optionally pass data to it with action\_args. If the access\_token has expired and the request gets a 401 response, a new access\_token will be automatically generated via the refresh\_token, and the request will be resubmitted with the new access\_token. Otherwise the refresh token won't be used. This method will return a tuple of \(requests.Response, access\_token\) where you can inspect the http response, and get the updated access\_token if it was updated \(otherwise the original access\_token will be returned\).
 
 ### func \(\*workflowInstance\) UnsetVar
 
