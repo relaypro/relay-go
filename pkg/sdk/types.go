@@ -2,21 +2,58 @@
 
 package sdk
 
+// Different events that can happen during a workflow, including
+// an error, interaction lifecycle events, button presses, timers
+// or notifications, incidents, speech, and calls. See the Relay Guide's
+// section on Events for more detailed information on each of these.
+
 type Event string
 
 const (
-	ERROR                 Event = "error"
-	START                       = "start"
-	STOP                        = "stop"
-	INTERACTION_LIFECYCLE       = "interaction_lifecycle"
-	BUTTON                      = "button"
-	TIMER                       = "timer"
-	SPEECH                      = "speech"
-	NOTIFICATION                = "notification"
-	INCIDENT                    = "incident"
-	PROMPT                      = "prompt"
-	PROMPT_START                = "prompt_start"
-	PROMPT_STOP                 = "prompt_stop"
+	// An error has occurred while running your workflow.  If you have DEBUG level
+	// logging turned on, take a look at the logs to track down the error.  In
+	// most cases, this occurrs when the wrong type of URN is sent in the payload
+	// to the server.
+	ERROR = "error"
+
+	// Your workflow has been triggered
+	START = "start"
+
+	// Your workflow has stopped, which might be due to a normal completion after you call
+	// terminate() or from an abnormal completion error.
+	STOP = "stop"
+
+	// An interaction lifecycle event has occurred.  This could indicate that an interaction
+	// has started, resumed, been suspended, ended, or failed.
+	INTERACTION_LIFECYCLE = "interaction_lifecycle"
+
+	// A button has been pressed on your device during a running workflow.  This event occurs on a single, double or triple
+	// tap of the action button or a tap of the assistant button.  Note this is separate from a button
+	// trigger.
+	BUTTON = "button"
+
+	// An unnamed timer has fired.
+	TIMER = "timer"
+
+	// You have spoken into the device by holding down the action button. Typically seen
+	// when the listen() funcitonis happening on a device.
+	SPEECH = "speech"
+
+	// A device has acknowledged an alert that was sent out to a group of devices.
+	NOTIFICATION = "notification"
+
+	// An incident has been resolved.
+	INCIDENT = "incident"
+
+	// When a text-to-speech is being streamed to a Relay device, this event will mark
+	// the beginning and end of that stream delivery.
+	PROMPT = "prompt"
+
+	// The beginning of text-to-speech on the device.
+	PROMPT_START = "prompt_start"
+
+	// The end of text-to-speech on the device.
+	PROMPT_STOP = "prompt_stop"
 
 	// The device we called is ringing. We are waiting for them to answer.
 	// This event can occur on the caller.
@@ -42,9 +79,11 @@ const (
 	// the caller after using the "Call X" voice command on the Assistant.
 	CALL_START_REQUEST = "call_start_request"
 
+	// A named timer has fired.
 	TIMER_FIRED = "timer_fired"
 )
 
+// The different types of triggers that can start a workflow.
 type TriggerType string
 
 const (
@@ -58,6 +97,7 @@ const (
 	TELEPHONY_TRIGGER = "telephony"
 )
 
+// Whether the message back from the server is an event or response
 type MessageType string
 
 const (
@@ -65,6 +105,8 @@ const (
 	RESPONSE = "response"
 )
 
+// The supported languages that can be used for speech, listening,
+// or translation on the device.
 type Language string
 
 const (
@@ -105,6 +147,7 @@ const (
 	FINNISH    = `fi-FI`
 )
 
+// Type of timer on the device.  Can be timeout or interval timer type.
 type TimerType string
 
 const (
@@ -112,6 +155,7 @@ const (
 	INTERVAL_TIMER_TYPE = "interval"
 )
 
+// The timeout type for a timer.  Can be either milliseconds, seconds, minutes or hours.
 type TimeoutType string
 
 const (
@@ -121,6 +165,7 @@ const (
 	HRS_TIMEOUT_TYPE  = "hrs"
 )
 
+// Information dealing with the device name, id, type, locatin, battery, and username.
 type DeviceInfoQuery string
 
 const (
