@@ -160,87 +160,125 @@ type EventWrapper struct {
 
 // Callback Handlers
 
+// A decorator for a handler for the START event (workflow is starting).
 func (wfInst *workflowInstance) OnStart(fn func(startEvent StartEvent)) {
 	// store the func that was passed in as a callback in a slice, then whenever the websocket sends us a matching event, call the callback
 	wfInst.OnStartHandler = fn
 }
 
+// A decorator for a handler method for the INTERACTION_LIFECYCLE event (an interaction
+// is starting, resuming, or ending).
 func (wfInst *workflowInstance) OnInteractionLifecycle(fn func(interactionLifecycleEvent InteractionLifecycleEvent)) {
 	wfInst.OnInteractionLifecycleHandler = fn
 }
 
+// A decorator for a handler method for the PROMPT event (text-to-speech is streaming in).
 func (wfInst *workflowInstance) OnPrompt(fn func(promptEvent PromptEvent)) {
 	wfInst.OnPromptHandler = fn
 }
 
+// A decorator for a handler method for the BUTTON event (the Talk button was pressed).
 func (wfInst *workflowInstance) OnButton(fn func(buttonEvent ButtonEvent)) {
 	wfInst.OnButtonHandler = fn
 }
 
+// A decorator for a handler method for the TIMER_FIRED event (a named timer fired).
 func (wfInst *workflowInstance) OnTimerFired(fn func(timerFiredEvent TimerFiredEvent)) {
 	wfInst.OnTimerFiredHandler = fn
 }
 
+// A decorator for a handler method for the TIMER event (the unnamed timer fired).
 func (wfInst *workflowInstance) OnTimer(fn func(timerEvent TimerEvent)) {
 	wfInst.OnTimerHandler = fn
 }
 
+// A decorator for a handler method for the SPEECH event (the listen() function is running).
 func (wfInst *workflowInstance) OnSpeech(fn func(speechEvent SpeechEvent)) {
 	wfInst.OnSpeechHandler = fn
 }
 
+// A decorator for a handler method for the STOP event (workflow is stopping).
 func (wfInst *workflowInstance) OnStop(fn func(stopEvent StopEvent)) {
 	wfInst.OnStopHandler = fn
 }
 
+// A decorator for a handler method for the NOTIFICATION event (a broadcast or alert was sent).
 func (wfInst *workflowInstance) OnNotification(fn func(notificationEvent NotificationEvent)) {
 	wfInst.OnNotificationHandler = fn
 }
 
+// A decorator for a handler method for the PROGRESS event (a long running action is being
+// performed across a large number of devices, may get called multiple times).
 func (wfInst *workflowInstance) OnProgress(fn func(progressEvent ProgressEvent)) {
 	wfInst.OnProgressHandler = fn
 }
 
+// A decorator for a handler method for the PLAY_INBOX_MESSAGE event (a missed message
+// is being played).
 func (wfInst *workflowInstance) OnPlayInboxMessages(fn func(playInboxMessagesEvent PlayInboxMessagesEvent)) {
 	wfInst.OnPlayInboxMessagesHandler = fn
 }
 
+// A decorator for a handler method for the CALL_CONNECTED event.
+// A call attempt that was ringing, progressing, or incoming is now fully
+// connected. This event can occur on both the caller and the callee.
 func (wfInst *workflowInstance) OnCallConnected(fn func(callConnectedEvent CallConnectedEvent)) {
 	wfInst.OnCallConnectedHandler = fn
 }
 
+// A decorator for a handler method for the CALL_DISCONNECTED event.
+// A call that was once connected has become disconnected. This event can
+// occur on both the caller and the callee.
 func (wfInst *workflowInstance) OnCallDisconnected(fn func(callDisconnected CallDisconnectedEvent)) {
 	wfInst.OnCallDisconnectedHandler = fn
 }
 
+// A decorator for a handler method for the CALL_FAILED event.
+// A call failed to get connected. This event can occur on both the caller
+// and the callee.
 func (wfInst *workflowInstance) OnCallFailed(fn func(callFailedEvent CallFailedEvent)) {
 	wfInst.OnCallFailedHandler = fn
 }
 
+// A decorator for a handler method for the CALL_RECEIVED event.
+// The device is receiving an inbound call request. This event can occur
+// on the callee.
 func (wfInst *workflowInstance) OnCallReceived(fn func(callReceivedEvent CallReceivedEvent)) {
 	wfInst.OnCallReceivedHandler = fn
 }
 
+// A decorator for a handler method for the CALL_RINGING event.
+// The device we called is ringing. We are waiting for them to answer.
+// This event can occur on the caller.
 func (wfInst *workflowInstance) OnCallRinging(fn func(callRingingEvent CallRingingEvent)) {
 	wfInst.OnCallRingingHandler = fn
 }
 
+// A decorator for a handler method for the CALL_START_REQUEST event.
+// There is a request to make an outbound call. This event can occur on
+// the caller after using the "Call X" voice command on the Assistant.
 func (wfInst *workflowInstance) OnCallStartRequest(fn func(callStartEvent CallStartEvent)) {
 	wfInst.OnCallStartRequestHandler = fn
 }
 
+// A decorator for a handler method for the CALL_PROGRESSING event.
+// The device we called is making progress on getting connected. This may
+// be interspersed with on_call_ringing. This event can occur on the caller.
 func (wfInst *workflowInstance) OnCallProgressing(fn func(callProgressingEvent CallProgressingEvent)) {
 	wfInst.OnCallProgressingHandler = fn
 }
 
+// A decorator for a handler method for the SMS event (TBD).
 func (wfInst *workflowInstance) OnSms(fn func(smsEvent SmsEvent)) {
 	wfInst.OnSmsHandler = fn
 }
 
+// A decorator for a handler method for the INCIDENT event (an incident has been created).
 func (wfInst *workflowInstance) OnIncident(fn func(incidentEvent IncidentEvent)) {
 	wfInst.OnIncidentHandler = fn
 }
 
+// A decorator for a handler method for the RESUME event (TBD).
 func (wfInst *workflowInstance) OnResume(fn func(resumeEvent ResumeEvent)) {
 	wfInst.OnResumeHandler = fn
 }
@@ -917,6 +955,7 @@ func (wfInst *workflowInstance) Terminate() {
 	wfInst.sendRequest(req)
 }
 
+// Used only for TriggerWorkflow and FetchDevice
 var serverHostname string = "all-main-pro-ibot.relaysvr.com"
 var version string = "relay-sdk-go/2.0.0-pre"
 var auth_hostname string = "auth.relaygo.com"
@@ -969,8 +1008,7 @@ func (wfInst *workflowInstance) updateAccessToken(refreshToken string, clientId 
 // A convenience method for sending an HTTP trigger to the Relay server.
 // This generally would be used in a third-party system to start a Relay
 // workflow via an HTTP trigger and optionally pass data to it with
-// action_args.  Under the covers, this uses Python's "request" library
-// for using the https protocol.
+// action_args.
 // If the access_token has expired and the request gets a 401 response,
 // a new access_token will be automatically generated via the refresh_token,
 // and the request will be resubmitted with the new access_token. Otherwise
