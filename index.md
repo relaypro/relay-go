@@ -25,7 +25,6 @@ import "command-line-arguments"
 - [func ParseGroupId(uri string) string](<#func-parsegroupid>)
 - [func ParseGroupName(uri string) string](<#func-parsegroupname>)
 - [func construct(resourceType string, idtype string, idOrName string) string](<#func-construct>)
-- [func convert(arr []interface{}) string](<#func-convert>)
 - [func handleWs(w http.ResponseWriter, r *http.Request)](<#func-handlews>)
 - [func makeId() string](<#func-makeid>)
 - [func makeTargetMap(sourceUri string) map[string][]string](<#func-maketargetmap>)
@@ -627,12 +626,6 @@ Parses out a group name from a group URN. Returns the name of the group as a str
 
 ```go
 func construct(resourceType string, idtype string, idOrName string) string
-```
-
-## func convert
-
-```go
-func convert(arr []interface{}) string
 ```
 
 ## func handleWs
