@@ -117,12 +117,3 @@ func parseMessage(msg []byte) (map[string]interface{}, Event, string) {
     
     return parsedMsg, Event(matches[1]), messageType
 }
-
-func convert(arr []interface{}) string {
-    var bytes []byte = make([]byte, len(arr))
-    for i, v := range arr {
-        var f float64 = v.(float64)
-        bytes[i] = byte(f)
-    }
-    return string(bytes)
-}
