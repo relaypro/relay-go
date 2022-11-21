@@ -465,6 +465,17 @@ type LogAnalyticsEventResponse struct {
 	_type string `json:"_type"`
 }
 
+type debugLogRequest struct {
+	Id          string `json:"_id"`
+	Type        string `json:"_type"`
+	Content     string `json:"content"`
+}
+
+type DebugLogResponse struct {
+	_id   string `json:"_id"`
+	_type string `json:"_type"`
+}
+
 type setVarRequest struct {
 	Id    string `json:"_id"`
 	Type  string `json:"_type"`

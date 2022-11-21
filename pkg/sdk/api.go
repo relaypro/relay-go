@@ -59,6 +59,7 @@ type RelayApi interface { // this is interface of your custom workflow, you impl
 	Translate(sourceUri string, text string, from Language, to Language) string
 	LogMessage(message string, category string) LogAnalyticsEventResponse
 	LogUserMessage(message string, sourceUri string, category string) LogAnalyticsEventResponse
+	DebugLog(message string) DebugLogResponse
 	SetVar(name string, value string) SetVarResponse
 	UnsetVar(name string) UnsetVarResponse
 	GetVar(name string, defaultValue string) string
@@ -455,6 +456,19 @@ func (wfInst *workflowInstance) LogUserMessage(message string, sourceUri string,
 	req := logAnalyticsEventRequest{Type: "wf_api_log_analytics_event_request", Id: id, Content: message, ContentType: "default", Category: category, DeviceUri: sourceUri}
 	call := wfInst.sendAndReceiveRequest(req, id)
 	res := LogAnalyticsEventResponse{}
+	json.Unmarshal(call.EventWrapper.Msg, &res)
+	return res
+}
+
+// Log a debug message that is visible with the CLI command
+// `relay workflow debug`. This is helpful for debugging workflows.
+// Returns a DebugLogResponse.
+func (wfInst *workflowInstance) DebugLog(message string) DebugLogResponse {
+	log.Debug("logging debug message ", message)
+	id := makeId()
+	req := debugLogRequest{Type: "wf_api_debug_log_request", Id: id, Content: message}
+	call := wfInst.sendAndReceiveRequest(req, id)
+	res := DebugLogResponse{}
 	json.Unmarshal(call.EventWrapper.Msg, &res)
 	return res
 }
