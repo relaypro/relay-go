@@ -13,6 +13,7 @@ import "command-line-arguments"
 - [func AddWorkflow(workflowName string, fn func(api RelayApi))](<#func-addworkflow>)
 - [func DeviceId(id string) string](<#func-deviceid>)
 - [func DeviceName(name string) string](<#func-devicename>)
+- [func FetchDevice(accessToken string, refreshToken string, clientId string, subscriberId string, userId string) map[string]string](<#func-fetchdevice>)
 - [func GroupId(id string) string](<#func-groupid>)
 - [func GroupMember(group string, device string) string](<#func-groupmember>)
 - [func GroupName(name string) string](<#func-groupname>)
@@ -24,12 +25,14 @@ import "command-line-arguments"
 - [func ParseDeviceName(uri string) string](<#func-parsedevicename>)
 - [func ParseGroupId(uri string) string](<#func-parsegroupid>)
 - [func ParseGroupName(uri string) string](<#func-parsegroupname>)
+- [func TriggerWorkflow(accessToken string, refreshToken string, clientId string, workflowId string, subscriberId string, userId string, targets []string, actionArgs map[string]string) map[string]string](<#func-triggerworkflow>)
 - [func construct(resourceType string, idtype string, idOrName string) string](<#func-construct>)
 - [func handleWs(w http.ResponseWriter, r *http.Request)](<#func-handlews>)
 - [func makeId() string](<#func-makeid>)
 - [func makeTargetMap(sourceUri string) map[string][]string](<#func-maketargetmap>)
 - [func parseMessage(msg []byte) (map[string]interface{}, Event, string)](<#func-parsemessage>)
 - [func startWorkflow(wfInst *workflowInstance, workflowName string)](<#func-startworkflow>)
+- [func updateAccessToken(refreshToken string, clientId string) string](<#func-updateaccesstoken>)
 - [type AnswerResponse](<#type-answerresponse>)
 - [type ButtonEvent](<#type-buttonevent>)
 - [type Call](<#type-call>)
@@ -153,7 +156,6 @@ import "command-line-arguments"
   - [func (wfInst *workflowInstance) EnableHomeChannel(sourceUri string) SetHomeChannelStateResponse](<#func-workflowinstance-enablehomechannel>)
   - [func (wfInst *workflowInstance) EnableLocation(sourceUri string) SetDeviceInfoResponse](<#func-workflowinstance-enablelocation>)
   - [func (wfInst *workflowInstance) EndInteraction(sourceUri string) EndInteractionResponse](<#func-workflowinstance-endinteraction>)
-  - [func (wfInst *workflowInstance) FetchDevice(accessToken string, refreshToken string, clientId string, subscriberId string, userId string) map[string]string](<#func-workflowinstance-fetchdevice>)
   - [func (wfInst *workflowInstance) Flash(sourceUri string, color string, count int64) SetLedResponse](<#func-workflowinstance-flash>)
   - [func (wfInst *workflowInstance) GetDeviceAddress(sourceUri string, refresh bool) string](<#func-workflowinstance-getdeviceaddress>)
   - [func (wfInst *workflowInstance) GetDeviceBattery(sourceUri string, refresh bool) uint64](<#func-workflowinstance-getdevicebattery>)
@@ -220,7 +222,6 @@ import "command-line-arguments"
   - [func (wfInst *workflowInstance) SwitchLedOn(sourceUri string, led int, color string) SetLedResponse](<#func-workflowinstance-switchledon>)
   - [func (wfInst *workflowInstance) Terminate()](<#func-workflowinstance-terminate>)
   - [func (wfInst *workflowInstance) Translate(sourceUri string, text string, from Language, to Language) string](<#func-workflowinstance-translate>)
-  - [func (wfInst *workflowInstance) TriggerWorkflow(accessToken string, refreshToken string, clientId string, workflowId string, subscriberId string, userId string, targets []string, actionArgs map[string]string) map[string]string](<#func-workflowinstance-triggerworkflow>)
   - [func (wfInst *workflowInstance) UnsetVar(name string) UnsetVarResponse](<#func-workflowinstance-unsetvar>)
   - [func (wfInst *workflowInstance) Vibrate(sourceUri string, pattern []uint64) VibrateResponse](<#func-workflowinstance-vibrate>)
   - [func (wfInst *workflowInstance) getDeviceInfo(sourceUri string, query DeviceInfoQuery, refresh bool) GetDeviceInfoResponse](<#func-workflowinstance-getdeviceinfo>)
@@ -234,7 +235,6 @@ import "command-line-arguments"
   - [func (wfInst *workflowInstance) setDeviceInfo(sourceUri string, field SetDeviceInfoType, value string) SetDeviceInfoResponse](<#func-workflowinstance-setdeviceinfo>)
   - [func (wfInst *workflowInstance) setHomeChannelState(sourceUri string, enabled bool) SetHomeChannelStateResponse](<#func-workflowinstance-sethomechannelstate>)
   - [func (wfInst *workflowInstance) setLeds(sourceUri string, effect LedEffect, args LedInfo) SetLedResponse](<#func-workflowinstance-setleds>)
-  - [func (wfInst *workflowInstance) updateAccessToken(refreshToken string, clientId string) string](<#func-workflowinstance-updateaccesstoken>)
 
 
 ## Constants
@@ -569,6 +569,14 @@ func DeviceName(name string) string
 
 Creates a URN from a device name. Returns the constructed URN as a string.
 
+## func FetchDevice
+
+```go
+func FetchDevice(accessToken string, refreshToken string, clientId string, subscriberId string, userId string) map[string]string
+```
+
+A convenience method for getting all the details of a device. This will return quite a bit of data regarding device configuration and state. The result, if the query was successful, should have a large JSON dictionary.
+
 ## func GroupId
 
 ```go
@@ -657,6 +665,14 @@ func ParseGroupName(uri string) string
 
 Parses out a group name from a group URN. Returns the name of the group as a string.
 
+## func TriggerWorkflow
+
+```go
+func TriggerWorkflow(accessToken string, refreshToken string, clientId string, workflowId string, subscriberId string, userId string, targets []string, actionArgs map[string]string) map[string]string
+```
+
+A convenience method for sending an HTTP trigger to the Relay server. This generally would be used in a third\-party system to start a Relay workflow via an HTTP trigger and optionally pass data to it with action\_args. If the access\_token has expired and the request gets a 401 response, a new access\_token will be automatically generated via the refresh\_token, and the request will be resubmitted with the new access\_token. Otherwise the refresh token won't be used. This method will return a tuple of \(requests.Response, access\_token\) where you can inspect the http response, and get the updated access\_token if it was updated \(otherwise the original access\_token will be returned\).
+
 ## func construct
 
 ```go
@@ -691,6 +707,12 @@ func parseMessage(msg []byte) (map[string]interface{}, Event, string)
 
 ```go
 func startWorkflow(wfInst *workflowInstance, workflowName string)
+```
+
+## func updateAccessToken
+
+```go
+func updateAccessToken(refreshToken string, clientId string) string
 ```
 
 ## type AnswerResponse
@@ -1243,8 +1265,6 @@ type RelayApi interface {
     AnswerCall(sourceUri string, callId string) AnswerResponse
     HangupCall(targetUri string, callId string) HangupCallResponse
     Terminate()
-    FetchDevice(accessToken string, refreshToken string, clientId string, subscriberId string, userId string) map[string]string
-    TriggerWorkflow(accessToken string, refreshToken string, clientId string, workflowId string, subscriberId string, userId string, targets []string, actionArgs map[string]string) map[string]string
 }
 ```
 
@@ -2057,14 +2077,6 @@ func (wfInst *workflowInstance) EndInteraction(sourceUri string) EndInteractionR
 
 Ends an interaction with the user.  Triggers an INTERACTION\_ENDED event to signify that the user is done interacting with the device.  Returns an EndInteractionResponse.
 
-### func \(\*workflowInstance\) FetchDevice
-
-```go
-func (wfInst *workflowInstance) FetchDevice(accessToken string, refreshToken string, clientId string, subscriberId string, userId string) map[string]string
-```
-
-A convenience method for getting all the details of a device. This will return quite a bit of data regarding device configuration and state. The result, if the query was successful, should have a large JSON dictionary.
-
 ### func \(\*workflowInstance\) Flash
 
 ```go
@@ -2593,14 +2605,6 @@ func (wfInst *workflowInstance) Translate(sourceUri string, text string, from La
 
 Translates text from one language to another. Returns the translated text in the specified language as a string.
 
-### func \(\*workflowInstance\) TriggerWorkflow
-
-```go
-func (wfInst *workflowInstance) TriggerWorkflow(accessToken string, refreshToken string, clientId string, workflowId string, subscriberId string, userId string, targets []string, actionArgs map[string]string) map[string]string
-```
-
-A convenience method for sending an HTTP trigger to the Relay server. This generally would be used in a third\-party system to start a Relay workflow via an HTTP trigger and optionally pass data to it with action\_args. If the access\_token has expired and the request gets a 401 response, a new access\_token will be automatically generated via the refresh\_token, and the request will be resubmitted with the new access\_token. Otherwise the refresh token won't be used. This method will return a tuple of \(requests.Response, access\_token\) where you can inspect the http response, and get the updated access\_token if it was updated \(otherwise the original access\_token will be returned\).
-
 ### func \(\*workflowInstance\) UnsetVar
 
 ```go
@@ -2681,12 +2685,6 @@ func (wfInst *workflowInstance) setHomeChannelState(sourceUri string, enabled bo
 
 ```go
 func (wfInst *workflowInstance) setLeds(sourceUri string, effect LedEffect, args LedInfo) SetLedResponse
-```
-
-### func \(\*workflowInstance\) updateAccessToken
-
-```go
-func (wfInst *workflowInstance) updateAccessToken(refreshToken string, clientId string) string
 ```
 
 
