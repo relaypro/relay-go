@@ -105,8 +105,6 @@ type RelayApi interface { // this is interface of your custom workflow, you impl
 	AnswerCall(sourceUri string, callId string) AnswerResponse
 	HangupCall(targetUri string, callId string) HangupCallResponse
 	Terminate()
-	FetchDevice(accessToken string, refreshToken string, clientId string, subscriberId string, userId string) map[string]string
-	TriggerWorkflow(accessToken string, refreshToken string, clientId string, workflowId string, subscriberId string, userId string, targets []string, actionArgs map[string]string) map[string]string
 }
 
 // This struct implements RelayApi below
@@ -960,7 +958,7 @@ var serverHostname string = "all-main-pro-ibot.relaysvr.com"
 var version string = "relay-sdk-go/2.0.0-pre"
 var auth_hostname string = "auth.relaygo.com"
 
-func (wfInst *workflowInstance) updateAccessToken(refreshToken string, clientId string) string {
+func updateAccessToken(refreshToken string, clientId string) string {
 	grantUrl := "https://" + auth_hostname + "/oauth2/token"
 
 	// Create the query params to be sent with the request, and encode the query params
@@ -1016,7 +1014,8 @@ func (wfInst *workflowInstance) updateAccessToken(refreshToken string, clientId 
 // This method will return a tuple of (requests.Response, access_token)
 // where you can inspect the http response, and get the updated access_token
 // if it was updated (otherwise the original access_token will be returned).
-func (wfInst *workflowInstance) TriggerWorkflow(accessToken string, refreshToken string, clientId string, workflowId string, subscriberId string, userId string, targets []string, actionArgs map[string]string) map[string]string {
+func  TriggerWorkflow(accessToken string, refreshToken string, clientId string, workflowId string, subscriberId string, userId string, targets []string, actionArgs map[string]string) map[string]string {
+	var res *http.Response
 	// Create the query params to be sent with the request, and encode the query params
 	queryParams := url.Values{}
 	queryParams.Add("subscriber_id", subscriberId)
@@ -1026,6 +1025,7 @@ func (wfInst *workflowInstance) TriggerWorkflow(accessToken string, refreshToken
 
 	// Create a map representing the payload to be sent with teh request.  Add action_args field if actionArgs has entries.  Convert
 	// the triggerPayload map into a string and then into bytes that can be sent with the request
+	
 	triggerPayload := map[string]string{
 		"action": "invoke",
 	}
@@ -1035,6 +1035,13 @@ func (wfInst *workflowInstance) TriggerWorkflow(accessToken string, refreshToken
 			log.Error(err)
 		}
 		triggerPayload["action_args"] = string(actionArgsString)
+	}
+	if len(targets) > 0 {
+		targetsString, err := json.Marshal(targets)
+		if err != nil {
+			log.Error(err)
+		}
+		triggerPayload["target_device_ids"] = string(targetsString)
 	}
 	triggerPayloadString, err := json.Marshal(triggerPayload)
 	if err != nil {
@@ -1055,23 +1062,29 @@ func (wfInst *workflowInstance) TriggerWorkflow(accessToken string, refreshToken
 	// Create the client and perform the request
 	client := &http.Client{}
 	client.Timeout = time.Second * 30
-	res, err := client.Do(req)
+	res, err = client.Do(req)
 	if err != nil {
 		log.Error(err)
 	}
 
-	defer res.Body.Close()
-
 	// If you get a 401 back, retrieve a new access token and try again
 	if res.StatusCode == http.StatusUnauthorized {
 		fmt.Println("Got 401, retrieving a new access token")
-		accessToken = wfInst.updateAccessToken(refreshToken, clientId)
+		accessToken = updateAccessToken(refreshToken, clientId)
+		req, err := http.NewRequest("POST", triggerUrl, bytes.NewBuffer(payload))
+		if err != nil {
+			log.Error(err)
+		}
+		// Set the headers again
+		req.Header.Set("User-Agent", version)
 		req.Header.Set("Authorization", "Bearer "+accessToken)
+		// Create the client and perform the request again
+		client := &http.Client{}
+		client.Timeout = time.Second * 30
 		res, err = client.Do(req)
 		if err != nil {
 			log.Error(err)
 		}
-		defer res.Body.Close()
 	}
 
 	// Convert the respoonse body into bytes, so that it can then be converted into a string that is readable to the client
@@ -1079,12 +1092,14 @@ func (wfInst *workflowInstance) TriggerWorkflow(accessToken string, refreshToken
 	if err != nil {
 		log.Error(err)
 	}
-
 	// Return a map containing the response and the access token
 	response := map[string]string{
 		"response":     string(bytes),
 		"access_token": accessToken,
 	}
+
+	defer res.Body.Close()
+
 	return response
 }
 
@@ -1092,7 +1107,7 @@ func (wfInst *workflowInstance) TriggerWorkflow(accessToken string, refreshToken
 // This will return quite a bit of data regarding device configuration and
 // state. The result, if the query was successful, should have a large JSON
 // dictionary.
-func (wfInst *workflowInstance) FetchDevice(accessToken string, refreshToken string, clientId string, subscriberId string, userId string) map[string]string {
+func FetchDevice(accessToken string, refreshToken string, clientId string, subscriberId string, userId string) map[string]string {
 	// Create the query params to be sent with the request, and encode the query params
 	queryParams := url.Values{}
 	queryParams.Add("subscriber_id", subscriberId)
@@ -1120,7 +1135,7 @@ func (wfInst *workflowInstance) FetchDevice(accessToken string, refreshToken str
 	// If you get a 401 back, retrieve the new access token and try again
 	if res.StatusCode == http.StatusUnauthorized {
 		fmt.Println("Got 401, retrieving a new access token")
-		accessToken = wfInst.updateAccessToken(refreshToken, clientId)
+		accessToken = updateAccessToken(refreshToken, clientId)
 		req.Header.Set("Authorization", "Bearer "+accessToken)
 		res, err = client.Do(req)
 		if err != nil {
