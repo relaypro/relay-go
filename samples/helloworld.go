@@ -14,7 +14,6 @@ func main() {
     log.SetLevel(log.InfoLevel)
 
     sdk.AddWorkflow("hellopath", func(api sdk.RelayApi) {
-        var sourceUri string
         
         api.OnStart(func(startEvent sdk.StartEvent) {
             sourceUri := api.GetSourceUri(startEvent)
@@ -26,12 +25,12 @@ func main() {
             log.Debug("User workflow got interaction lifecycle: ", interactionLifecycleEvent)
 
             if interactionLifecycleEvent.LifecycleType == "started" {
-                sourceUri = interactionLifecycleEvent.SourceUri
-                var deviceName = api.GetDeviceName(sourceUri, false)
-                api.SayAndWait(sourceUri, "What is your name?", sdk.ENGLISH)
-                var name = api.Listen(sourceUri, []string {}, false, sdk.ENGLISH, 30)
-                api.Say(sourceUri, "Hello " + name + " you are currently using " + deviceName, sdk.ENGLISH)
-                api.EndInteraction(sourceUri)
+                interactionUri := interactionLifecycleEvent.SourceUri
+                var deviceName = api.GetDeviceName(interactionUri, false)
+                api.SayAndWait(interactionUri, "What is your name?", sdk.ENGLISH)
+                var name = api.Listen(interactionUri, []string {}, false, sdk.ENGLISH, 30)
+                api.Say(interactionUri, "Hello " + name + " you are currently using " + deviceName, sdk.ENGLISH)
+                api.EndInteraction(interactionUri)
             }
 
             if interactionLifecycleEvent.LifecycleType == "ended" {
