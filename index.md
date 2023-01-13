@@ -175,7 +175,7 @@ import "command-line-arguments"
   - [func (wfInst *workflowInstance) GetVar(name string, defaultValue string) string](<#func-workflowinstance-getvar>)
   - [func (wfInst *workflowInstance) HangupCall(targetUri string, callId string) HangupCallResponse](<#func-workflowinstance-hangupcall>)
   - [func (wfInst *workflowInstance) IsGroupMember(groupNameUri string, potentialMemberUri string) bool](<#func-workflowinstance-isgroupmember>)
-  - [func (wfInst *workflowInstance) Listen(sourceUri string, phrases []string, transcribe bool, alt_lang string, timeout int) string](<#func-workflowinstance-listen>)
+  - [func (wfInst *workflowInstance) Listen(sourceUri string, phrases []string, transcribe bool, alt_lang Language, timeout int) string](<#func-workflowinstance-listen>)
   - [func (wfInst *workflowInstance) LogMessage(message string, category string) LogAnalyticsEventResponse](<#func-workflowinstance-logmessage>)
   - [func (wfInst *workflowInstance) LogUserMessage(message string, sourceUri string, category string) LogAnalyticsEventResponse](<#func-workflowinstance-logusermessage>)
   - [func (wfInst *workflowInstance) OnButton(fn func(buttonEvent ButtonEvent))](<#func-workflowinstance-onbutton>)
@@ -223,7 +223,7 @@ import "command-line-arguments"
   - [func (wfInst *workflowInstance) Terminate()](<#func-workflowinstance-terminate>)
   - [func (wfInst *workflowInstance) Translate(sourceUri string, text string, from Language, to Language) string](<#func-workflowinstance-translate>)
   - [func (wfInst *workflowInstance) UnsetVar(name string) UnsetVarResponse](<#func-workflowinstance-unsetvar>)
-  - [func (wfInst *workflowInstance) Vibrate(sourceUri string, pattern []uint64) VibrateResponse](<#func-workflowinstance-vibrate>)
+  - [func (wfInst *workflowInstance) Vibrate(sourceUri string, pattern []int64) VibrateResponse](<#func-workflowinstance-vibrate>)
   - [func (wfInst *workflowInstance) getDeviceInfo(sourceUri string, query DeviceInfoQuery, refresh bool) GetDeviceInfoResponse](<#func-workflowinstance-getdeviceinfo>)
   - [func (wfInst *workflowInstance) handleEvent(eventWrapper EventWrapper) error](<#func-workflowinstance-handleevent>)
   - [func (wfInst *workflowInstance) handleResponse(eventWrapper EventWrapper) error](<#func-workflowinstance-handleresponse>)
@@ -777,9 +777,9 @@ type CallDisconnectedEvent struct {
     Uri              string `json:"uri"`
     OnNet            string `json:"onnet"`
     Reason           string `json:"reason"`
-    StartTimeEpoch   string `json:"start_time_epoch"`
-    ConnectTimeEpoch string `json:"connect_time_epoch"`
-    EndTimeEpoch     string `json:"end_time_epoch"`
+    StartTimeEpoch   int64  `json:"start_time_epoch"`
+    ConnectTimeEpoch int64  `json:"connect_time_epoch"`
+    EndTimeEpoch     int64  `json:"end_time_epoch"`
 }
 ```
 
@@ -1101,10 +1101,10 @@ type NotificationEvent struct {
 
 ```go
 type NotificationOptions struct {
-    priority NotificationPriority
-    title    string
-    body     string
-    sound    NotificationSound
+    Priority NotificationPriority
+    Title    string
+    Body     string
+    Sound    NotificationSound
 }
 ```
 
@@ -1193,7 +1193,7 @@ type RelayApi interface {
     OnProgress(fn func(progressEvent ProgressEvent))
     OnPlayInboxMessages(fn func(playInboxMessagesEvent PlayInboxMessagesEvent))
     OnCallConnected(fn func(callConnectedEvent CallConnectedEvent))
-    OnCallDisconnected(fn func(callDisconnected CallDisconnectedEvent))
+    OnCallDisconnected(fn func(callDisconnectedEvent CallDisconnectedEvent))
     OnCallFailed(fn func(callFailedEvent CallFailedEvent))
     OnCallReceived(fn func(callReceivedEvent CallReceivedEvent))
     OnCallRinging(fn func(callRingingEvent CallRingingEvent))
@@ -1214,8 +1214,9 @@ type RelayApi interface {
     ResolveIncident(incidentId string, reason string) ResolveIncidentResponse
     Say(sourceUri string, text string, lang Language) SayResponse
     Alert(target string, originator string, name string, text string, pushOptions NotificationOptions) SendNotificationResponse
+    CancelAlert(target string, name string) SendNotificationResponse
     SayAndWait(sourceUri string, text string, lang Language) SayResponse
-    Listen(sourceUri string, phrases []string, transcribe bool, alt_lang string, timeout int) string
+    Listen(sourceUri string, phrases []string, transcribe bool, alt_lang Language, timeout int) string
     Translate(sourceUri string, text string, from Language, to Language) string
     LogMessage(message string, category string) LogAnalyticsEventResponse
     LogUserMessage(message string, sourceUri string, category string) LogAnalyticsEventResponse
@@ -1235,8 +1236,9 @@ type RelayApi interface {
     Rotate(sourceUri string, color string, rotations int64) SetLedResponse
     Flash(sourceUri string, color string, count int64) SetLedResponse
     Breathe(sourceUri string, color string, count int64) SetLedResponse
-    Vibrate(sourceUri string, pattern []uint64) VibrateResponse
+    Vibrate(sourceUri string, pattern []int64) VibrateResponse
     Broadcast(target string, originator string, name string, text string, pushOptions NotificationOptions) SendNotificationResponse
+    CancelBroadcast(target string, name string) SendNotificationResponse
     GetDeviceName(sourceUri string, refresh bool) string
     GetDeviceId(sourceUri string, refresh bool) string
     GetDeviceAddress(sourceUri string, refresh bool) string
@@ -1930,7 +1932,7 @@ type vibrateRequest struct {
     Type    string              `json:"_type"`
     Id      string              `json:"_id"`
     Target  map[string][]string `json:"_target"`
-    Pattern []uint64            `json:"pattern"`
+    Pattern []int64             `json:"pattern"`
 }
 ```
 
@@ -2232,7 +2234,7 @@ Checks whether a device is a member of a particular group. Returns true if the d
 ### func \(\*workflowInstance\) Listen
 
 ```go
-func (wfInst *workflowInstance) Listen(sourceUri string, phrases []string, transcribe bool, alt_lang string, timeout int) string
+func (wfInst *workflowInstance) Listen(sourceUri string, phrases []string, transcribe bool, alt_lang Language, timeout int) string
 ```
 
 Listens for the user to speak into the device.  Utilizes speech to text functionality to interact with the user. Returns the text that the device parsed from the speech as a string.
@@ -2616,7 +2618,7 @@ Unsets the value of a variable. Returns an UnsetVarResponse.
 ### func \(\*workflowInstance\) Vibrate
 
 ```go
-func (wfInst *workflowInstance) Vibrate(sourceUri string, pattern []uint64) VibrateResponse
+func (wfInst *workflowInstance) Vibrate(sourceUri string, pattern []int64) VibrateResponse
 ```
 
 Makes the device vibrate in a particular pattern.  You can specify how many vibrations you would like, the duration of each vibration in milliseconds, and how long you would like the pauses between each vibration to last in milliseconds. Returns a VibrateResponse.
