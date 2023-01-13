@@ -33,7 +33,7 @@ type RelayApi interface { // this is interface of your custom workflow, you impl
 	OnProgress(fn func(progressEvent ProgressEvent))
 	OnPlayInboxMessages(fn func(playInboxMessagesEvent PlayInboxMessagesEvent))
 	OnCallConnected(fn func(callConnectedEvent CallConnectedEvent))
-	OnCallDisconnected(fn func(callDisconnected CallDisconnectedEvent))
+	OnCallDisconnected(fn func(callDisconnectedEvent CallDisconnectedEvent))
 	OnCallFailed(fn func(callFailedEvent CallFailedEvent))
 	OnCallReceived(fn func(callReceivedEvent CallReceivedEvent))
 	OnCallRinging(fn func(callRingingEvent CallRingingEvent))
@@ -54,8 +54,9 @@ type RelayApi interface { // this is interface of your custom workflow, you impl
 	ResolveIncident(incidentId string, reason string) ResolveIncidentResponse
 	Say(sourceUri string, text string, lang Language) SayResponse
 	Alert(target string, originator string, name string, text string, pushOptions NotificationOptions) SendNotificationResponse
+	CancelAlert(target string, name string) SendNotificationResponse
 	SayAndWait(sourceUri string, text string, lang Language) SayResponse
-	Listen(sourceUri string, phrases []string, transcribe bool, alt_lang string, timeout int) string
+	Listen(sourceUri string, phrases []string, transcribe bool, alt_lang Language, timeout int) string
 	Translate(sourceUri string, text string, from Language, to Language) string
 	LogMessage(message string, category string) LogAnalyticsEventResponse
 	LogUserMessage(message string, sourceUri string, category string) LogAnalyticsEventResponse
@@ -75,8 +76,9 @@ type RelayApi interface { // this is interface of your custom workflow, you impl
 	Rotate(sourceUri string, color string, rotations int64) SetLedResponse
 	Flash(sourceUri string, color string, count int64) SetLedResponse
 	Breathe(sourceUri string, color string, count int64) SetLedResponse
-	Vibrate(sourceUri string, pattern []uint64) VibrateResponse
+	Vibrate(sourceUri string, pattern []int64) VibrateResponse
 	Broadcast(target string, originator string, name string, text string, pushOptions NotificationOptions) SendNotificationResponse
+	CancelBroadcast(target string, name string) SendNotificationResponse
 	GetDeviceName(sourceUri string, refresh bool) string
 	GetDeviceId(sourceUri string, refresh bool) string
 	GetDeviceAddress(sourceUri string, refresh bool) string
@@ -409,11 +411,11 @@ func (wfInst *workflowInstance) SayAndWait(sourceUri string, text string, lang L
 
 // Listens for the user to speak into the device.  Utilizes speech to text functionality to interact
 // with the user. Returns the text that the device parsed from the speech as a string.
-func (wfInst *workflowInstance) Listen(sourceUri string, phrases []string, transcribe bool, alt_lang string, timeout int) string {
+func (wfInst *workflowInstance) Listen(sourceUri string, phrases []string, transcribe bool, alt_lang Language, timeout int) string {
 	log.Debug("listening ")
 	id := makeId()
 	target := makeTargetMap(sourceUri)
-	req := listenRequest{Type: "wf_api_listen_request", Id: id, Target: target, ReqestId: "request1", Phrases: phrases, Transcribe: transcribe, Timeout: timeout, AltLang: alt_lang}
+	req := listenRequest{Type: "wf_api_listen_request", Id: id, Target: target, ReqestId: "request1", Phrases: phrases, Transcribe: transcribe, Timeout: timeout, AltLang: string(alt_lang)}
 	call := wfInst.sendAndReceiveRequest(req, id)
 	res := SpeechEvent{}
 	json.Unmarshal(call.EventWrapper.Msg, &res)
@@ -649,7 +651,7 @@ func (wfInst *workflowInstance) Breathe(sourceUri string, color string, count in
 // how many vibrations you would like, the duration of each vibration in
 // milliseconds, and how long you would like the pauses between each vibration to last
 // in milliseconds. Returns a VibrateResponse.
-func (wfInst *workflowInstance) Vibrate(sourceUri string, pattern []uint64) VibrateResponse {
+func (wfInst *workflowInstance) Vibrate(sourceUri string, pattern []int64) VibrateResponse {
 	log.Debug("vibrating with pattern ", pattern)
 	id := makeId()
 	target := makeTargetMap(sourceUri)

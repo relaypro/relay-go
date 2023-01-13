@@ -43,7 +43,7 @@ func (wfInst *workflowInstance) sendAndReceiveRequest(msg interface{}, id string
     // here we block to receive from the call's channel
     select {
         case <-call.Done:
-        case <-time.After(10 * time.Second):
+        case <-time.After(60 * time.Second):
             log.Debug("Request timed out")
             call.Error = errors.New("request timeout")
     }
@@ -212,6 +212,24 @@ func (wfInst *workflowInstance) handleEvent(eventWrapper EventWrapper) error {
                 wfInst.OnCallStartRequestHandler(params)
             } else {
                 log.Debug("ignoring event", eventWrapper.EventName, " no handler registered")
+            }
+        case NOTIFICATION:
+            log.Debug("received notification event ", string(eventWrapper.Msg))
+            var params NotificationEvent
+            json.Unmarshal(eventWrapper.Msg, &params)
+            if(wfInst.OnNotificationHandler != nil) {
+                wfInst.OnNotificationHandler(params)
+            } else {
+                log.Debug("ignoring event ", eventWrapper.EventName, " no handler registered")
+            }
+        case INCIDENT:
+            log.Debug("received incident event ", string(eventWrapper.Msg))
+            var params IncidentEvent
+            json.Unmarshal(eventWrapper.Msg, &params)
+            if(wfInst.OnIncidentHandler != nil) {
+                wfInst.OnIncidentHandler(params)
+            } else {
+                log.Debug("ignoring event ", eventWrapper.EventName, " no handler registered")
             }
         default:
             log.Debug("UNKNOWN EVENT ", eventWrapper.ParsedMsg);

@@ -1,3 +1,4 @@
+
 // Copyright © 2022 Relay Inc.
 
 package main
@@ -25,12 +26,11 @@ func main() {
             log.Debug("User workflow got interaction lifecycle: ", interactionLifecycleEvent)
 
             if interactionLifecycleEvent.LifecycleType == "started" {
-                sourceUri = interactionLifecycleEvent.SourceUri     // save the interaction id here to use in the timer callback
+                sourceUri = interactionLifecycleEvent.SourceUri
                 var deviceName = api.GetDeviceName(sourceUri, false)
-                api.SayAndWait(sourceUri, "What is your name?", "en-US")
-                var pharses = []string {}
-                var name = api.Listen(sourceUri, pharses, false, "en-US", 30)
-                api.Say(sourceUri, "Hello " + name + " you are currently using " + deviceName, "en-US")
+                api.SayAndWait(sourceUri, "What is your name?", sdk.ENGLISH)
+                var name = api.Listen(sourceUri, []string {}, false, sdk.ENGLISH, 30)
+                api.Say(sourceUri, "Hello " + name + " you are currently using " + deviceName, sdk.ENGLISH)
                 api.EndInteraction(sourceUri)
             }
 
