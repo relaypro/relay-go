@@ -203,10 +203,10 @@ type NotificationEvent struct {
 }
 
 type NotificationOptions struct {
-	priority NotificationPriority
-	title    string
-	body     string
-	sound    NotificationSound
+	Priority NotificationPriority
+	Title    string
+	Body     string
+	Sound    NotificationSound
 }
 
 type NotificationPriority string
@@ -254,9 +254,9 @@ type CallDisconnectedEvent struct {
 	Uri              string `json:"uri"`
 	OnNet            string `json:"onnet"`
 	Reason           string `json:"reason"`
-	StartTimeEpoch   string `json:"start_time_epoch"`
-	ConnectTimeEpoch string `json:"connect_time_epoch"`
-	EndTimeEpoch     string `json:"end_time_epoch"`
+	StartTimeEpoch   int64 `json:"start_time_epoch"`
+	ConnectTimeEpoch int64 `json:"connect_time_epoch"`
+	EndTimeEpoch     int64 `json:"end_time_epoch"`
 }
 
 type CallFailedEvent struct {
@@ -757,7 +757,7 @@ type vibrateRequest struct {
 	Type    string              `json:"_type"`
 	Id      string              `json:"_id"`
 	Target  map[string][]string `json:"_target"`
-	Pattern []uint64            `json:"pattern"`
+	Pattern []int64            `json:"pattern"`
 }
 
 type VibrateResponse struct {

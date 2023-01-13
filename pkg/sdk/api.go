@@ -33,7 +33,7 @@ type RelayApi interface { // this is interface of your custom workflow, you impl
 	OnProgress(fn func(progressEvent ProgressEvent))
 	OnPlayInboxMessages(fn func(playInboxMessagesEvent PlayInboxMessagesEvent))
 	OnCallConnected(fn func(callConnectedEvent CallConnectedEvent))
-	OnCallDisconnected(fn func(callDisconnected CallDisconnectedEvent))
+	OnCallDisconnected(fn func(callDisconnectedEvent CallDisconnectedEvent))
 	OnCallFailed(fn func(callFailedEvent CallFailedEvent))
 	OnCallReceived(fn func(callReceivedEvent CallReceivedEvent))
 	OnCallRinging(fn func(callRingingEvent CallRingingEvent))
@@ -54,8 +54,9 @@ type RelayApi interface { // this is interface of your custom workflow, you impl
 	ResolveIncident(incidentId string, reason string) ResolveIncidentResponse
 	Say(sourceUri string, text string, lang Language) SayResponse
 	Alert(target string, originator string, name string, text string, pushOptions NotificationOptions) SendNotificationResponse
+	CancelAlert(target string, name string) SendNotificationResponse
 	SayAndWait(sourceUri string, text string, lang Language) SayResponse
-	Listen(sourceUri string, phrases []string, transcribe bool, alt_lang string, timeout int) string
+	Listen(sourceUri string, phrases []string, transcribe bool, alt_lang Language, timeout int) string
 	Translate(sourceUri string, text string, from Language, to Language) string
 	LogMessage(message string, category string) LogAnalyticsEventResponse
 	LogUserMessage(message string, sourceUri string, category string) LogAnalyticsEventResponse
@@ -75,8 +76,9 @@ type RelayApi interface { // this is interface of your custom workflow, you impl
 	Rotate(sourceUri string, color string, rotations int64) SetLedResponse
 	Flash(sourceUri string, color string, count int64) SetLedResponse
 	Breathe(sourceUri string, color string, count int64) SetLedResponse
-	Vibrate(sourceUri string, pattern []uint64) VibrateResponse
+	Vibrate(sourceUri string, pattern []int64) VibrateResponse
 	Broadcast(target string, originator string, name string, text string, pushOptions NotificationOptions) SendNotificationResponse
+	CancelBroadcast(target string, name string) SendNotificationResponse
 	GetDeviceName(sourceUri string, refresh bool) string
 	GetDeviceId(sourceUri string, refresh bool) string
 	GetDeviceAddress(sourceUri string, refresh bool) string
@@ -409,11 +411,11 @@ func (wfInst *workflowInstance) SayAndWait(sourceUri string, text string, lang L
 
 // Listens for the user to speak into the device.  Utilizes speech to text functionality to interact
 // with the user. Returns the text that the device parsed from the speech as a string.
-func (wfInst *workflowInstance) Listen(sourceUri string, phrases []string, transcribe bool, alt_lang string, timeout int) string {
+func (wfInst *workflowInstance) Listen(sourceUri string, phrases []string, transcribe bool, alt_lang Language, timeout int) string {
 	log.Debug("listening ")
 	id := makeId()
 	target := makeTargetMap(sourceUri)
-	req := listenRequest{Type: "wf_api_listen_request", Id: id, Target: target, ReqestId: "request1", Phrases: phrases, Transcribe: transcribe, Timeout: timeout, AltLang: alt_lang}
+	req := listenRequest{Type: "wf_api_listen_request", Id: id, Target: target, ReqestId: "request1", Phrases: phrases, Transcribe: transcribe, Timeout: timeout, AltLang: string(alt_lang)}
 	call := wfInst.sendAndReceiveRequest(req, id)
 	res := SpeechEvent{}
 	json.Unmarshal(call.EventWrapper.Msg, &res)
@@ -649,7 +651,7 @@ func (wfInst *workflowInstance) Breathe(sourceUri string, color string, count in
 // how many vibrations you would like, the duration of each vibration in
 // milliseconds, and how long you would like the pauses between each vibration to last
 // in milliseconds. Returns a VibrateResponse.
-func (wfInst *workflowInstance) Vibrate(sourceUri string, pattern []uint64) VibrateResponse {
+func (wfInst *workflowInstance) Vibrate(sourceUri string, pattern []int64) VibrateResponse {
 	log.Debug("vibrating with pattern ", pattern)
 	id := makeId()
 	target := makeTargetMap(sourceUri)
@@ -972,7 +974,7 @@ func updateAccessToken(refreshToken string, clientId string) string {
 	// Create a new POST request with the URL and query parameters
 	req, err := http.NewRequest("POST", grantUrl, bytes.NewBuffer(grantPayload))
 	if err != nil {
-		log.Error(err)
+		log.Error("Error creating HTTP request in updateAccessToken: ", err)
 	}
 
 	// Set the headers
@@ -983,7 +985,7 @@ func updateAccessToken(refreshToken string, clientId string) string {
 	client.Timeout = time.Second * 30
 	res, err := client.Do(req)
 	if err != nil {
-		log.Error(err)
+		log.Error("Error sending HTTP request in updateAccessToken: ", err)
 	}
 
 	defer res.Body.Close()
@@ -997,7 +999,7 @@ func updateAccessToken(refreshToken string, clientId string) string {
 	var accessTokenRes map[string]interface{}
 	error := json.NewDecoder(res.Body).Decode(&accessTokenRes)
 	if error != nil {
-		log.Error(err)
+		log.Error("Error decoding response body in updateAccessToken: ", err)
 	}
 	return accessTokenRes["access_token"].(string)
 
@@ -1032,27 +1034,27 @@ func  TriggerWorkflow(accessToken string, refreshToken string, clientId string, 
 	if len(actionArgs) > 0 {
 		actionArgsString, err := json.Marshal(actionArgs)
 		if err != nil {
-			log.Error(err)
+			log.Error("Error converting actionArgs to JSON: ", err)
 		}
 		triggerPayload["action_args"] = string(actionArgsString)
 	}
 	if len(targets) > 0 {
 		targetsString, err := json.Marshal(targets)
 		if err != nil {
-			log.Error(err)
+			log.Error("Error converting targets to JSON: ", err)
 		}
 		triggerPayload["target_device_ids"] = string(targetsString)
 	}
 	triggerPayloadString, err := json.Marshal(triggerPayload)
 	if err != nil {
-		log.Error(err)
+		log.Error("Error converting triggerPayload to JSON: ", err)
 	}
 	var payload = []byte(string(triggerPayloadString))
 
 	// Create a requst to be sent with the triggerUrl and payload bytes
 	req, err := http.NewRequest("POST", triggerUrl, bytes.NewBuffer(payload))
 	if err != nil {
-		log.Error(err)
+		log.Error("Error creating HTTP request in TriggerWorkflow: ", err)
 	}
 
 	// Set the headers
@@ -1064,7 +1066,7 @@ func  TriggerWorkflow(accessToken string, refreshToken string, clientId string, 
 	client.Timeout = time.Second * 30
 	res, err = client.Do(req)
 	if err != nil {
-		log.Error(err)
+		log.Error("Error sending HTTP request in TriggerWorkflow: ", err)
 	}
 
 	// If you get a 401 back, retrieve a new access token and try again
@@ -1073,7 +1075,7 @@ func  TriggerWorkflow(accessToken string, refreshToken string, clientId string, 
 		accessToken = updateAccessToken(refreshToken, clientId)
 		req, err := http.NewRequest("POST", triggerUrl, bytes.NewBuffer(payload))
 		if err != nil {
-			log.Error(err)
+			log.Error("Error creating HTTP request in TriggerWorkflow", err)
 		}
 		// Set the headers again
 		req.Header.Set("User-Agent", version)
@@ -1083,14 +1085,14 @@ func  TriggerWorkflow(accessToken string, refreshToken string, clientId string, 
 		client.Timeout = time.Second * 30
 		res, err = client.Do(req)
 		if err != nil {
-			log.Error(err)
+			log.Error("Error sending HTTP request in TriggerWorkflow: ", err)
 		}
 	}
 
 	// Convert the respoonse body into bytes, so that it can then be converted into a string that is readable to the client
 	bytes, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		log.Error(err)
+		log.Error("Error reading HTTP response in TriggerWorkflow: ", err)
 	}
 	// Return a map containing the response and the access token
 	response := map[string]string{
@@ -1119,7 +1121,7 @@ func FetchDevice(accessToken string, refreshToken string, clientId string, subsc
 	client.Timeout = time.Second * 30
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		log.Error(err)
+		log.Error("Error creating HTTP request in FetchDevice: ", err)
 	}
 
 	// Set the headers and perform the request
@@ -1127,7 +1129,7 @@ func FetchDevice(accessToken string, refreshToken string, clientId string, subsc
 	req.Header.Set("Authorization", "Bearer "+accessToken)
 	res, err := client.Do(req)
 	if err != nil {
-		log.Error(err)
+		log.Error("Error sending HTTP request in FetchDevice: ", err)
 	}
 
 	defer res.Body.Close()
@@ -1139,7 +1141,7 @@ func FetchDevice(accessToken string, refreshToken string, clientId string, subsc
 		req.Header.Set("Authorization", "Bearer "+accessToken)
 		res, err = client.Do(req)
 		if err != nil {
-			log.Error(err)
+			log.Error("Error sending HTTP request in FetchDevice: ", err)
 		}
 		defer res.Body.Close()
 	}
@@ -1147,7 +1149,7 @@ func FetchDevice(accessToken string, refreshToken string, clientId string, subsc
 	// Convert the response body into types, so that it can then be converted into a string that is readable to the client
 	bytes, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		log.Error(err)
+		log.Error("Error reading HTTP response in FetchDevice: ", err)
 	}
 
 	// Return a map containing the response and the access token
