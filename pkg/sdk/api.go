@@ -974,7 +974,7 @@ func updateAccessToken(refreshToken string, clientId string) string {
 	// Create a new POST request with the URL and query parameters
 	req, err := http.NewRequest("POST", grantUrl, bytes.NewBuffer(grantPayload))
 	if err != nil {
-		log.Error(err)
+		log.Error("Error creating HTTP request in updateAccessToken: ", err)
 	}
 
 	// Set the headers
@@ -985,7 +985,7 @@ func updateAccessToken(refreshToken string, clientId string) string {
 	client.Timeout = time.Second * 30
 	res, err := client.Do(req)
 	if err != nil {
-		log.Error(err)
+		log.Error("Error sending HTTP request in updateAccessToken: ", err)
 	}
 
 	defer res.Body.Close()
@@ -999,7 +999,7 @@ func updateAccessToken(refreshToken string, clientId string) string {
 	var accessTokenRes map[string]interface{}
 	error := json.NewDecoder(res.Body).Decode(&accessTokenRes)
 	if error != nil {
-		log.Error(err)
+		log.Error("Error decoding response body in updateAccessToken: ", err)
 	}
 	return accessTokenRes["access_token"].(string)
 
@@ -1034,27 +1034,27 @@ func  TriggerWorkflow(accessToken string, refreshToken string, clientId string, 
 	if len(actionArgs) > 0 {
 		actionArgsString, err := json.Marshal(actionArgs)
 		if err != nil {
-			log.Error(err)
+			log.Error("Error converting actionArgs to JSON: ", err)
 		}
 		triggerPayload["action_args"] = string(actionArgsString)
 	}
 	if len(targets) > 0 {
 		targetsString, err := json.Marshal(targets)
 		if err != nil {
-			log.Error(err)
+			log.Error("Error converting targets to JSON: ", err)
 		}
 		triggerPayload["target_device_ids"] = string(targetsString)
 	}
 	triggerPayloadString, err := json.Marshal(triggerPayload)
 	if err != nil {
-		log.Error(err)
+		log.Error("Error converting triggerPayload to JSON: ", err)
 	}
 	var payload = []byte(string(triggerPayloadString))
 
 	// Create a requst to be sent with the triggerUrl and payload bytes
 	req, err := http.NewRequest("POST", triggerUrl, bytes.NewBuffer(payload))
 	if err != nil {
-		log.Error(err)
+		log.Error("Error creating HTTP request in TriggerWorkflow: ", err)
 	}
 
 	// Set the headers
@@ -1066,7 +1066,7 @@ func  TriggerWorkflow(accessToken string, refreshToken string, clientId string, 
 	client.Timeout = time.Second * 30
 	res, err = client.Do(req)
 	if err != nil {
-		log.Error(err)
+		log.Error("Error sending HTTP request in TriggerWorkflow: ", err)
 	}
 
 	// If you get a 401 back, retrieve a new access token and try again
@@ -1075,7 +1075,7 @@ func  TriggerWorkflow(accessToken string, refreshToken string, clientId string, 
 		accessToken = updateAccessToken(refreshToken, clientId)
 		req, err := http.NewRequest("POST", triggerUrl, bytes.NewBuffer(payload))
 		if err != nil {
-			log.Error(err)
+			log.Error("Error creating HTTP request in TriggerWorkflow", err)
 		}
 		// Set the headers again
 		req.Header.Set("User-Agent", version)
@@ -1085,14 +1085,14 @@ func  TriggerWorkflow(accessToken string, refreshToken string, clientId string, 
 		client.Timeout = time.Second * 30
 		res, err = client.Do(req)
 		if err != nil {
-			log.Error(err)
+			log.Error("Error sending HTTP request in TriggerWorkflow: ", err)
 		}
 	}
 
 	// Convert the respoonse body into bytes, so that it can then be converted into a string that is readable to the client
 	bytes, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		log.Error(err)
+		log.Error("Error reading HTTP response in TriggerWorkflow: ", err)
 	}
 	// Return a map containing the response and the access token
 	response := map[string]string{
@@ -1121,7 +1121,7 @@ func FetchDevice(accessToken string, refreshToken string, clientId string, subsc
 	client.Timeout = time.Second * 30
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		log.Error(err)
+		log.Error("Error creating HTTP request in FetchDevice: ", err)
 	}
 
 	// Set the headers and perform the request
@@ -1129,7 +1129,7 @@ func FetchDevice(accessToken string, refreshToken string, clientId string, subsc
 	req.Header.Set("Authorization", "Bearer "+accessToken)
 	res, err := client.Do(req)
 	if err != nil {
-		log.Error(err)
+		log.Error("Error sending HTTP request in FetchDevice: ", err)
 	}
 
 	defer res.Body.Close()
@@ -1141,7 +1141,7 @@ func FetchDevice(accessToken string, refreshToken string, clientId string, subsc
 		req.Header.Set("Authorization", "Bearer "+accessToken)
 		res, err = client.Do(req)
 		if err != nil {
-			log.Error(err)
+			log.Error("Error sending HTTP request in FetchDevice: ", err)
 		}
 		defer res.Body.Close()
 	}
@@ -1149,7 +1149,7 @@ func FetchDevice(accessToken string, refreshToken string, clientId string, subsc
 	// Convert the response body into types, so that it can then be converted into a string that is readable to the client
 	bytes, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		log.Error(err)
+		log.Error("Error reading HTTP response in FetchDevice: ", err)
 	}
 
 	// Return a map containing the response and the access token
